@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "moduleResolution": "Node",
+    "module": "ESNext",
+    "target": "ES2020",
+    "resolveJsonModule": true,
+    "removeComments": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "incremental": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+
+    "declaration": true,
+    "declarationMap": true,
+    "baseUrl": ".",
+    "rootDir": ".",
+    "paths": {
+      "@polkadot/types/lookup": ["node_modules/@unique-nft/unique-mainnet-types/types-lookup"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"],
+}
