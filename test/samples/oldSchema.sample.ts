@@ -125,7 +125,7 @@ export const oldSchemaDecoded: UniqueCollectionSchemaDecoded = {
   oldProperties: {
     _old_schemaVersion: "ImageUrl",
     _old_offchainSchema: "https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image{id}.png",
-    _old_constOnChainSchema: "{\"nested\":{\"onChainMetaData\":{\"nested\":{\"NFTMeta\":{\"fields\":{\"ipfsJson\":{\"id\":1,\"rule\":\"required\",\"type\":\"string\"},\"gender\":{\"id\":2,\"rule\":\"required\",\"type\":\"Gender\"},\"traits\":{\"id\":3,\"rule\":\"repeated\",\"type\":\"PunkTrait\"},\"name\":{\"id\":4,\"rule\":\"required\",\"type\":\"string\"}}},\"Gender\":{\"options\":{\"Female\":\"{\\\"en\\\": \\\"Female\\\"}\",\"Male\":\"{\\\"en\\\": \\\"Male\\\"}\"},\"values\":{\"Female\":1,\"Male\":0}},\"PunkTrait\":{\"options\":{\"BLACK_LIPSTICK\":\"{\\\"en\\\": \\\"Black Lipstick\\\"}\",\"RED_LIPSTICK\":\"{\\\"en\\\": \\\"Red Lipstick\\\"}\"},\"values\":{\"BLACK_LIPSTICK\":0,\"RED_LIPSTICK\":1}}}}}}"
+    _old_constOnChainSchema: "{\"nested\":{\"onChainMetaData\":{\"nested\":{\"NFTMeta\":{\"fields\":{\"ipfsJson\":{\"id\":1,\"rule\":\"required\",\"type\":\"string\"},\"gender\":{\"id\":2,\"rule\":\"required\",\"type\":\"Gender\"},\"traits\":{\"id\":3,\"rule\":\"repeated\",\"type\":\"PunkTrait\"},\"name\":{\"id\":4,\"rule\":\"required\",\"type\":\"string\"}}},\"Gender\":{\"options\":{\"Female\":\"{\\\"en\\\": \\\"Female\\\"}\",\"Male\":\"{\\\"en\\\": \\\"Male\\\"}\"},\"values\":{\"Female\":0,\"Male\":1}},\"PunkTrait\":{\"options\":{\"BLACK_LIPSTICK\":\"{\\\"en\\\": \\\"Black Lipstick\\\"}\",\"RED_LIPSTICK\":\"{\\\"en\\\": \\\"Red Lipstick\\\"}\"},\"values\":{\"BLACK_LIPSTICK\":0,\"RED_LIPSTICK\":1}}}}}}"
   }
 };
 
@@ -152,18 +152,18 @@ export const oldTokenDecodedAttributes: DecodedAttributes = {
     isArray: false,
     isEnum: true,
     name: {_: 'gender'},
-    rawValue: 'Female',
+    rawValue: 1,
     type: AttributeType.string,
     value: {
-      _: 'Female',
-      en: 'Female',
+      _: 'Male',
+      en: 'Male',
     }
   },
   1: {
     isArray: true,
     isEnum: true,
     name: {_: 'traits'},
-    rawValue: ['BLACK_LIPSTICK'],
+    rawValue: [0],
     type: AttributeType.string,
     value: [{
       _: 'Black Lipstick',
@@ -174,7 +174,7 @@ export const oldTokenDecodedAttributes: DecodedAttributes = {
     isArray: false,
     isEnum: false,
     name: {_: 'name'},
-    rawValue: 'Bob',
+    rawValue: {_: 'Bob'},
     type: AttributeType.string,
     value: {_: 'Bob'}
   },

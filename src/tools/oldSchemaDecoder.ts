@@ -203,9 +203,20 @@ export const decodeOldSchemaToken = async (collectionId: number, tokenId: number
   const u8aToken = StringUtils.HexString.toU8a(constDataProp.value)
   let tokenDecoded: Message<{}> = {} as any
   let tokenDecodedHuman: Record<string, any> = {}
+  let tokenDecodedWithRawValues: Array<{
+    name: string
+    rawValue: typeof Message<{}>[keyof typeof Message<{}>]
+    toJSONValue: any
+  }> = []
+
   try {
     tokenDecoded = NFTMeta.decode(u8aToken)
     tokenDecodedHuman = tokenDecoded.toJSON()
+    tokenDecodedWithRawValues = getEntries(tokenDecoded).map(([name, rawValue], index) => ({
+      name,
+      rawValue: rawValue,
+      toJSONValue: tokenDecodedHuman[name],
+    }))
   } catch (err: any) {
     return {
       result: null,
@@ -215,15 +226,14 @@ export const decodeOldSchemaToken = async (collectionId: number, tokenId: number
 
   const tokenAttributesResult: DecodedAttributes = {}
 
-  const entries = getEntries(tokenDecodedHuman)
   let i = 0
-  for (const entry of entries) {
-    let [name, rawValue] = entry as [string, any]
+  for (const entry of tokenDecodedWithRawValues) {
+    let {name, rawValue, toJSONValue} = entry
     if (name === 'ipfsJson') {
       continue
     }
 
-    let value = rawValue
+    let value = toJSONValue
     let isArray = false
     let isEnum = false
 
@@ -234,7 +244,7 @@ export const decodeOldSchemaToken = async (collectionId: number, tokenId: number
       isEnum = !!enumOptions;
 
       if (field.repeated && Array.isArray(rawValue)) {
-        const parsedValues = rawValue
+        const parsedValues = toJSONValue
           .map((v: any) => {
             const parsed = safeJSONParse<any>(enumOptions?.[v] || v)
             if (typeof parsed !== 'string') {
@@ -244,13 +254,12 @@ export const decodeOldSchemaToken = async (collectionId: number, tokenId: number
               return null
             }
           })
-          .filter(v => typeof v?._ === 'string')
-
+          .filter((v: any) => typeof v?._ === 'string')
 
         value = parsedValues
         isArray = true
       } else {
-        value = safeJSONParse(enumOptions?.[rawValue] || rawValue)
+        value = safeJSONParse(enumOptions?.[toJSONValue] || rawValue)
         if (typeof value !== 'string') {
           value._ = value.en || getValues(value)[0]
         }
@@ -259,13 +268,20 @@ export const decodeOldSchemaToken = async (collectionId: number, tokenId: number
 
     if (field.type === 'string') value = {_: value}
 
-    tokenAttributesResult[i++] = {
+    const schemaAttr = getEntries(schema.attributesSchema!).find(([attrId, attrValue]) => {
+      return attrValue.name._ === name
+    })
+
+    const index = schemaAttr ? schemaAttr[0] : i
+    i += 1
+
+    tokenAttributesResult[index] = {
       name: {_: name},
       type: field.type === 'number' ? AttributeType.float : AttributeType.string,
       value,
       isArray,
       isEnum,
-      rawValue,
+      rawValue: isEnum ? rawValue as any : {_: rawValue},
     }
   }
 
