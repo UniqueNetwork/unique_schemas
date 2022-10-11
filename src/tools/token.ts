@@ -131,9 +131,6 @@ export const unpackEncodedTokenFromProperties = <T extends UniqueTokenToCreate>(
 export const decodeTokenFromProperties = async (collectionId: number, tokenId: number, rawToken: HumanizedNftToken, schema: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaDecoded): Promise<DecodingResult<UniqueTokenDecoded>> => {
   const unpackedToken = unpackEncodedTokenFromProperties(rawToken.properties, schema)
 
-  console.log('UNPACKED TOKEN')
-  console.log(unpackedToken)
-
   try {
     validateUniqueToken(unpackedToken, schema)
   } catch (e) {
