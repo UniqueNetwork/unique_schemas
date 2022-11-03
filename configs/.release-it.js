@@ -25,7 +25,7 @@ const config = {
     preRelease: true,
     autoGenerate: true,
     tokenRef: "GITHUB_TOKEN",
-    assets: ["dist/utf-helpers.min.js"],
+    assets: ["dist/unique_schemas.min.js"],
   },
 }
 
