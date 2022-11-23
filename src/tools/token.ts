@@ -284,8 +284,6 @@ export const extractERC721MetadataFromIpfsUrl = async (
   try {
     const response = await fetch(ipfsUrl);
 
-    console.log(response);
-
     return response.json();
   } catch {
     throw new Error("Cannot extract ERC721 metadata from tokenURI");
