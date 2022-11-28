@@ -243,7 +243,7 @@ export const decodeOldSchemaToken = async (collectionId: number, tokenId: number
       const enumOptions = root.lookupEnum(field.type).options
       isEnum = !!enumOptions;
 
-      if (field.repeated && Array.isArray(rawValue)) {
+      if (field.repeated && Array.isArray(rawValue) && toJSONValue) {
         const parsedValues = toJSONValue
           .map((v: any) => {
             const parsed = safeJSONParse<any>(enumOptions?.[v] || v)
