@@ -105,13 +105,13 @@ export interface UniqueCollectionSchemaToCreate {
 
   audio?: {
     urlTemplate?: UrlTemplateString
-    format: string
+    format?: string
     isLossless?: boolean
   }
 
   spatialObject?: {
     urlTemplate?: UrlTemplateString
-    format: string
+    format?: string
   }
 }
 

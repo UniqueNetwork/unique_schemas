@@ -160,7 +160,7 @@ export const validateUniqueCollectionSchema = <C extends UniqueCollectionSchemaT
     isPlainObject(schema.audio, 'audio')
     validateUrlTemplateString(schema.audio.urlTemplate, 'audio')
 
-    validateFieldByType(schema.audio, 'format', 'string', false, 'audio')
+    validateFieldByType(schema.audio, 'format', 'string', true, 'audio')
     validateFieldByType(schema.audio, 'isLossless', 'boolean', true, 'audio')
   }
 
@@ -168,7 +168,7 @@ export const validateUniqueCollectionSchema = <C extends UniqueCollectionSchemaT
     isPlainObject(schema.spatialObject, 'spatialObject')
     validateUrlTemplateString(schema.spatialObject.urlTemplate, 'spatialObject')
 
-    validateFieldByType(schema.spatialObject, 'format', 'string', false, 'spatialObject')
+    validateFieldByType(schema.spatialObject, 'format', 'string', true, 'spatialObject')
   }
 
   return true
