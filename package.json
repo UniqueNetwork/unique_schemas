@@ -9,8 +9,7 @@
     "copy_files": "cpy ./package.json ./README.md ./dist",
     "patch": "npm run release -- -i patch --ci",
     "release": "dotenv -e ./configs/.release.env -- release-it --config ./configs/.release-it.js --github.release",
-    "esno": "esno ",
-    "esmon": "nodemon --exec \"esno\" ",
+    "generate_types": "create-validator-ts \"src/v2/types.ts\"",
     "testrun": "vitest run",
     "test": "vitest"
   },

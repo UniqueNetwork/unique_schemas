@@ -14,7 +14,7 @@ type RawUrlOrInfix = {
 
 type UrlOrInfix<FullUrl> = RawUrlOrInfix & FullUrl
 
-type AnimationUrlOrInfix<FullUrl> = UrlOrInfix<FullUrl> & {isVideo?: boolean}
+type AnimationAppend = {isVideo?: boolean}
 
 type GenericLocalizedWithDefault<T> = {
   _: T
@@ -26,7 +26,6 @@ type LocalizedStringWithDefault = GenericLocalizedWithDefault<string>
 type LocalizedStringOrBoxedNumberWithDefault = BoxedNumberWithDefault | LocalizedStringWithDefault
 
 type LocalizedUrlOfInfix<FullUrl> = GenericLocalizedWithDefault<UrlOrInfix<FullUrl>>
-type LocalizedAnimationUrlOrInfix<FullUrl> = GenericLocalizedWithDefault<AnimationUrlOrInfix<FullUrl>>
 
 export type TokenPropertyPermissionValue = {
   mutable: boolean
@@ -54,12 +53,6 @@ enum AttributeType {
   colorRgba = "colorRgba",    // string // 'rrggbbaa'
 }
 
-type ImageDataGeneric<FullUrl = {}> = {
-  main: LocalizedUrlOfInfix<FullUrl>
-  fullQuality?: LocalizedUrlOfInfix<FullUrl>
-  animation?: LocalizedAnimationUrlOrInfix<FullUrl>
-}
-
 type ContentTypeSchema<T = {}> = T & {
   baseUrl?: string
   isIpfsByDefault?: string
@@ -82,6 +75,8 @@ type AttributesSchema<T = {}> = T & {
 
   combineAllAttributesToOneProperty?: boolean
 
+  attributesToCombineToOneProperty?: string[]
+
   schema: {
     [K: string]: OneAttributeSchema<T>
   }
@@ -99,14 +94,10 @@ type UniqueCollectionSchemaV2Generic<Permission, FullUrl> = Permission & {
   // without generic knowledge how to read this info for wallets
   info?: any
 
-  cover: ImageDataGeneric<{}>
+  cover: LocalizedUrlOfInfix<FullUrl> & AnimationAppend
 
   content: {
-    images: Omit<ContentTypeSchema<Permission>, 'baseUrl'> & {
-      baseUrl: string
-      previewBaseUrl?: string
-      fullQualityBaseUrl?: string
-    }
+    images?: ContentTypeSchema<Permission>
 
     videos?: ContentTypeSchema<Permission>
 
@@ -114,9 +105,7 @@ type UniqueCollectionSchemaV2Generic<Permission, FullUrl> = Permission & {
 
     volumes?: ContentTypeSchema<Permission>
 
-    files?: ContentTypeSchema<Permission> & {
-      defaultMimeType?: string
-    }
+    files?: ContentTypeSchema<Permission>
   }
 
   attributes?: AttributesSchema<Permission>
@@ -136,13 +125,16 @@ export type UniqueCollectionSchemaV2Decoded = UniqueCollectionSchemaV2Generic<{}
   url: string
 }>
 
-type TokenMediaContent<FullUrl> = {
-  main: LocalizedUrlOfInfix<FullUrl>
-  order?: number
-  isMain?: number
-}
 
-type TokenCommonData = {
+type TokenMediaContent<FullUrl, Append = {}> = LocalizedUrlOfInfix<FullUrl> & {
+  title?: LocalizedStringWithDefault
+  order?: number
+  isMain?: boolean
+} & Append
+
+type TokenCommonData<FullUrl> = {
+  preview?: LocalizedUrlOfInfix<FullUrl> & AnimationAppend
+
   defaultLocale?: string
 
   name?: LocalizedStringWithDefault
@@ -151,11 +143,7 @@ type TokenCommonData = {
   info?: any // this field is needed for some free form data about the token
 }
 type TokenContentData<FullUrl> = {
-  images: Array<Omit<TokenMediaContent<FullUrl>, 'main'> & {
-    main: LocalizedAnimationUrlOrInfix<FullUrl>
-    preview?: LocalizedAnimationUrlOrInfix<FullUrl>
-    fullQuality?: LocalizedAnimationUrlOrInfix<FullUrl>
-  }>
+  images: Array<TokenMediaContent<FullUrl, AnimationAppend>>
   videos?: Array<TokenMediaContent<FullUrl>>
   audios?: Array<TokenMediaContent<FullUrl>>
   volumes?: Array<TokenMediaContent<FullUrl>>
@@ -163,7 +151,7 @@ type TokenContentData<FullUrl> = {
 }
 
 type UniqueTokenSchemaV2Generic<FullUrl> = {
-  common?: TokenCommonData
+  common?: TokenCommonData<FullUrl>
   content: TokenContentData<FullUrl>
   attributes?: {
     [K: string]: {

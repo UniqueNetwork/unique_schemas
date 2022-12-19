@@ -81,288 +81,57 @@ export const SCHEMA = {
                 "info": {},
                 "cover": {
                     "type": "object",
+                    "additionalProperties": {
+                        "type": "object"
+                    },
                     "properties": {
-                        "main": {
-                            "type": "object",
-                            "properties": {
-                                "_": {
-                                    "anyOf": [
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "url": {
-                                                    "type": "string"
-                                                },
-                                                "infix": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "url"
-                                            ]
-                                        },
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "infix": {
-                                                    "type": "string"
-                                                },
-                                                "url": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "infix"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            "required": [
-                                "_"
-                            ],
-                            "additionalProperties": {
-                                "anyOf": [
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "url": {
-                                                "type": "string"
-                                            },
-                                            "infix": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "url"
-                                        ]
-                                    },
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "infix": {
-                                                "type": "string"
-                                            },
-                                            "url": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "infix"
-                                        ]
-                                    }
-                                ]
-                            }
+                        "isVideo": {
+                            "type": "boolean"
                         },
-                        "fullQuality": {
-                            "type": "object",
-                            "properties": {
-                                "_": {
-                                    "anyOf": [
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "url": {
-                                                    "type": "string"
-                                                },
-                                                "infix": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "url"
-                                            ]
+                        "_": {
+                            "anyOf": [
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "url": {
+                                            "type": "string"
                                         },
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "infix": {
-                                                    "type": "string"
-                                                },
-                                                "url": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "infix"
-                                            ]
+                                        "infix": {
+                                            "not": {}
+                                        },
+                                        "isIpfs": {
+                                            "type": "boolean"
                                         }
+                                    },
+                                    "required": [
+                                        "url"
+                                    ]
+                                },
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "infix": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "not": {}
+                                        },
+                                        "isIpfs": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "infix"
                                     ]
                                 }
-                            },
-                            "required": [
-                                "_"
-                            ],
-                            "additionalProperties": {
-                                "anyOf": [
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "url": {
-                                                "type": "string"
-                                            },
-                                            "infix": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "url"
-                                        ]
-                                    },
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "infix": {
-                                                "type": "string"
-                                            },
-                                            "url": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "infix"
-                                        ]
-                                    }
-                                ]
-                            }
-                        },
-                        "animation": {
-                            "type": "object",
-                            "properties": {
-                                "_": {
-                                    "anyOf": [
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "isVideo": {
-                                                    "type": "boolean"
-                                                },
-                                                "url": {
-                                                    "type": "string"
-                                                },
-                                                "infix": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "url"
-                                            ]
-                                        },
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "isVideo": {
-                                                    "type": "boolean"
-                                                },
-                                                "infix": {
-                                                    "type": "string"
-                                                },
-                                                "url": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "infix"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            "required": [
-                                "_"
-                            ],
-                            "additionalProperties": {
-                                "anyOf": [
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "isVideo": {
-                                                "type": "boolean"
-                                            },
-                                            "url": {
-                                                "type": "string"
-                                            },
-                                            "infix": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "url"
-                                        ]
-                                    },
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "isVideo": {
-                                                "type": "boolean"
-                                            },
-                                            "infix": {
-                                                "type": "string"
-                                            },
-                                            "url": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "infix"
-                                        ]
-                                    }
-                                ]
-                            }
+                            ]
                         }
                     },
                     "required": [
-                        "main"
-                    ],
-                    "additionalProperties": false
+                        "_"
+                    ]
                 },
                 "content": {
                     "type": "object",
@@ -374,22 +143,13 @@ export const SCHEMA = {
                                 "baseUrl": {
                                     "type": "string"
                                 },
-                                "previewBaseUrl": {
-                                    "type": "string"
-                                },
-                                "fullQualityBaseUrl": {
+                                "isIpfsByDefault": {
                                     "type": "string"
                                 },
                                 "defaultPermission": {
                                     "$ref": "#/definitions/TokenPropertyPermissionValue"
-                                },
-                                "isIpfsByDefault": {
-                                    "type": "string"
                                 }
-                            },
-                            "required": [
-                                "baseUrl"
-                            ]
+                            }
                         },
                         "videos": {
                             "type": "object",
@@ -440,9 +200,6 @@ export const SCHEMA = {
                             "type": "object",
                             "additionalProperties": false,
                             "properties": {
-                                "defaultMimeType": {
-                                    "type": "string"
-                                },
                                 "baseUrl": {
                                     "type": "string"
                                 },
@@ -455,9 +212,6 @@ export const SCHEMA = {
                             }
                         }
                     },
-                    "required": [
-                        "images"
-                    ],
                     "additionalProperties": false
                 },
                 "attributes": {
@@ -472,6 +226,12 @@ export const SCHEMA = {
                         },
                         "combineAllAttributesToOneProperty": {
                             "type": "boolean"
+                        },
+                        "attributesToCombineToOneProperty": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
                         },
                         "schema": {
                             "type": "object",
@@ -637,288 +397,57 @@ export const SCHEMA = {
                 "info": {},
                 "cover": {
                     "type": "object",
+                    "additionalProperties": {
+                        "type": "object"
+                    },
                     "properties": {
-                        "main": {
-                            "type": "object",
-                            "properties": {
-                                "_": {
-                                    "anyOf": [
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "url": {
-                                                    "type": "string"
-                                                },
-                                                "infix": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "url"
-                                            ]
-                                        },
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "infix": {
-                                                    "type": "string"
-                                                },
-                                                "url": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "infix"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            "required": [
-                                "_"
-                            ],
-                            "additionalProperties": {
-                                "anyOf": [
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "url": {
-                                                "type": "string"
-                                            },
-                                            "infix": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "url"
-                                        ]
-                                    },
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "infix": {
-                                                "type": "string"
-                                            },
-                                            "url": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "infix"
-                                        ]
-                                    }
-                                ]
-                            }
+                        "isVideo": {
+                            "type": "boolean"
                         },
-                        "fullQuality": {
-                            "type": "object",
-                            "properties": {
-                                "_": {
-                                    "anyOf": [
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "url": {
-                                                    "type": "string"
-                                                },
-                                                "infix": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "url"
-                                            ]
+                        "_": {
+                            "anyOf": [
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "url": {
+                                            "type": "string"
                                         },
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "infix": {
-                                                    "type": "string"
-                                                },
-                                                "url": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "infix"
-                                            ]
+                                        "infix": {
+                                            "not": {}
+                                        },
+                                        "isIpfs": {
+                                            "type": "boolean"
                                         }
+                                    },
+                                    "required": [
+                                        "url"
+                                    ]
+                                },
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "infix": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "not": {}
+                                        },
+                                        "isIpfs": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "infix"
                                     ]
                                 }
-                            },
-                            "required": [
-                                "_"
-                            ],
-                            "additionalProperties": {
-                                "anyOf": [
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "url": {
-                                                "type": "string"
-                                            },
-                                            "infix": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "url"
-                                        ]
-                                    },
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "infix": {
-                                                "type": "string"
-                                            },
-                                            "url": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "infix"
-                                        ]
-                                    }
-                                ]
-                            }
-                        },
-                        "animation": {
-                            "type": "object",
-                            "properties": {
-                                "_": {
-                                    "anyOf": [
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "isVideo": {
-                                                    "type": "boolean"
-                                                },
-                                                "url": {
-                                                    "type": "string"
-                                                },
-                                                "infix": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "url"
-                                            ]
-                                        },
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "isVideo": {
-                                                    "type": "boolean"
-                                                },
-                                                "infix": {
-                                                    "type": "string"
-                                                },
-                                                "url": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "infix"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            "required": [
-                                "_"
-                            ],
-                            "additionalProperties": {
-                                "anyOf": [
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "isVideo": {
-                                                "type": "boolean"
-                                            },
-                                            "url": {
-                                                "type": "string"
-                                            },
-                                            "infix": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "url"
-                                        ]
-                                    },
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "isVideo": {
-                                                "type": "boolean"
-                                            },
-                                            "infix": {
-                                                "type": "string"
-                                            },
-                                            "url": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "infix"
-                                        ]
-                                    }
-                                ]
-                            }
+                            ]
                         }
                     },
                     "required": [
-                        "main"
-                    ],
-                    "additionalProperties": false
+                        "_"
+                    ]
                 },
                 "content": {
                     "type": "object",
@@ -930,19 +459,10 @@ export const SCHEMA = {
                                 "baseUrl": {
                                     "type": "string"
                                 },
-                                "previewBaseUrl": {
-                                    "type": "string"
-                                },
-                                "fullQualityBaseUrl": {
-                                    "type": "string"
-                                },
                                 "isIpfsByDefault": {
                                     "type": "string"
                                 }
-                            },
-                            "required": [
-                                "baseUrl"
-                            ]
+                            }
                         },
                         "videos": {
                             "type": "object",
@@ -984,9 +504,6 @@ export const SCHEMA = {
                             "type": "object",
                             "additionalProperties": false,
                             "properties": {
-                                "defaultMimeType": {
-                                    "type": "string"
-                                },
                                 "baseUrl": {
                                     "type": "string"
                                 },
@@ -996,9 +513,6 @@ export const SCHEMA = {
                             }
                         }
                     },
-                    "required": [
-                        "images"
-                    ],
                     "additionalProperties": false
                 },
                 "attributes": {
@@ -1013,6 +527,12 @@ export const SCHEMA = {
                         },
                         "combineAllAttributesToOneProperty": {
                             "type": "boolean"
+                        },
+                        "attributesToCombineToOneProperty": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
                         },
                         "schema": {
                             "type": "object",
@@ -1169,288 +689,58 @@ export const SCHEMA = {
                 "info": {},
                 "cover": {
                     "type": "object",
+                    "additionalProperties": {
+                        "type": "object"
+                    },
                     "properties": {
-                        "main": {
-                            "type": "object",
-                            "properties": {
-                                "_": {
-                                    "anyOf": [
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "url": {
-                                                    "type": "string"
-                                                },
-                                                "infix": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "url"
-                                            ]
-                                        },
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "infix": {
-                                                    "type": "string"
-                                                },
-                                                "url": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "infix"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            "required": [
-                                "_"
-                            ],
-                            "additionalProperties": {
-                                "anyOf": [
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "url": {
-                                                "type": "string"
-                                            },
-                                            "infix": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "url"
-                                        ]
-                                    },
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "infix": {
-                                                "type": "string"
-                                            },
-                                            "url": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "infix"
-                                        ]
-                                    }
-                                ]
-                            }
+                        "isVideo": {
+                            "type": "boolean"
                         },
-                        "fullQuality": {
-                            "type": "object",
-                            "properties": {
-                                "_": {
-                                    "anyOf": [
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "url": {
-                                                    "type": "string"
-                                                },
-                                                "infix": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "url"
-                                            ]
+                        "_": {
+                            "anyOf": [
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "url": {
+                                            "type": "string"
                                         },
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "infix": {
-                                                    "type": "string"
-                                                },
-                                                "url": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "infix"
-                                            ]
+                                        "infix": {
+                                            "not": {}
+                                        },
+                                        "isIpfs": {
+                                            "type": "boolean"
                                         }
+                                    },
+                                    "required": [
+                                        "url"
+                                    ]
+                                },
+                                {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                        "url": {
+                                            "not": {}
+                                        },
+                                        "infix": {
+                                            "type": "string"
+                                        },
+                                        "isIpfs": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "infix",
+                                        "url"
                                     ]
                                 }
-                            },
-                            "required": [
-                                "_"
-                            ],
-                            "additionalProperties": {
-                                "anyOf": [
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "url": {
-                                                "type": "string"
-                                            },
-                                            "infix": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "url"
-                                        ]
-                                    },
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "infix": {
-                                                "type": "string"
-                                            },
-                                            "url": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "infix"
-                                        ]
-                                    }
-                                ]
-                            }
-                        },
-                        "animation": {
-                            "type": "object",
-                            "properties": {
-                                "_": {
-                                    "anyOf": [
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "isVideo": {
-                                                    "type": "boolean"
-                                                },
-                                                "url": {
-                                                    "type": "string"
-                                                },
-                                                "infix": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "url"
-                                            ]
-                                        },
-                                        {
-                                            "type": "object",
-                                            "additionalProperties": false,
-                                            "properties": {
-                                                "isVideo": {
-                                                    "type": "boolean"
-                                                },
-                                                "infix": {
-                                                    "type": "string"
-                                                },
-                                                "url": {
-                                                    "not": {}
-                                                },
-                                                "isIpfs": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "infix"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            "required": [
-                                "_"
-                            ],
-                            "additionalProperties": {
-                                "anyOf": [
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "isVideo": {
-                                                "type": "boolean"
-                                            },
-                                            "url": {
-                                                "type": "string"
-                                            },
-                                            "infix": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "url"
-                                        ]
-                                    },
-                                    {
-                                        "type": "object",
-                                        "additionalProperties": false,
-                                        "properties": {
-                                            "isVideo": {
-                                                "type": "boolean"
-                                            },
-                                            "infix": {
-                                                "type": "string"
-                                            },
-                                            "url": {
-                                                "not": {}
-                                            },
-                                            "isIpfs": {
-                                                "type": "boolean"
-                                            }
-                                        },
-                                        "required": [
-                                            "infix"
-                                        ]
-                                    }
-                                ]
-                            }
+                            ]
                         }
                     },
                     "required": [
-                        "main"
-                    ],
-                    "additionalProperties": false
+                        "_"
+                    ]
                 },
                 "content": {
                     "type": "object",
@@ -1462,19 +752,10 @@ export const SCHEMA = {
                                 "baseUrl": {
                                     "type": "string"
                                 },
-                                "previewBaseUrl": {
-                                    "type": "string"
-                                },
-                                "fullQualityBaseUrl": {
-                                    "type": "string"
-                                },
                                 "isIpfsByDefault": {
                                     "type": "string"
                                 }
-                            },
-                            "required": [
-                                "baseUrl"
-                            ]
+                            }
                         },
                         "videos": {
                             "type": "object",
@@ -1516,9 +797,6 @@ export const SCHEMA = {
                             "type": "object",
                             "additionalProperties": false,
                             "properties": {
-                                "defaultMimeType": {
-                                    "type": "string"
-                                },
                                 "baseUrl": {
                                     "type": "string"
                                 },
@@ -1528,9 +806,6 @@ export const SCHEMA = {
                             }
                         }
                     },
-                    "required": [
-                        "images"
-                    ],
                     "additionalProperties": false
                 },
                 "attributes": {
@@ -1545,6 +820,12 @@ export const SCHEMA = {
                         },
                         "combineAllAttributesToOneProperty": {
                             "type": "boolean"
+                        },
+                        "attributesToCombineToOneProperty": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
                         },
                         "schema": {
                             "type": "object",
@@ -1685,6 +966,60 @@ export const SCHEMA = {
                 "common": {
                     "type": "object",
                     "properties": {
+                        "preview": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "object"
+                            },
+                            "properties": {
+                                "isVideo": {
+                                    "type": "boolean"
+                                },
+                                "_": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "url": {
+                                                    "type": "string"
+                                                },
+                                                "infix": {
+                                                    "not": {}
+                                                },
+                                                "isIpfs": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "url"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "infix": {
+                                                    "type": "string"
+                                                },
+                                                "url": {
+                                                    "not": {}
+                                                },
+                                                "isIpfs": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "infix"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "_"
+                            ]
+                        },
                         "defaultLocale": {
                             "type": "string"
                         },
@@ -1727,317 +1062,76 @@ export const SCHEMA = {
                             "type": "array",
                             "items": {
                                 "type": "object",
-                                "additionalProperties": false,
+                                "additionalProperties": {
+                                    "type": "object"
+                                },
                                 "properties": {
-                                    "main": {
-                                        "type": "object",
-                                        "properties": {
-                                            "_": {
-                                                "anyOf": [
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "isVideo": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "url": {
-                                                                "type": "string"
-                                                            },
-                                                            "infix": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "url"
-                                                        ]
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "isVideo": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "infix": {
-                                                                "type": "string"
-                                                            },
-                                                            "url": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "infix"
-                                                        ]
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                        "required": [
-                                            "_"
-                                        ],
-                                        "additionalProperties": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "isVideo": {
-                                                            "type": "boolean"
-                                                        },
-                                                        "url": {
-                                                            "type": "string"
-                                                        },
-                                                        "infix": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "url"
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "isVideo": {
-                                                            "type": "boolean"
-                                                        },
-                                                        "infix": {
-                                                            "type": "string"
-                                                        },
-                                                        "url": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "infix"
-                                                    ]
-                                                }
-                                            ]
-                                        }
+                                    "isVideo": {
+                                        "type": "boolean"
                                     },
-                                    "preview": {
+                                    "title": {
                                         "type": "object",
                                         "properties": {
                                             "_": {
-                                                "anyOf": [
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "isVideo": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "url": {
-                                                                "type": "string"
-                                                            },
-                                                            "infix": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "url"
-                                                        ]
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "isVideo": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "infix": {
-                                                                "type": "string"
-                                                            },
-                                                            "url": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "infix"
-                                                        ]
-                                                    }
-                                                ]
+                                                "type": "string"
                                             }
                                         },
                                         "required": [
                                             "_"
                                         ],
                                         "additionalProperties": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "isVideo": {
-                                                            "type": "boolean"
-                                                        },
-                                                        "url": {
-                                                            "type": "string"
-                                                        },
-                                                        "infix": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "url"
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "isVideo": {
-                                                            "type": "boolean"
-                                                        },
-                                                        "infix": {
-                                                            "type": "string"
-                                                        },
-                                                        "url": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "infix"
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "fullQuality": {
-                                        "type": "object",
-                                        "properties": {
-                                            "_": {
-                                                "anyOf": [
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "isVideo": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "url": {
-                                                                "type": "string"
-                                                            },
-                                                            "infix": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "url"
-                                                        ]
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "isVideo": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "infix": {
-                                                                "type": "string"
-                                                            },
-                                                            "url": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "infix"
-                                                        ]
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                        "required": [
-                                            "_"
-                                        ],
-                                        "additionalProperties": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "isVideo": {
-                                                            "type": "boolean"
-                                                        },
-                                                        "url": {
-                                                            "type": "string"
-                                                        },
-                                                        "infix": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "url"
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "isVideo": {
-                                                            "type": "boolean"
-                                                        },
-                                                        "infix": {
-                                                            "type": "string"
-                                                        },
-                                                        "url": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "infix"
-                                                    ]
-                                                }
-                                            ]
+                                            "type": "string"
                                         }
                                     },
                                     "order": {
                                         "type": "number"
                                     },
                                     "isMain": {
-                                        "type": "number"
+                                        "type": "boolean"
+                                    },
+                                    "_": {
+                                        "anyOf": [
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "url": {
+                                                        "type": "string"
+                                                    },
+                                                    "infix": {
+                                                        "not": {}
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "url"
+                                                ]
+                                            },
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "infix": {
+                                                        "type": "string"
+                                                    },
+                                                    "url": {
+                                                        "not": {}
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "infix"
+                                                ]
+                                            }
+                                        ]
                                     }
                                 },
                                 "required": [
-                                    "main"
+                                    "_"
                                 ]
                             }
                         },
@@ -2045,424 +1139,296 @@ export const SCHEMA = {
                             "type": "array",
                             "items": {
                                 "type": "object",
+                                "additionalProperties": {
+                                    "type": "object"
+                                },
                                 "properties": {
-                                    "main": {
+                                    "title": {
                                         "type": "object",
                                         "properties": {
                                             "_": {
-                                                "anyOf": [
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "url": {
-                                                                "type": "string"
-                                                            },
-                                                            "infix": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "url"
-                                                        ]
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "infix": {
-                                                                "type": "string"
-                                                            },
-                                                            "url": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "infix"
-                                                        ]
-                                                    }
-                                                ]
+                                                "type": "string"
                                             }
                                         },
                                         "required": [
                                             "_"
                                         ],
                                         "additionalProperties": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "url": {
-                                                            "type": "string"
-                                                        },
-                                                        "infix": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "url"
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "infix": {
-                                                            "type": "string"
-                                                        },
-                                                        "url": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "infix"
-                                                    ]
-                                                }
-                                            ]
+                                            "type": "string"
                                         }
                                     },
                                     "order": {
                                         "type": "number"
                                     },
                                     "isMain": {
-                                        "type": "number"
+                                        "type": "boolean"
+                                    },
+                                    "_": {
+                                        "anyOf": [
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "url": {
+                                                        "type": "string"
+                                                    },
+                                                    "infix": {
+                                                        "not": {}
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "url"
+                                                ]
+                                            },
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "infix": {
+                                                        "type": "string"
+                                                    },
+                                                    "url": {
+                                                        "not": {}
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "infix"
+                                                ]
+                                            }
+                                        ]
                                     }
                                 },
                                 "required": [
-                                    "main"
-                                ],
-                                "additionalProperties": false
+                                    "_"
+                                ]
                             }
                         },
                         "audios": {
                             "type": "array",
                             "items": {
                                 "type": "object",
+                                "additionalProperties": {
+                                    "type": "object"
+                                },
                                 "properties": {
-                                    "main": {
+                                    "title": {
                                         "type": "object",
                                         "properties": {
                                             "_": {
-                                                "anyOf": [
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "url": {
-                                                                "type": "string"
-                                                            },
-                                                            "infix": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "url"
-                                                        ]
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "infix": {
-                                                                "type": "string"
-                                                            },
-                                                            "url": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "infix"
-                                                        ]
-                                                    }
-                                                ]
+                                                "type": "string"
                                             }
                                         },
                                         "required": [
                                             "_"
                                         ],
                                         "additionalProperties": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "url": {
-                                                            "type": "string"
-                                                        },
-                                                        "infix": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "url"
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "infix": {
-                                                            "type": "string"
-                                                        },
-                                                        "url": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "infix"
-                                                    ]
-                                                }
-                                            ]
+                                            "type": "string"
                                         }
                                     },
                                     "order": {
                                         "type": "number"
                                     },
                                     "isMain": {
-                                        "type": "number"
+                                        "type": "boolean"
+                                    },
+                                    "_": {
+                                        "anyOf": [
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "url": {
+                                                        "type": "string"
+                                                    },
+                                                    "infix": {
+                                                        "not": {}
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "url"
+                                                ]
+                                            },
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "infix": {
+                                                        "type": "string"
+                                                    },
+                                                    "url": {
+                                                        "not": {}
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "infix"
+                                                ]
+                                            }
+                                        ]
                                     }
                                 },
                                 "required": [
-                                    "main"
-                                ],
-                                "additionalProperties": false
+                                    "_"
+                                ]
                             }
                         },
                         "volumes": {
                             "type": "array",
                             "items": {
                                 "type": "object",
+                                "additionalProperties": {
+                                    "type": "object"
+                                },
                                 "properties": {
-                                    "main": {
+                                    "title": {
                                         "type": "object",
                                         "properties": {
                                             "_": {
-                                                "anyOf": [
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "url": {
-                                                                "type": "string"
-                                                            },
-                                                            "infix": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "url"
-                                                        ]
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "infix": {
-                                                                "type": "string"
-                                                            },
-                                                            "url": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "infix"
-                                                        ]
-                                                    }
-                                                ]
+                                                "type": "string"
                                             }
                                         },
                                         "required": [
                                             "_"
                                         ],
                                         "additionalProperties": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "url": {
-                                                            "type": "string"
-                                                        },
-                                                        "infix": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "url"
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "infix": {
-                                                            "type": "string"
-                                                        },
-                                                        "url": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "infix"
-                                                    ]
-                                                }
-                                            ]
+                                            "type": "string"
                                         }
                                     },
                                     "order": {
                                         "type": "number"
                                     },
                                     "isMain": {
-                                        "type": "number"
+                                        "type": "boolean"
+                                    },
+                                    "_": {
+                                        "anyOf": [
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "url": {
+                                                        "type": "string"
+                                                    },
+                                                    "infix": {
+                                                        "not": {}
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "url"
+                                                ]
+                                            },
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "infix": {
+                                                        "type": "string"
+                                                    },
+                                                    "url": {
+                                                        "not": {}
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "infix"
+                                                ]
+                                            }
+                                        ]
                                     }
                                 },
                                 "required": [
-                                    "main"
-                                ],
-                                "additionalProperties": false
+                                    "_"
+                                ]
                             }
                         },
                         "files": {
                             "type": "array",
                             "items": {
                                 "type": "object",
+                                "additionalProperties": {
+                                    "type": "object"
+                                },
                                 "properties": {
-                                    "main": {
+                                    "title": {
                                         "type": "object",
                                         "properties": {
                                             "_": {
-                                                "anyOf": [
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "url": {
-                                                                "type": "string"
-                                                            },
-                                                            "infix": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "url"
-                                                        ]
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "infix": {
-                                                                "type": "string"
-                                                            },
-                                                            "url": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "infix"
-                                                        ]
-                                                    }
-                                                ]
+                                                "type": "string"
                                             }
                                         },
                                         "required": [
                                             "_"
                                         ],
                                         "additionalProperties": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "url": {
-                                                            "type": "string"
-                                                        },
-                                                        "infix": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "url"
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "infix": {
-                                                            "type": "string"
-                                                        },
-                                                        "url": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "infix"
-                                                    ]
-                                                }
-                                            ]
+                                            "type": "string"
                                         }
                                     },
                                     "order": {
                                         "type": "number"
                                     },
                                     "isMain": {
-                                        "type": "number"
+                                        "type": "boolean"
+                                    },
+                                    "_": {
+                                        "anyOf": [
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "url": {
+                                                        "type": "string"
+                                                    },
+                                                    "infix": {
+                                                        "not": {}
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "url"
+                                                ]
+                                            },
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "infix": {
+                                                        "type": "string"
+                                                    },
+                                                    "url": {
+                                                        "not": {}
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "infix"
+                                                ]
+                                            }
+                                        ]
                                     }
                                 },
                                 "required": [
-                                    "main"
-                                ],
-                                "additionalProperties": false
+                                    "_"
+                                ]
                             }
                         }
                     },
@@ -2644,6 +1610,61 @@ export const SCHEMA = {
                 "common": {
                     "type": "object",
                     "properties": {
+                        "preview": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "object"
+                            },
+                            "properties": {
+                                "isVideo": {
+                                    "type": "boolean"
+                                },
+                                "_": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "url": {
+                                                    "type": "string"
+                                                },
+                                                "infix": {
+                                                    "not": {}
+                                                },
+                                                "isIpfs": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "url"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "url": {
+                                                    "not": {}
+                                                },
+                                                "infix": {
+                                                    "type": "string"
+                                                },
+                                                "isIpfs": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "infix",
+                                                "url"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "_"
+                            ]
+                        },
                         "defaultLocale": {
                             "type": "string"
                         },
@@ -2686,323 +1707,77 @@ export const SCHEMA = {
                             "type": "array",
                             "items": {
                                 "type": "object",
-                                "additionalProperties": false,
+                                "additionalProperties": {
+                                    "type": "object"
+                                },
                                 "properties": {
-                                    "main": {
-                                        "type": "object",
-                                        "properties": {
-                                            "_": {
-                                                "anyOf": [
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "isVideo": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "url": {
-                                                                "type": "string"
-                                                            },
-                                                            "infix": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "url"
-                                                        ]
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "isVideo": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "url": {
-                                                                "not": {}
-                                                            },
-                                                            "infix": {
-                                                                "type": "string"
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "infix",
-                                                            "url"
-                                                        ]
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                        "required": [
-                                            "_"
-                                        ],
-                                        "additionalProperties": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "isVideo": {
-                                                            "type": "boolean"
-                                                        },
-                                                        "url": {
-                                                            "type": "string"
-                                                        },
-                                                        "infix": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "url"
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "isVideo": {
-                                                            "type": "boolean"
-                                                        },
-                                                        "url": {
-                                                            "not": {}
-                                                        },
-                                                        "infix": {
-                                                            "type": "string"
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "infix",
-                                                        "url"
-                                                    ]
-                                                }
-                                            ]
-                                        }
+                                    "isVideo": {
+                                        "type": "boolean"
                                     },
-                                    "preview": {
+                                    "title": {
                                         "type": "object",
                                         "properties": {
                                             "_": {
-                                                "anyOf": [
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "isVideo": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "url": {
-                                                                "type": "string"
-                                                            },
-                                                            "infix": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "url"
-                                                        ]
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "isVideo": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "url": {
-                                                                "not": {}
-                                                            },
-                                                            "infix": {
-                                                                "type": "string"
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "infix",
-                                                            "url"
-                                                        ]
-                                                    }
-                                                ]
+                                                "type": "string"
                                             }
                                         },
                                         "required": [
                                             "_"
                                         ],
                                         "additionalProperties": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "isVideo": {
-                                                            "type": "boolean"
-                                                        },
-                                                        "url": {
-                                                            "type": "string"
-                                                        },
-                                                        "infix": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "url"
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "isVideo": {
-                                                            "type": "boolean"
-                                                        },
-                                                        "url": {
-                                                            "not": {}
-                                                        },
-                                                        "infix": {
-                                                            "type": "string"
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "infix",
-                                                        "url"
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "fullQuality": {
-                                        "type": "object",
-                                        "properties": {
-                                            "_": {
-                                                "anyOf": [
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "isVideo": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "url": {
-                                                                "type": "string"
-                                                            },
-                                                            "infix": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "url"
-                                                        ]
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "isVideo": {
-                                                                "type": "boolean"
-                                                            },
-                                                            "url": {
-                                                                "not": {}
-                                                            },
-                                                            "infix": {
-                                                                "type": "string"
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "infix",
-                                                            "url"
-                                                        ]
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                        "required": [
-                                            "_"
-                                        ],
-                                        "additionalProperties": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "isVideo": {
-                                                            "type": "boolean"
-                                                        },
-                                                        "url": {
-                                                            "type": "string"
-                                                        },
-                                                        "infix": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "url"
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "isVideo": {
-                                                            "type": "boolean"
-                                                        },
-                                                        "url": {
-                                                            "not": {}
-                                                        },
-                                                        "infix": {
-                                                            "type": "string"
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "infix",
-                                                        "url"
-                                                    ]
-                                                }
-                                            ]
+                                            "type": "string"
                                         }
                                     },
                                     "order": {
                                         "type": "number"
                                     },
                                     "isMain": {
-                                        "type": "number"
+                                        "type": "boolean"
+                                    },
+                                    "_": {
+                                        "anyOf": [
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "url": {
+                                                        "type": "string"
+                                                    },
+                                                    "infix": {
+                                                        "not": {}
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "url"
+                                                ]
+                                            },
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "url": {
+                                                        "not": {}
+                                                    },
+                                                    "infix": {
+                                                        "type": "string"
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "infix",
+                                                    "url"
+                                                ]
+                                            }
+                                        ]
                                     }
                                 },
                                 "required": [
-                                    "main"
+                                    "_"
                                 ]
                             }
                         },
@@ -3010,432 +1785,300 @@ export const SCHEMA = {
                             "type": "array",
                             "items": {
                                 "type": "object",
+                                "additionalProperties": {
+                                    "type": "object"
+                                },
                                 "properties": {
-                                    "main": {
+                                    "title": {
                                         "type": "object",
                                         "properties": {
                                             "_": {
-                                                "anyOf": [
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "url": {
-                                                                "type": "string"
-                                                            },
-                                                            "infix": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "url"
-                                                        ]
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "url": {
-                                                                "not": {}
-                                                            },
-                                                            "infix": {
-                                                                "type": "string"
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "infix",
-                                                            "url"
-                                                        ]
-                                                    }
-                                                ]
+                                                "type": "string"
                                             }
                                         },
                                         "required": [
                                             "_"
                                         ],
                                         "additionalProperties": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "url": {
-                                                            "type": "string"
-                                                        },
-                                                        "infix": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "url"
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "url": {
-                                                            "not": {}
-                                                        },
-                                                        "infix": {
-                                                            "type": "string"
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "infix",
-                                                        "url"
-                                                    ]
-                                                }
-                                            ]
+                                            "type": "string"
                                         }
                                     },
                                     "order": {
                                         "type": "number"
                                     },
                                     "isMain": {
-                                        "type": "number"
+                                        "type": "boolean"
+                                    },
+                                    "_": {
+                                        "anyOf": [
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "url": {
+                                                        "type": "string"
+                                                    },
+                                                    "infix": {
+                                                        "not": {}
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "url"
+                                                ]
+                                            },
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "url": {
+                                                        "not": {}
+                                                    },
+                                                    "infix": {
+                                                        "type": "string"
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "infix",
+                                                    "url"
+                                                ]
+                                            }
+                                        ]
                                     }
                                 },
                                 "required": [
-                                    "main"
-                                ],
-                                "additionalProperties": false
+                                    "_"
+                                ]
                             }
                         },
                         "audios": {
                             "type": "array",
                             "items": {
                                 "type": "object",
+                                "additionalProperties": {
+                                    "type": "object"
+                                },
                                 "properties": {
-                                    "main": {
+                                    "title": {
                                         "type": "object",
                                         "properties": {
                                             "_": {
-                                                "anyOf": [
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "url": {
-                                                                "type": "string"
-                                                            },
-                                                            "infix": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "url"
-                                                        ]
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "url": {
-                                                                "not": {}
-                                                            },
-                                                            "infix": {
-                                                                "type": "string"
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "infix",
-                                                            "url"
-                                                        ]
-                                                    }
-                                                ]
+                                                "type": "string"
                                             }
                                         },
                                         "required": [
                                             "_"
                                         ],
                                         "additionalProperties": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "url": {
-                                                            "type": "string"
-                                                        },
-                                                        "infix": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "url"
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "url": {
-                                                            "not": {}
-                                                        },
-                                                        "infix": {
-                                                            "type": "string"
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "infix",
-                                                        "url"
-                                                    ]
-                                                }
-                                            ]
+                                            "type": "string"
                                         }
                                     },
                                     "order": {
                                         "type": "number"
                                     },
                                     "isMain": {
-                                        "type": "number"
+                                        "type": "boolean"
+                                    },
+                                    "_": {
+                                        "anyOf": [
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "url": {
+                                                        "type": "string"
+                                                    },
+                                                    "infix": {
+                                                        "not": {}
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "url"
+                                                ]
+                                            },
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "url": {
+                                                        "not": {}
+                                                    },
+                                                    "infix": {
+                                                        "type": "string"
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "infix",
+                                                    "url"
+                                                ]
+                                            }
+                                        ]
                                     }
                                 },
                                 "required": [
-                                    "main"
-                                ],
-                                "additionalProperties": false
+                                    "_"
+                                ]
                             }
                         },
                         "volumes": {
                             "type": "array",
                             "items": {
                                 "type": "object",
+                                "additionalProperties": {
+                                    "type": "object"
+                                },
                                 "properties": {
-                                    "main": {
+                                    "title": {
                                         "type": "object",
                                         "properties": {
                                             "_": {
-                                                "anyOf": [
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "url": {
-                                                                "type": "string"
-                                                            },
-                                                            "infix": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "url"
-                                                        ]
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "url": {
-                                                                "not": {}
-                                                            },
-                                                            "infix": {
-                                                                "type": "string"
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "infix",
-                                                            "url"
-                                                        ]
-                                                    }
-                                                ]
+                                                "type": "string"
                                             }
                                         },
                                         "required": [
                                             "_"
                                         ],
                                         "additionalProperties": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "url": {
-                                                            "type": "string"
-                                                        },
-                                                        "infix": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "url"
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "url": {
-                                                            "not": {}
-                                                        },
-                                                        "infix": {
-                                                            "type": "string"
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "infix",
-                                                        "url"
-                                                    ]
-                                                }
-                                            ]
+                                            "type": "string"
                                         }
                                     },
                                     "order": {
                                         "type": "number"
                                     },
                                     "isMain": {
-                                        "type": "number"
+                                        "type": "boolean"
+                                    },
+                                    "_": {
+                                        "anyOf": [
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "url": {
+                                                        "type": "string"
+                                                    },
+                                                    "infix": {
+                                                        "not": {}
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "url"
+                                                ]
+                                            },
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "url": {
+                                                        "not": {}
+                                                    },
+                                                    "infix": {
+                                                        "type": "string"
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "infix",
+                                                    "url"
+                                                ]
+                                            }
+                                        ]
                                     }
                                 },
                                 "required": [
-                                    "main"
-                                ],
-                                "additionalProperties": false
+                                    "_"
+                                ]
                             }
                         },
                         "files": {
                             "type": "array",
                             "items": {
                                 "type": "object",
+                                "additionalProperties": {
+                                    "type": "object"
+                                },
                                 "properties": {
-                                    "main": {
+                                    "title": {
                                         "type": "object",
                                         "properties": {
                                             "_": {
-                                                "anyOf": [
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "url": {
-                                                                "type": "string"
-                                                            },
-                                                            "infix": {
-                                                                "not": {}
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "url"
-                                                        ]
-                                                    },
-                                                    {
-                                                        "type": "object",
-                                                        "additionalProperties": false,
-                                                        "properties": {
-                                                            "url": {
-                                                                "not": {}
-                                                            },
-                                                            "infix": {
-                                                                "type": "string"
-                                                            },
-                                                            "isIpfs": {
-                                                                "type": "boolean"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "infix",
-                                                            "url"
-                                                        ]
-                                                    }
-                                                ]
+                                                "type": "string"
                                             }
                                         },
                                         "required": [
                                             "_"
                                         ],
                                         "additionalProperties": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "url": {
-                                                            "type": "string"
-                                                        },
-                                                        "infix": {
-                                                            "not": {}
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "url"
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "additionalProperties": false,
-                                                    "properties": {
-                                                        "url": {
-                                                            "not": {}
-                                                        },
-                                                        "infix": {
-                                                            "type": "string"
-                                                        },
-                                                        "isIpfs": {
-                                                            "type": "boolean"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "infix",
-                                                        "url"
-                                                    ]
-                                                }
-                                            ]
+                                            "type": "string"
                                         }
                                     },
                                     "order": {
                                         "type": "number"
                                     },
                                     "isMain": {
-                                        "type": "number"
+                                        "type": "boolean"
+                                    },
+                                    "_": {
+                                        "anyOf": [
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "url": {
+                                                        "type": "string"
+                                                    },
+                                                    "infix": {
+                                                        "not": {}
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "url"
+                                                ]
+                                            },
+                                            {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "properties": {
+                                                    "url": {
+                                                        "not": {}
+                                                    },
+                                                    "infix": {
+                                                        "type": "string"
+                                                    },
+                                                    "isIpfs": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "infix",
+                                                    "url"
+                                                ]
+                                            }
+                                        ]
                                     }
                                 },
                                 "required": [
-                                    "main"
-                                ],
-                                "additionalProperties": false
+                                    "_"
+                                ]
                             }
                         }
                     },

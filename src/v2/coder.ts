@@ -49,11 +49,22 @@ const validateCollectionSchemaV2 = (schema: UniqueCollectionSchemaV2ToEncode) =>
     throwValidationError(`Schema version should be '2.0.0', got ${schema.schemaVersion}`, 'schemaVersion')
   }
 
-  if (schema.attributes && !schema.attributes.combineAllAttributesToOneProperty) {
-    const keys = Object.keys(schema.attributes.schema)
-    for (const key of keys) {
-      if (!key.match(PROPERTY_KEY_REGEX)) {
-        throwValidationError(`Attribute key should contain only valid for property key symbols, got ${key}`, `attributes.schema['${key}']`)
+  if (schema.attributes) {
+    if (schema.attributes.combineAllAttributesToOneProperty && schema.attributes.attributesToCombineToOneProperty) {
+      throwValidationError(`attributes cannot contain keys 'combineAllAttributesToOneProperty' and 'attributesToCombineToOneProperty' simultaneously`, 'schema.attributes.attributesToCombineToOneProperty')
+    }
+    if (schema.attributes.attributesToCombineToOneProperty) {
+      for (const attrToCombine of schema.attributes.attributesToCombineToOneProperty) {
+
+      }
+    }
+
+    if (!schema.attributes.combineAllAttributesToOneProperty) {
+      const keys = Object.keys(schema.attributes.schema)
+      for (const key of keys) {
+        if (!key.match(PROPERTY_KEY_REGEX)) {
+          throwValidationError(`Attribute key should contain only valid for property key symbols, got ${key}`, `attributes.schema['${key}']`)
+        }
       }
     }
   }
@@ -109,7 +120,9 @@ export const encodeCollectionSchema = (schema: UniqueCollectionSchemaV2ToEncode,
 
   const schemaToWrite = JSON.parse(JSON.stringify(schema)) as UniqueCollectionSchemaV2ToEncode
   delete schemaToWrite.defaultPermission
-  delete schemaToWrite.content.images.defaultPermission
+  if (schemaToWrite.content.images?.hasOwnProperty('defaultPermission')) {
+    delete schemaToWrite.content.images.defaultPermission
+  }
   for (const key of CONTENT_TYPES) {
     if (schemaToWrite.content[key]?.hasOwnProperty('defaultPermission')) {
       delete schemaToWrite.content[key]?.defaultPermission
@@ -183,8 +196,6 @@ const encodeTokenV2 = (schema: UniqueCollectionSchemaV2ToEncode | UniqueCollecti
   }
 
   if (schema.attributes && token.attributes) {
-
-  } else {
 
   }
 
