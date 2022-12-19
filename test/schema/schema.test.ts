@@ -32,7 +32,7 @@ describe('encode and decode unique schema', () => {
     expect(result!.schemaVersion).toEqual(expected.schemaVersion)
     expect(result!.attributesSchemaVersion).toEqual(expected.attributesSchemaVersion)
     expect(result!.attributesSchema).toEqual(expected.attributesSchema)
-    expect(result!.file.urlTemplate).toEqual(expected.file.urlTemplate)
+    expect(result!.file!.urlTemplate).toEqual(expected.file!.urlTemplate)
   })
 
   test('Schema without attributes', async () => {
