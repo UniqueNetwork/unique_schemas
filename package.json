@@ -49,6 +49,9 @@
   },
   "dependencies": {
     "@unique-nft/utils": "^0.0.1",
+    "add": "^2.0.6",
+    "ajv": "^8.11.2",
+    "create-validator-ts": "^4.0.2",
     "protobufjs": "^7.1.1"
   }
 }
