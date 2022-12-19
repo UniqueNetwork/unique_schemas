@@ -55,6 +55,7 @@ export const encodeTokenToProperties = (token: UniqueTokenToCreate, schema: Uniq
 
   if (token.image) addUrlObjectToTokenProperties(properties, 'i', token.image)
   if (schema.imagePreview && token.imagePreview) addUrlObjectToTokenProperties(properties, 'p', token.imagePreview)
+  if (schema.file && token.file) addUrlObjectToTokenProperties(properties, 'f', token.file)
   if (schema.video && token.video) addUrlObjectToTokenProperties(properties, 'v', token.video)
   if (schema.audio && token.audio) addUrlObjectToTokenProperties(properties, 'au', token.audio)
   if (schema.spatialObject && token.spatialObject) addUrlObjectToTokenProperties(properties, 'so', token.spatialObject)
@@ -103,6 +104,7 @@ export const unpackEncodedTokenFromProperties = <T extends UniqueTokenToCreate>(
 
   fillTokenFieldByKeyPrefix(token, properties, 'i', 'image')
   fillTokenFieldByKeyPrefix(token, properties, 'p', 'imagePreview')
+  fillTokenFieldByKeyPrefix(token, properties, 'f', 'file')
   fillTokenFieldByKeyPrefix(token, properties, 'v', 'video')
   fillTokenFieldByKeyPrefix(token, properties, 'au', 'audio')
   fillTokenFieldByKeyPrefix(token, properties, 'so', 'spatialObject')
@@ -156,6 +158,9 @@ export const decodeTokenFromProperties = async (collectionId: number, tokenId: n
 
   if (unpackedToken.imagePreview) {
     token.imagePreview = decodeTokenUrlOrInfixOrCidWithHashField(unpackedToken.imagePreview, schema.imagePreview)
+  }
+  if (unpackedToken.file) {
+    token.file = decodeTokenUrlOrInfixOrCidWithHashField(unpackedToken.file, schema.file)
   }
   if (unpackedToken.video) {
     token.video = decodeTokenUrlOrInfixOrCidWithHashField(unpackedToken.video, schema.video)

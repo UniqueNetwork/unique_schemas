@@ -40,6 +40,10 @@ export const validateUniqueToken = <T, C extends UniqueCollectionSchemaToCreate 
     validateUrlWithHashObject(token.imagePreview, 'token.imagePreview')
   }
 
+  if (token.hasOwnProperty('file')) {
+    validateUrlWithHashObject(token.file, 'token.file')
+  }
+
   const schemaVersion = validateAndParseSemverString(collectionSchema.schemaVersion, 'collectionSchema.schemaVersion')
 
   if (token.encodedAttributes && collectionSchema.attributesSchema) {

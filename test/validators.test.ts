@@ -249,7 +249,7 @@ describe.concurrent('validateCollectionAttributesSchema tests:', () => {
       }
     }
 
-    expect(() => validateCollectionAttributesSchema(test_attribute, 'testVar')).toThrowError(/integer/)
+    expect(() => validateCollectionAttributesSchema(test_attribute, 'testVar')).toThrowError(/number/)
   })
 
   test('attributes.enumValues value boolean type: wrong number', () => {

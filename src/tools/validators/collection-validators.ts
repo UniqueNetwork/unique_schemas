@@ -72,8 +72,11 @@ export const validateAttributesSchemaSingleAttribute = (attr: AttributeSchema, v
     throw new ValidationError(`${varName}.optional should be boolean when passed, got ${typeof attr.optional}: ${attr.optional}`)
   }
 
-  if (!AttributeTypeValues.includes(attr.type))
+  if (!AttributeTypeValues.includes(attr.type)) {
+    console.log(AttributeTypeValues)
+    console.log(attr.type)
     throw new ValidationError(`${varName}.type should be a valid attribute type, got ${typeof attr.type}: ${attr.type}`)
+  }
 
   if (attr.hasOwnProperty('enumValues')) {
     isPlainObject(attr.enumValues, `${varName}.enumValues`)
@@ -147,8 +150,13 @@ export const validateUniqueCollectionSchema = <C extends UniqueCollectionSchemaT
   validateUrlTemplateString(schema.image.urlTemplate, 'image')
 
   if (schema.hasOwnProperty('imagePreview')) {
-    isPlainObject(schema.video, 'video')
-    validateUrlTemplateString(schema.video.urlTemplate, 'video')
+    isPlainObject(schema.imagePreview, 'imagePreview')
+    validateUrlTemplateString(schema.video.urlTemplate, 'imagePreview')
+  }
+
+  if (schema.hasOwnProperty('file')) {
+    isPlainObject(schema.file, 'file')
+    validateUrlTemplateString(schema.file.urlTemplate, 'file')
   }
 
   if (schema.hasOwnProperty('video')) {
