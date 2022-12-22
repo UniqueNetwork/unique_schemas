@@ -149,7 +149,7 @@ export const decodeTokenFromProperties = async (collectionId: number, tokenId: n
     attributes: fullDecodeTokenAttributes(unpackedToken, schema),
     image: decodeTokenUrlOrInfixOrCidWithHashField(unpackedToken.image, schema.image)
   }
-  if (token.owner.Ethereum && Address.is.nestingAddress(token.owner.Ethereum)) {
+  if (token.owner?.Ethereum && Address.is.nestingAddress(token.owner.Ethereum)) {
     token.nestingParentToken = Address.nesting.addressToIds(token.owner.Ethereum)
   }
 
