@@ -105,4 +105,14 @@ describe('unique v1', async () => {
 
     console.log('Decoded tokens are same:', decodedTokensAreSame)
   })
+
+  test('RFT sample - no owner', async () => {
+    const encodedToken = SchemaTools.encodeUnique.token(tokenToEncode, schema)
+    const rawToken = {owner: null, properties: encodedToken}
+
+    const decodedToken = await decodeTokenFromProperties(1,1, rawToken, schema)
+
+    expect(decodedToken.error).toBeFalsy()
+    expect(decodedToken.result).toBeDefined()
+  })
 })

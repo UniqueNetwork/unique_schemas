@@ -164,7 +164,7 @@ export type DecodedInfixOrUrlOrCidAndHash = InfixOrUrlOrCidAndHash & { fullUrl: 
 export interface UniqueTokenDecoded extends IToken<DecodedInfixOrUrlOrCidAndHash> {
   tokenId: number
   collectionId: number
-  owner: CrossAccountId
+  owner: CrossAccountId | null
   nestingParentToken?: {
     collectionId: number
     tokenId: number
