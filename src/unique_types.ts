@@ -29,6 +29,6 @@ export type HumanizedNftToken = {
 }
 
 export type CollectionFlags = {
-  foreign: boolean
-  erc721metadata: boolean
+  foreign?: boolean
+  erc721metadata?: boolean
 }

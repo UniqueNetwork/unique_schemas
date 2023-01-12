@@ -258,7 +258,7 @@ export const extractAttributesFromERC721Metadata = (
     const type: AttributeType =
       typeof values[0] === 'string'
         ? AttributeType.string
-        : AttributeType.float //TODO: replace with AttributeType.number
+        : AttributeType.number
 
     if (values.length > 1) {
       const rawValue = values as string[] | number[]

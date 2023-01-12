@@ -5,7 +5,6 @@ import {
   DecodingImageLinkOptions,
   UniqueCollectionSchemaDecoded,
   UniqueTokenDecoded,
-  UrlTemplateString,
 } from '../types'
 import * as oldSchema from './oldSchemaDecoder'
 import * as collection from './collection'

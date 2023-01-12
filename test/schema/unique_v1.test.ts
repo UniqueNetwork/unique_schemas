@@ -63,7 +63,7 @@ describe('unique v1', async () => {
     console.dir(encodedTPPs, {depth: 100})
 
 
-    const decodedSchema = await SchemaTools.decode.collectionSchema(1, encodedSchema)
+    const decodedSchema = await SchemaTools.decode.collectionSchema(1, encodedSchema, {})
 
     if (!decodedSchema.result) {
       throw decodedSchema.error
