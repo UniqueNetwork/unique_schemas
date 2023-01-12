@@ -15,7 +15,7 @@ export const getEnumKeys = <T extends EnumBaseType>(en: T): Array<keyof T> => {
 }
 export const getEnumValues = <T extends EnumBaseType>(en: T): Array<T[keyof T]> => {
   const arr = getValues(en)
-  return arr.slice(arr.length / 2)
+  return arr
 }
 
 type EnumReverse<T extends EnumBaseType> = { [K in T[keyof T]]: keyof T }

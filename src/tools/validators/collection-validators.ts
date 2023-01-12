@@ -72,8 +72,11 @@ export const validateAttributesSchemaSingleAttribute = (attr: AttributeSchema, v
     throw new ValidationError(`${varName}.optional should be boolean when passed, got ${typeof attr.optional}: ${attr.optional}`)
   }
 
-  if (!AttributeTypeValues.includes(attr.type))
+  if (!AttributeTypeValues.includes(attr.type)) {
+    console.log(AttributeTypeValues)
+    console.log(attr.type)
     throw new ValidationError(`${varName}.type should be a valid attribute type, got ${typeof attr.type}: ${attr.type}`)
+  }
 
   if (attr.hasOwnProperty('enumValues')) {
     isPlainObject(attr.enumValues, `${varName}.enumValues`)
@@ -147,8 +150,13 @@ export const validateUniqueCollectionSchema = <C extends UniqueCollectionSchemaT
   validateUrlTemplateString(schema.image.urlTemplate, 'image')
 
   if (schema.hasOwnProperty('imagePreview')) {
-    isPlainObject(schema.video, 'video')
-    validateUrlTemplateString(schema.video.urlTemplate, 'video')
+    isPlainObject(schema.imagePreview, 'imagePreview')
+    validateUrlTemplateString(schema.video.urlTemplate, 'imagePreview')
+  }
+
+  if (schema.hasOwnProperty('file')) {
+    isPlainObject(schema.file, 'file')
+    validateUrlTemplateString(schema.file.urlTemplate, 'file')
   }
 
   if (schema.hasOwnProperty('video')) {
@@ -160,7 +168,7 @@ export const validateUniqueCollectionSchema = <C extends UniqueCollectionSchemaT
     isPlainObject(schema.audio, 'audio')
     validateUrlTemplateString(schema.audio.urlTemplate, 'audio')
 
-    validateFieldByType(schema.audio, 'format', 'string', false, 'audio')
+    validateFieldByType(schema.audio, 'format', 'string', true, 'audio')
     validateFieldByType(schema.audio, 'isLossless', 'boolean', true, 'audio')
   }
 
@@ -168,7 +176,7 @@ export const validateUniqueCollectionSchema = <C extends UniqueCollectionSchemaT
     isPlainObject(schema.spatialObject, 'spatialObject')
     validateUrlTemplateString(schema.spatialObject.urlTemplate, 'spatialObject')
 
-    validateFieldByType(schema.spatialObject, 'format', 'string', false, 'spatialObject')
+    validateFieldByType(schema.spatialObject, 'format', 'string', true, 'spatialObject')
   }
 
   return true

@@ -95,6 +95,10 @@ export const generateTokenPropertyPermissionsFromCollectionSchema = (schema: Uni
     generateDefaultTPPsForInfixOrUrlOrCidAndHashObject(permissions, 'p')    // imagePreview url, urlInfix, ipfsCid and hash (p.u, p.i, p.c, p.h)
   }
 
+  if (schema.hasOwnProperty('file')) {
+    generateDefaultTPPsForInfixOrUrlOrCidAndHashObject(permissions, 'f')    // imagePreview url, urlInfix, ipfsCid and hash (p.u, p.i, p.c, p.h)
+  }
+
   if (schema.hasOwnProperty('video')) {
     generateDefaultTPPsForInfixOrUrlOrCidAndHashObject(permissions, 'v')    // video url, urlInfix, ipfsCid and hash (v.u, v.i, v.c, v.h)
   }

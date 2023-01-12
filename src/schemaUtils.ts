@@ -4,7 +4,6 @@ import {
   DecodedInfixOrUrlOrCidAndHash,
   InfixOrUrlOrCidAndHash,
   URL_TEMPLATE_INFIX,
-  UrlTemplateString
 } from "./types";
 import {safeJsonParseStringOrHexString} from "./tsUtils";
 
@@ -69,7 +68,7 @@ export const converters2Layers = {
   }
 }
 
-export const decodeTokenUrlOrInfixOrCidWithHashField = <U extends { urlTemplate?: UrlTemplateString }>(obj: InfixOrUrlOrCidAndHash, urlTemplateObj: U | undefined): DecodedInfixOrUrlOrCidAndHash => {
+export const decodeTokenUrlOrInfixOrCidWithHashField = <U extends { urlTemplate?: string }>(obj: InfixOrUrlOrCidAndHash, urlTemplateObj: U | undefined): DecodedInfixOrUrlOrCidAndHash => {
   const result: DecodedInfixOrUrlOrCidAndHash = {
     ...obj,
     fullUrl: null

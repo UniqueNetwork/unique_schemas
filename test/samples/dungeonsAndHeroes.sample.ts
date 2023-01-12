@@ -36,6 +36,9 @@ export const dungeonsAndHeroesSchema: UniqueCollectionSchemaToCreate = {
   image: {
     urlTemplate: `https://images.unsplash.com/photo-{infix}`
   },
+  file: {
+    urlTemplate: `https://images.unsplash.com/photo-{infix}`
+  },
   video: {
     urlTemplate: `https://assets.mixkit.co/videos/preview/{infix}.mp4`
   },
@@ -61,6 +64,9 @@ export const knightToken: UniqueTokenToCreate = {
   image: {
     ipfsCid: '1600081522768-cb2e80ed4491'
   },
+  file: {
+    ipfsCid: '1600081522768-cb2e80ed4491'
+  },
 
   name: {_: 'knight test token'},
 
@@ -72,6 +78,12 @@ export const knightToken: UniqueTokenToCreate = {
 
 export const assassinToken: UniqueTokenToCreate = {
   image: {
+    ipfsCid: '1598284188955-497134dbc08b'
+  },
+  imagePreview: {
+    ipfsCid: '1598284188955-497134dbc08b'
+  },
+  file: {
     ipfsCid: '1598284188955-497134dbc08b'
   },
 

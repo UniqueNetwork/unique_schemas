@@ -16,10 +16,9 @@ export type InfixOrUrlOrCid =
   { ipfsCid: string, url?: undefined, urlInfix?: undefined }
 export type InfixOrUrlOrCidAndHash = InfixOrUrlOrCid & { hash?: string }
 export const URL_TEMPLATE_INFIX = <const>'{infix}'
-export type UrlTemplateString = `${string}${typeof URL_TEMPLATE_INFIX}${string}`
-
 
 export enum AttributeType {
+  number = "number",          // number
   integer = "integer",        // number
   float = "float",            // number
   boolean = "boolean",        // number
@@ -32,7 +31,7 @@ export enum AttributeType {
 }
 
 export const NumberAttributeTypes = [
-  AttributeType.integer, AttributeType.float, AttributeType.boolean, AttributeType.timestamp,
+  AttributeType.number, AttributeType.integer, AttributeType.float, AttributeType.boolean, AttributeType.timestamp,
 ]
 export const IntegerAttributeTypes = [
   AttributeType.integer, AttributeType.boolean, AttributeType.timestamp,
@@ -82,7 +81,7 @@ export enum COLLECTION_SCHEMA_NAME {
 }
 
 export interface UniqueCollectionSchemaToCreate {
-  schemaName: COLLECTION_SCHEMA_NAME.unique
+  schemaName: string
   schemaVersion: string // semver
 
   coverPicture: InfixOrUrlOrCidAndHash
@@ -92,26 +91,30 @@ export interface UniqueCollectionSchemaToCreate {
   attributesSchema?: CollectionAttributesSchema
 
   image: {
-    urlTemplate: UrlTemplateString
+    urlTemplate: string
   }
 
   imagePreview?: {
-    urlTemplate?: UrlTemplateString
+    urlTemplate?: string
+  }
+
+  file?: {
+    urlTemplate?: string
   }
 
   video?: {
-    urlTemplate?: UrlTemplateString
+    urlTemplate?: string
   }
 
   audio?: {
-    urlTemplate?: UrlTemplateString
-    format: string
+    urlTemplate?: string
+    format?: string
     isLossless?: boolean
   }
 
   spatialObject?: {
-    urlTemplate?: UrlTemplateString
-    format: string
+    urlTemplate?: string
+    format?: string
   }
 }
 
@@ -136,6 +139,7 @@ interface IToken<GenericInfixUrlOrCidWithHash> {
   description?: LocalizedStringWithDefault
   image: GenericInfixUrlOrCidWithHash
   imagePreview?: GenericInfixUrlOrCidWithHash
+  file?: GenericInfixUrlOrCidWithHash
   video?: GenericInfixUrlOrCidWithHash
   audio?: GenericInfixUrlOrCidWithHash
   spatialObject?: GenericInfixUrlOrCidWithHash
@@ -174,7 +178,7 @@ export interface UniqueTokenDecoded extends IToken<DecodedInfixOrUrlOrCidAndHash
 }
 
 export type DecodingImageLinkOptions = {
-  imageUrlTemplate?: UrlTemplateString
+  imageUrlTemplate?: string
   dummyImageFullUrl?: string
 }
 

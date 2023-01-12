@@ -16,12 +16,12 @@ import {IFetch, safeJsonParseStringOrHexString} from '../tsUtils'
 
 type UpDataStructsTokenData = any
 
-const DEFAULT_IMAGE_URL_TEMPLATE: UrlTemplateString = `https://ipfs.unique.network/ipfs/{infix}`
+const DEFAULT_IMAGE_URL_TEMPLATE = `https://ipfs.unique.network/ipfs/{infix}`
 const DEFAULT_DUMMY_IMAGE_FULL_URL = `https://ipfs.unique.network/ipfs/QmPCqY7Lmxerm8cLKmB18kT1RxkwnpasPVksA8XLhViVT7`
 
 
 export const parseImageLinkOptions = (options?: DecodingImageLinkOptions): Required<DecodingImageLinkOptions> => {
-  let imageUrlTemplate: UrlTemplateString = DEFAULT_IMAGE_URL_TEMPLATE
+  let imageUrlTemplate = DEFAULT_IMAGE_URL_TEMPLATE
   if (validateUrlTemplateStringSafe(options?.imageUrlTemplate, 'options.imageUrlTemplate')) {
     imageUrlTemplate = options!.imageUrlTemplate
   }

@@ -5,7 +5,6 @@ import {
   InfixOrUrlOrCidAndHash,
   LocalizedStringWithDefault,
   URL_TEMPLATE_INFIX,
-  UrlTemplateString
 } from "../../types";
 import {getKeys} from "../../tsUtils";
 import {Semver} from "../../semver";
@@ -138,7 +137,7 @@ export const validateBoxedNumberWithDefault = (dict: BoxedNumberWithDefault, sho
   return true
 }
 
-export const validateUrlTemplateString = (str: any, varName: string): str is UrlTemplateString => {
+export const validateUrlTemplateString = (str: any, varName: string): str is string => {
   const prefix = `TemplateUrlString is not valid, ${varName}`
   if (typeof str !== 'string')
     throw new ValidationError(`${prefix} is not a string, got ${str}`)

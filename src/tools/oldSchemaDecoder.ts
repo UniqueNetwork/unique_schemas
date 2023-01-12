@@ -9,7 +9,6 @@ import {
   LocalizedStringWithDefault,
   UniqueCollectionSchemaDecoded,
   UniqueTokenDecoded,
-  UrlTemplateString
 } from "../types";
 import {validateURLSafe} from "./validators";
 
@@ -54,7 +53,7 @@ export const decodeOldSchemaCollection = async (collectionId: number, properties
     },
     image: {
       urlTemplate: offchainSchemaIsValidUrl
-        ? offchainSchema.replace('{id}', '{infix}') as UrlTemplateString
+        ? offchainSchema.replace('{id}', '{infix}')
         : imageUrlTemplate
     },
 
@@ -243,7 +242,7 @@ export const decodeOldSchemaToken = async (collectionId: number, tokenId: number
       const enumOptions = root.lookupEnum(field.type).options
       isEnum = !!enumOptions;
 
-      if (field.repeated && Array.isArray(rawValue)) {
+      if (field.repeated && Array.isArray(rawValue) && toJSONValue) {
         const parsedValues = toJSONValue
           .map((v: any) => {
             const parsed = safeJSONParse<any>(enumOptions?.[v] || v)
@@ -277,7 +276,7 @@ export const decodeOldSchemaToken = async (collectionId: number, tokenId: number
 
     tokenAttributesResult[index] = {
       name: {_: name},
-      type: field.type === 'number' ? AttributeType.float : AttributeType.string,
+      type: field.type === 'number' ? AttributeType.number : AttributeType.string,
       value,
       isArray,
       isEnum,
