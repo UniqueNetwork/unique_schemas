@@ -1,17 +1,18 @@
-import {HumanizedNftToken, PropertiesArray} from "../unique_types";
-import {DecodingResult} from "../schemaUtils";
+import {CollectionFlags, HumanizedNftToken, PropertiesArray,} from '../unique_types'
+import {DecodingResult} from '../schemaUtils'
 import {
   COLLECTION_SCHEMA_NAME,
   DecodingImageLinkOptions,
   UniqueCollectionSchemaDecoded,
   UniqueTokenDecoded,
-} from "../types";
-import * as oldSchema from "./oldSchemaDecoder";
-import * as collection from "./collection";
-import {ValidationError} from "../types";
-import * as token from "./token";
-import {validateUrlTemplateStringSafe} from "./validators";
-import {safeJSONParse, safeJsonParseStringOrHexString} from "../tsUtils";
+  UrlTemplateString,
+} from '../types'
+import * as oldSchema from './oldSchemaDecoder'
+import * as collection from './collection'
+import {ValidationError} from '../types'
+import * as token from './token'
+import {validateUrlTemplateStringSafe} from './validators'
+import {IFetch, safeJsonParseStringOrHexString} from '../tsUtils'
 
 type UpDataStructsTokenData = any
 
@@ -36,16 +37,19 @@ export const parseImageLinkOptions = (options?: DecodingImageLinkOptions): Requi
 }
 
 
-export const universallyDecodeCollectionSchema = async (collectionId: number, properties: PropertiesArray, options?: DecodingImageLinkOptions): Promise<DecodingResult<UniqueCollectionSchemaDecoded>> => {
+export const universallyDecodeCollectionSchema = async (collectionId: number, properties: PropertiesArray, flags: CollectionFlags, options?: DecodingImageLinkOptions): Promise<DecodingResult<UniqueCollectionSchemaDecoded>> => {
   const schemaNameProp = properties.find(({key}) => key === 'schemaName')?.value || null
   const schemaName = typeof schemaNameProp === 'string' ? safeJsonParseStringOrHexString<string>(schemaNameProp) : null
   const isOldSchema = !!properties.find(({key}) => key === '_old_schemaVersion')
+  const isERC721Metadata = flags.erc721metadata === true
 
   if (isOldSchema) {
     const imageLinkOptions = parseImageLinkOptions(options)
     return await oldSchema.decodeOldSchemaCollection(collectionId, properties, imageLinkOptions)
   } else if (schemaName === COLLECTION_SCHEMA_NAME.unique) {
     return await collection.decodeUniqueCollectionFromProperties(collectionId, properties)
+  } else if (isERC721Metadata) {
+    return collection.decodeUniqueCollectionFromERC721Metadata(collectionId, properties)
   }
 
   return {
@@ -54,7 +58,7 @@ export const universallyDecodeCollectionSchema = async (collectionId: number, pr
   }
 }
 
-export const universallyDecodeToken = async (collectionId: number, tokenId: number, rawToken: UpDataStructsTokenData, schema: UniqueCollectionSchemaDecoded, options?: DecodingImageLinkOptions): Promise<DecodingResult<UniqueTokenDecoded>> => {
+export const universallyDecodeToken = async (collectionId: number, tokenId: number, rawToken: UpDataStructsTokenData, schema: UniqueCollectionSchemaDecoded, fetch: IFetch, ipfsGateways: string[], options?: DecodingImageLinkOptions): Promise<DecodingResult<UniqueTokenDecoded>> => {
   if (!schema) {
     return {
       result: null,
@@ -68,6 +72,15 @@ export const universallyDecodeToken = async (collectionId: number, tokenId: numb
   } else if (schema.schemaName === COLLECTION_SCHEMA_NAME.old) {
     const imageLinkOptions = parseImageLinkOptions(options)
     return await oldSchema.decodeOldSchemaToken(collectionId, tokenId, rawToken, schema, imageLinkOptions)
+  } else if (schema.schemaName === COLLECTION_SCHEMA_NAME.ERC721Metadata) {
+    return token.decodeTokenFromERC721Metadata(
+      collectionId,
+      tokenId,
+      humanizedToken,
+      schema,
+      fetch,
+      ipfsGateways
+    )
   }
 
   return {

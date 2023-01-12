@@ -24,7 +24,11 @@ export type PropertiesArray = Array<{
 
 
 export type HumanizedNftToken = {
-  owner: CrossAccountId
+  owner: CrossAccountId | null
   properties: PropertiesArray
 }
 
+export type CollectionFlags = {
+  foreign: boolean
+  erc721metadata: boolean
+}

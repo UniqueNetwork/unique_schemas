@@ -324,7 +324,7 @@ export const decodeOldSchemaToken = async (collectionId: number, tokenId: number
     attributes: tokenAttributesResult,
   }
 
-  if (parsedToken.owner.Ethereum && Address.is.nestingAddress(parsedToken.owner.Ethereum)) {
+  if (parsedToken.owner?.Ethereum && Address.is.nestingAddress(parsedToken.owner.Ethereum)) {
     decodedToken.nestingParentToken = Address.nesting.addressToIds(parsedToken.owner.Ethereum)
   }
 

@@ -1,5 +1,4 @@
-import {UniqueCollectionSchemaDecoded, UniqueCollectionSchemaToCreate} from '../types'
-
+import {COLLECTION_SCHEMA_NAME, UniqueCollectionSchemaDecoded, UniqueCollectionSchemaToCreate} from '../types'
 import {converters2Layers, decodeTokenUrlOrInfixOrCidWithHashField, DecodingResult} from '../schemaUtils'
 import {getKeys} from '../tsUtils'
 import {validateCollectionTokenPropertyPermissions, validateUniqueCollectionSchema} from './validators'
@@ -28,6 +27,36 @@ export const decodeUniqueCollectionFromProperties = async (collectionId: number,
     }
     return {
       result: unpackedSchema,
+      error: null,
+    }
+  } catch (e) {
+    return {
+      result: null,
+      error: e as Error,
+    }
+  }
+}
+
+export const decodeUniqueCollectionFromERC721Metadata = (collectionId: number, properties: PropertiesArray): DecodingResult<UniqueCollectionSchemaDecoded> => {
+  try {
+    const baseURI = properties.find((p) => p.key === 'baseURI')?.value
+
+    const result: UniqueCollectionSchemaDecoded = {
+      schemaName: COLLECTION_SCHEMA_NAME.ERC721Metadata,
+      schemaVersion: '1.0.0',
+      collectionId,
+      coverPicture: {
+        url: '',
+        fullUrl: null,
+      },
+      image: {
+        urlTemplate: '{infix}',
+      },
+      baseURI,
+    }
+
+    return {
+      result,
       error: null,
     }
   } catch (e) {

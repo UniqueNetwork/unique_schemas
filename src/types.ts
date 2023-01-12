@@ -131,6 +131,7 @@ export type UniqueCollectionSchemaDecoded =
     _old_constOnChainSchema?: string
     _old_variableOnChainSchema?: string
   }
+  baseURI?: string
 }
 
 interface IToken<GenericInfixUrlOrCidWithHash> {
@@ -170,9 +171,25 @@ export interface UniqueTokenDecoded extends IToken<DecodedInfixOrUrlOrCidAndHash
     tokenId: number
   }
   attributes: DecodedAttributes
+  erc721Metadata?: {
+    metadata: ERC721Metadata
+    tokenURI: string
+  }
 }
 
 export type DecodingImageLinkOptions = {
   imageUrlTemplate?: string
   dummyImageFullUrl?: string
+}
+
+export type ERC721MetadataAttribute = {
+  trait_type: string
+  value: string | number
+}
+
+export type ERC721Metadata = {
+  name: string
+  description: string
+  image: string
+  attributes: ERC721MetadataAttribute[]
 }
