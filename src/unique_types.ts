@@ -1,6 +1,6 @@
-export type CrossAccountId =
-  | ({ Substrate: string } & { Ethereum?: never })
-  | ({ Ethereum: string } & { Substrate?: never })
+
+export type CrossAccountId = { Substrate: string } & { Ethereum?: never } | { Ethereum: string } & { Substrate?: never }
+
 
 export interface TokenPropertyPermission {
   mutable: boolean
@@ -13,6 +13,7 @@ export interface TokenPropertyPermissionObject {
   permission: TokenPropertyPermission
 }
 
+
 export type CollectionTokenPropertyPermissions = Array<TokenPropertyPermissionObject>
 
 export type PropertiesArray = Array<{
@@ -20,8 +21,10 @@ export type PropertiesArray = Array<{
   value: string
 }>
 
+
+
 export type HumanizedNftToken = {
-  owner: CrossAccountId
+  owner: CrossAccountId | null
   properties: PropertiesArray
 }
 

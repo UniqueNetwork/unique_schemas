@@ -1,5 +1,5 @@
-import {getEnumValues} from './tsUtils'
-import {CrossAccountId} from './unique_types'
+import {getEnumValues} from "./tsUtils";
+import {CrossAccountId} from "./unique_types";
 
 export class ValidationError extends TypeError {
   constructor(message: string) {
@@ -16,40 +16,32 @@ export type InfixOrUrlOrCid =
   { ipfsCid: string, url?: undefined, urlInfix?: undefined }
 export type InfixOrUrlOrCidAndHash = InfixOrUrlOrCid & { hash?: string }
 export const URL_TEMPLATE_INFIX = <const>'{infix}'
-export type UrlTemplateString =
-  `${string}${typeof URL_TEMPLATE_INFIX}${string}`
+export type UrlTemplateString = `${string}${typeof URL_TEMPLATE_INFIX}${string}`
+
 
 export enum AttributeType {
-  integer = 'integer',        // number
-  float = 'float',            // number
-  boolean = 'boolean',        // number
-  timestamp = 'timestamp',    // number // js, milliseconds from epoch
-  string = 'string',          // string
-  url = 'url',                // string
-  isoDate = 'isoDate',        // string // ISO Date: YYYY-MM-DD
-  time = 'time',              // string // 24h time: HH:mm:ss
-  colorRgba = 'colorRgba',    // string // 'rrggbbaa'
+  integer = "integer",        // number
+  float = "float",            // number
+  boolean = "boolean",        // number
+  timestamp = "timestamp",    // number // js, milliseconds from epoch
+  string = "string",          // string
+  url = "url",                // string
+  isoDate = "isoDate",        // string // ISO Date: YYYY-MM-DD
+  time = "time",              // string // 24h time: HH:mm:ss
+  colorRgba = "colorRgba",    // string // 'rrggbbaa'
 }
 
 export const NumberAttributeTypes = [
-  AttributeType.integer,
-  AttributeType.float,
-  AttributeType.boolean,
-  AttributeType.timestamp,
+  AttributeType.integer, AttributeType.float, AttributeType.boolean, AttributeType.timestamp,
 ]
 export const IntegerAttributeTypes = [
-  AttributeType.integer,
-  AttributeType.boolean,
-  AttributeType.timestamp,
+  AttributeType.integer, AttributeType.boolean, AttributeType.timestamp,
 ]
 export const StringAttributeTypes = [
-  AttributeType.string,
-  AttributeType.url,
-  AttributeType.isoDate,
-  AttributeType.time,
-  AttributeType.colorRgba,
+  AttributeType.string, AttributeType.url, AttributeType.isoDate, AttributeType.time, AttributeType.colorRgba,
 ]
 export const AttributeTypeValues = getEnumValues(AttributeType)
+
 
 export type BoxedNumberWithDefault = {
   _: number
@@ -58,9 +50,7 @@ export type LocalizedStringWithDefault = {
   _: string
   [K: string]: string
 }
-export type LocalizedStringOrBoxedNumberWithDefault =
-  | BoxedNumberWithDefault
-  | LocalizedStringWithDefault
+export type LocalizedStringOrBoxedNumberWithDefault = BoxedNumberWithDefault | LocalizedStringWithDefault
 
 export interface AttributeSchema {
   name: LocalizedStringWithDefault
@@ -72,9 +62,9 @@ export interface AttributeSchema {
 
 type EncodedEnumAttributeValue = number | Array<number>
 export type EncodedTokenAttributeValue =
-  | number
-  | Array<number>
-  | LocalizedStringOrBoxedNumberWithDefault
+  number |
+  Array<number> |
+  LocalizedStringOrBoxedNumberWithDefault
   | LocalizedStringOrBoxedNumberWithDefault[]
 
 export interface EncodedTokenAttributes {
@@ -88,7 +78,7 @@ export type CollectionAttributesSchema = {
 export enum COLLECTION_SCHEMA_NAME {
   unique = 'unique',
   old = '_old_',
-  ERC721Metadata = 'ERC721Metadata',
+  ERC721Metadata = 'ERC721Metadata'
 }
 
 export interface UniqueCollectionSchemaToCreate {
@@ -125,7 +115,9 @@ export interface UniqueCollectionSchemaToCreate {
   }
 }
 
-export type UniqueCollectionSchemaDecoded = Omit<UniqueCollectionSchemaToCreate, 'schemaName' | 'coverPicture' | 'coverPicturePreview'> & {
+export type UniqueCollectionSchemaDecoded =
+  Omit<UniqueCollectionSchemaToCreate, 'schemaName' | 'coverPicture' | 'coverPicturePreview'>
+  & {
   schemaName: COLLECTION_SCHEMA_NAME
   collectionId: number
   coverPicture: DecodedInfixOrUrlOrCidAndHash
@@ -156,9 +148,7 @@ export interface UniqueTokenToCreate extends IToken<InfixOrUrlOrCidAndHash> {
 export type DecodedAttributes = {
   [K: number]: {
     name: LocalizedStringWithDefault
-    value:
-      | LocalizedStringOrBoxedNumberWithDefault
-      | Array<LocalizedStringOrBoxedNumberWithDefault>
+    value: LocalizedStringOrBoxedNumberWithDefault | Array<LocalizedStringOrBoxedNumberWithDefault>
     type: AttributeType
     isArray: boolean
     rawValue: EncodedTokenAttributeValue | string | Array<string>
@@ -166,22 +156,21 @@ export type DecodedAttributes = {
   }
 }
 
-export type DecodedInfixOrUrlOrCidAndHash = InfixOrUrlOrCidAndHash & {
-  fullUrl: string | null
-}
+export type DecodedInfixOrUrlOrCidAndHash = InfixOrUrlOrCidAndHash & { fullUrl: string | null }
 
-export interface UniqueTokenDecoded
-  extends IToken<DecodedInfixOrUrlOrCidAndHash> {
+export interface UniqueTokenDecoded extends IToken<DecodedInfixOrUrlOrCidAndHash> {
   tokenId: number
   collectionId: number
-  owner: CrossAccountId
+  owner: CrossAccountId | null
   nestingParentToken?: {
     collectionId: number
     tokenId: number
   }
   attributes: DecodedAttributes
-  tokenURI?: string
-  erc721Metadata?: ERC721Metadata
+  erc721Metadata?: {
+    metadata: ERC721Metadata
+    tokenURI: string
+  }
 }
 
 export type DecodingImageLinkOptions = {

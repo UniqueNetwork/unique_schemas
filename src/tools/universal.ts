@@ -12,7 +12,7 @@ import * as collection from './collection'
 import {ValidationError} from '../types'
 import * as token from './token'
 import {validateUrlTemplateStringSafe} from './validators'
-import {safeJsonParseStringOrHexString} from '../tsUtils'
+import {IFetch, safeJsonParseStringOrHexString} from '../tsUtils'
 
 type UpDataStructsTokenData = any
 
@@ -58,7 +58,7 @@ export const universallyDecodeCollectionSchema = async (collectionId: number, pr
   }
 }
 
-export const universallyDecodeToken = async (collectionId: number, tokenId: number, rawToken: UpDataStructsTokenData, schema: UniqueCollectionSchemaDecoded, fetch: (url: string) => Promise<any>, ipfsGateways: string[], options?: DecodingImageLinkOptions): Promise<DecodingResult<UniqueTokenDecoded>> => {
+export const universallyDecodeToken = async (collectionId: number, tokenId: number, rawToken: UpDataStructsTokenData, schema: UniqueCollectionSchemaDecoded, fetch: IFetch, ipfsGateways: string[], options?: DecodingImageLinkOptions): Promise<DecodingResult<UniqueTokenDecoded>> => {
   if (!schema) {
     return {
       result: null,

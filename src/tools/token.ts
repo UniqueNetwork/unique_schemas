@@ -14,7 +14,7 @@ import {
   UniqueTokenToCreate,
 } from '../types'
 import {validateUniqueToken} from './validators'
-import {getEntries, safeJsonParseStringOrHexString} from '../tsUtils'
+import {getEntries, IFetch, safeJsonParseStringOrHexString} from '../tsUtils'
 import {
   decodeTokenUrlOrInfixOrCidWithHashField,
   DecodingResult,
@@ -153,7 +153,7 @@ export const decodeTokenFromProperties = async (collectionId: number, tokenId: n
     attributes: fullDecodeTokenAttributes(unpackedToken, schema),
     image: decodeTokenUrlOrInfixOrCidWithHashField(unpackedToken.image, schema.image)
   }
-  if (token.owner.Ethereum && Address.is.nestingAddress(token.owner.Ethereum)) {
+  if (token.owner?.Ethereum && Address.is.nestingAddress(token.owner.Ethereum)) {
     token.nestingParentToken = Address.nesting.addressToIds(token.owner.Ethereum)
   }
 
@@ -202,72 +202,37 @@ export const extractTokenURI = (
   }
 }
 
-export const extractERC721MetadataFromIpfsUrl = async (ipfsUrl: string, fetch: (url: string) => Promise<any>): Promise<ERC721Metadata> => {
+const extractERC721MetadataFromIpfsCid = async (
+  ipfsCid: string,
+  fetch: IFetch,
+  ipfsGateways: string[]
+): Promise<ERC721Metadata> => {
   try {
-    const response = await fetch(ipfsUrl)
-
-    return response.json()
-  } catch {
+    return await Promise.any(ipfsGateways
+      .map((ipfsGateway) => ipfsGateway + ipfsCid)
+      .map(async (ipfsUrl) => await (await fetch(ipfsUrl)).json())
+    )
+  } catch (e) {
     throw new Error('Cannot extract ERC721 metadata from tokenURI')
   }
 }
-export const extractERC721MetadataFromIpfsCid = async (ipfsCid: string, fetch: (url: string) => Promise<any>, ipfsGateways: string[]): Promise<ERC721Metadata> => {
-  const ipfsUrls = ipfsGateways.map((ipfsGateway) => {
-    const ipfsUrl = new URL(ipfsGateway)
 
-    const url = new URL(`ipfs/${ipfsCid}`, ipfsUrl.origin)
-
-    return url.toString()
-  })
-
-  for (const ipfsUrl of ipfsUrls) {
-    try {
-      return await extractERC721MetadataFromIpfsUrl(ipfsUrl, fetch)
-    } catch {
-      // nothing to do
-      // the first successful result is the desired result
-    }
-  }
-  throw new Error('Cannot extract ERC721 metadata from tokenURI')
-}
-
-export const extractERC721MetadataFromIpfsLink = async (
-  ipfsLink: string,
-  fetch: (url: string) => Promise<any>,
-  ipfsGateways: string[]
-): Promise<ERC721Metadata> => {
-  const ipfsUrls = ipfsGateways.map((ipfsGateway) => {
-    const ipfsUrl = new URL(ipfsGateway)
-
-    const url = new URL(`ipfs/${ipfsLink.split('//')[1]}`, ipfsUrl.origin)
-
-    return url.toString()
-  })
-
-  for (const ipfsUrl of ipfsUrls) {
-    try {
-      return await extractERC721MetadataFromIpfsUrl(ipfsUrl, fetch)
-    } catch {
-      // nothing to do
-      // the first successful result is the desired result
-    }
-  }
-  throw new Error('Cannot extract ERC721 metadata from tokenURI')
-}
-
-export const extractERC721Metadata = async (
+const extractERC721Metadata = async (
   tokenURI: string,
-  fetch: (url: string) => Promise<any>,
+  fetch: IFetch,
   ipfsGateways: string[]
 ): Promise<ERC721Metadata> => {
-  const gateways = [...new Set([...ipfsGateways, ...DEFAULT_IPFS_GATEWAYS])]
+  if (ipfsGateways.length < 1) {
+    throw new Error('No ipfs gateways provided')
+  }
 
   if (isIpfsUrl(tokenURI)) {
-    return await extractERC721MetadataFromIpfsUrl(tokenURI, fetch)
+    return await (await fetch(tokenURI)).json()
   } else if (isCID(tokenURI)) {
-    return await extractERC721MetadataFromIpfsCid(tokenURI, fetch, gateways)
+    return await extractERC721MetadataFromIpfsCid(tokenURI, fetch, ipfsGateways)
   } else if (isIpfsLink(tokenURI)) {
-    return await extractERC721MetadataFromIpfsLink(tokenURI, fetch, gateways)
+    const ipfsCid = tokenURI.split('//')[1]
+    return await extractERC721MetadataFromIpfsCid(ipfsCid, fetch, ipfsGateways)
   } else {
     throw new Error('Invalid tokenURI')
   }
@@ -285,12 +250,10 @@ export const extractAttributesFromERC721Metadata = (
       .filter(({trait_type}) => trait_type === key)
       .map((attr) => attr.value)
 
-    const type =
+    const type: AttributeType =
       typeof values[0] === 'string'
         ? AttributeType.string
-        : values[0] % 1 === 0
-          ? AttributeType.integer
-          : AttributeType.float
+        : AttributeType.float //TODO: replace with AttributeType.number
 
     if (values.length > 1) {
       const rawValue = values as string[] | number[]
@@ -324,10 +287,13 @@ export const extractAttributesFromERC721Metadata = (
   return attributes
 }
 
-export const extractImageFromERC721Metadata = (metadata: ERC721Metadata) => {
+export const extractImageFromERC721Metadata = (metadata: ERC721Metadata): DecodedInfixOrUrlOrCidAndHash => {
+  const ipfsCid = getCid(metadata.image)
+  const result: InfixOrUrlOrCidAndHash = ipfsCid ? {ipfsCid} : {url: metadata.image}
+
   return {
-    ipfsCid: getCid(metadata.image) || '',
-    fullUrl: metadata.image,
+    ...result,
+    fullUrl: metadata.image
   }
 }
 
@@ -336,17 +302,15 @@ export const decodeTokenFromERC721Metadata = async (
   tokenId: number,
   rawToken: HumanizedNftToken,
   schema: UniqueCollectionSchemaDecoded,
-  fetch: (url: string) => Promise<any>,
-  ipfsGateways: string[]
+  fetch: IFetch,
+  ipfsGateways: string[] = []
 ): Promise<DecodingResult<UniqueTokenDecoded>> => {
+  const gateways = [...new Set([...ipfsGateways, ...DEFAULT_IPFS_GATEWAYS])]
+
   try {
     const tokenURI = extractTokenURI(rawToken, schema)
 
-    const erc721Metadata = await extractERC721Metadata(
-      tokenURI,
-      fetch,
-      ipfsGateways
-    )
+    const erc721Metadata = await extractERC721Metadata(tokenURI, fetch, gateways)
 
     const attributes = extractAttributesFromERC721Metadata(erc721Metadata)
 
@@ -360,8 +324,7 @@ export const decodeTokenFromERC721Metadata = async (
       image,
       name: {_: erc721Metadata.name},
       description: {_: erc721Metadata.description},
-      tokenURI,
-      erc721Metadata,
+      erc721Metadata: {metadata: erc721Metadata, tokenURI},
     }
 
     return {
