@@ -15,17 +15,8 @@ import {
 } from './types.validator'
 import {Semver} from '../semver'
 import {ValidationError} from '../types'
-import {getKeys} from "../tsUtils";
-
-const PERMISSION = <const>{
-  REWRITEABLE_FOR_ANY: {mutable: true, collectionAdmin: true, tokenOwner: true},
-  REWRITEABLE_FOR_COLLECTION_ADMIN: {mutable: true, collectionAdmin: true, tokenOwner: false},
-  REWRITEABLE_FOR_TOKEN_OWNER: {mutable: true, collectionAdmin: false, tokenOwner: true},
-
-  ONETIME_FOR_ANY: {mutable: false, collectionAdmin: true, tokenOwner: true},
-  ONETIME_FOR_COLLECTION_ADMIN: {mutable: false, collectionAdmin: true, tokenOwner: false},
-  ONETIME_FOR_TOKEN_OWNER: {mutable: false, collectionAdmin: false, tokenOwner: true},
-}
+import {getKeys} from '../tsUtils'
+import {PERMISSION} from './constants'
 
 export const PROPERTY_KEY_REGEX = /^[a-zA-Z0-9.-]+$/
 
@@ -72,9 +63,9 @@ const validateCollectionSchemaV2 = (schema: UniqueCollectionSchemaV2ToEncode) =>
   return true
 }
 
-const CONTENT_TYPES = <const>['images', 'videos', 'audios', 'volumes', 'files']
+const MEDIA_TYPES = <const>['images', 'videos', 'audios', 'volumes', 'files']
 
-export const encodeCollectionSchema = (schema: UniqueCollectionSchemaV2ToEncode, defaultPermission: TokenPropertyPermissionValue = PERMISSION.ONETIME_FOR_COLLECTION_ADMIN) => {
+export const encodeCollectionSchema = (schema: UniqueCollectionSchemaV2ToEncode, defaultPermission: TokenPropertyPermissionValue = PERMISSION.WRITABLE_ONCE_FOR_COLLECTION_ADMIN) => {
   validateCollectionSchemaV2(schema)
 
   ////////////////////////////////////////////////////////////////
@@ -88,14 +79,14 @@ export const encodeCollectionSchema = (schema: UniqueCollectionSchemaV2ToEncode,
   ]
 
   ////////////////////////////////////////////////
-  // add TPPs for content: images, videos, etc...
+  // add TPPs for media: images, videos, etc...
   ////////////////////////////////////////////////
 
-  if (schema.combineAllContentInOneProperty) {
-    TPPs.push({key: 'content', permission})
+  if (schema.combineAllMediaInOneProperty) {
+    TPPs.push({key: 'media', permission})
   } else {
-    for (const key of CONTENT_TYPES) {
-      TPPs.push({key, permission: schema.content[key]?.defaultPermission || permission})
+    for (const key of MEDIA_TYPES) {
+      TPPs.push({key, permission: schema.media[key]?.defaultPermission || permission})
     }
   }
 
@@ -120,12 +111,12 @@ export const encodeCollectionSchema = (schema: UniqueCollectionSchemaV2ToEncode,
 
   const schemaToWrite = JSON.parse(JSON.stringify(schema)) as UniqueCollectionSchemaV2ToEncode
   delete schemaToWrite.defaultPermission
-  if (schemaToWrite.content.images?.hasOwnProperty('defaultPermission')) {
-    delete schemaToWrite.content.images.defaultPermission
+  if (schemaToWrite.media.images?.hasOwnProperty('defaultPermission')) {
+    delete schemaToWrite.media.images.defaultPermission
   }
-  for (const key of CONTENT_TYPES) {
-    if (schemaToWrite.content[key]?.hasOwnProperty('defaultPermission')) {
-      delete schemaToWrite.content[key]?.defaultPermission
+  for (const key of MEDIA_TYPES) {
+    if (schemaToWrite.media[key]?.hasOwnProperty('defaultPermission')) {
+      delete schemaToWrite.media[key]?.defaultPermission
     }
   }
   if (schemaToWrite.attributes) {
@@ -186,12 +177,12 @@ const encodeTokenV2 = (schema: UniqueCollectionSchemaV2ToEncode | UniqueCollecti
     properties.push({key: 'common', value: JSON.stringify(token.common)})
   }
 
-  if (schema.combineAllContentInOneProperty) {
-    properties.push({key: 'content', value: JSON.stringify(token.content)})
+  if (schema.combineAllMediaInOneProperty) {
+    properties.push({key: 'media', value: JSON.stringify(token.media)})
   } else {
-    const keys = getKeys(schema.content)
+    const keys = getKeys(schema.media)
     for (const key of keys) {
-      properties.push({key, value: JSON.stringify(schema.content[key])})
+      properties.push({key, value: JSON.stringify(schema.media[key])})
     }
   }
 
@@ -217,17 +208,17 @@ const decodeTokenV2 = (schema: UniqueCollectionSchemaV2ToEncode | UniqueCollecti
   if (propsByKey.common) {
     token.common = JSON.parse(propsByKey.common)
   }
-  if (propsByKey.content) {
-    token.content = JSON.parse(propsByKey.content)
+  if (propsByKey.media) {
+    token.media = JSON.parse(propsByKey.media)
   } else {
-    const rawImagesData = JSON.parse(propsByKey.images) as UniqueTokenV2ToEncode['content']['images']
-    token.content = {
+    const rawImagesData = JSON.parse(propsByKey.images) as UniqueTokenV2ToEncode['media']['images']
+    token.media = {
       // images:
     }
 
     for (const key of <const>['images', 'videos', 'audios', 'volumes', 'files']) {
       if (propsByKey[key]) {
-        token.content[key] = JSON.parse(propsByKey[key])
+        token.media[key] = JSON.parse(propsByKey[key])
       }
     }
   }

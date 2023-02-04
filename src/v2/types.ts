@@ -1,21 +1,3 @@
-import {F} from "vitest/dist/global-e98f203b";
-
-type RawUrlOrInfix = {
-  url: string,
-  infix?: undefined
-
-  isIpfs?: boolean
-} | {
-  infix: string,
-  url?: undefined
-
-  isIpfs?: boolean
-}
-
-type UrlOrInfix<FullUrl> = RawUrlOrInfix & FullUrl
-
-type AnimationAppend = {isVideo?: boolean}
-
 type GenericLocalizedWithDefault<T> = {
   _: T
   [K: string]: T
@@ -24,8 +6,6 @@ type BoxedNumberWithDefault = { _: number }
 
 type LocalizedStringWithDefault = GenericLocalizedWithDefault<string>
 type LocalizedStringOrBoxedNumberWithDefault = BoxedNumberWithDefault | LocalizedStringWithDefault
-
-type LocalizedUrlOfInfix<FullUrl> = GenericLocalizedWithDefault<UrlOrInfix<FullUrl>>
 
 export type TokenPropertyPermissionValue = {
   mutable: boolean
@@ -42,98 +22,123 @@ export type TokenPropertyPermission = {
 }
 
 enum AttributeType {
-  integer = "integer",        // number
-  float = "float",            // number
-  boolean = "boolean",        // number
-  timestamp = "timestamp",    // number // js, milliseconds from epoch
-  string = "string",          // string
-  url = "url",                // string
-  isoDate = "isoDate",        // string // ISO Date: YYYY-MM-DD
-  time = "time",              // string // 24h time: HH:mm:ss
-  colorRgba = "colorRgba",    // string // 'rrggbbaa'
+  integer = 'integer',        // number
+  float = 'float',            // number
+  boolean = 'boolean',        // number
+  timestamp = 'timestamp',    // number // js, milliseconds from epoch
+  string = 'string',          // string
+  url = 'url',                // string
+  isoDate = 'isoDate',        // string // ISO Date: YYYY-MM-DD
+  time = 'time',              // string // 24h time: HH:mm:ss
+  colorRgba = 'colorRgba',    // string // 'rrggbbaa'
+  colorLch = 'colorLch',      // string // '52.2345% 72.2 56.2 / .5'
 }
 
-type ContentTypeSchema<T = {}> = T & {
-  baseUrl?: string
-  isIpfsByDefault?: string
+export type TokenMediaType = 'image' | 'video' | 'audio' | '3d' | 'file' | 'link'
+export type LinkType =
+  'youtube'
+  | 'vimeo'
+  | 'soundcloud'
+  | 'spotify'
+  | 'deezer'
+  | 'tiktok'
+  | 'instagram'
+  | 'twitter'
+  | 'facebook'
+  | 'twitch'
+  | 'dailymotion'
+  | 'mixcloud'
+  | 'figma'
+
+export type TokenMediaInfo = {
+  type?: TokenMediaType
+  linkType?: LinkType
+  title?: LocalizedStringWithDefault
+  order?: number
+  main?: boolean
+  baseUrlKey?: string
+  loop?: boolean
+  animation?: boolean
+  posterFor?: string
 }
 
-type OneAttributeSchema<T = {}> = T & {
-  order?: number // to sort properties
-  name: LocalizedStringWithDefault
+type ScalarOrArrayOf<T> = T | T[]
+
+type AttributeBaseSchema = {
+  order?: number // to sort attrs
+  title: LocalizedStringWithDefault
   type: keyof typeof AttributeType // or just make the type `string` and that's all?
-  isMultipleValues?: boolean
-  optional?: boolean
-  enumValues?: {[K: string]: LocalizedStringOrBoxedNumberWithDefault & {order?: number}}
-  defaultValue?: LocalizedStringOrBoxedNumberWithDefault
+  array?: boolean
 }
 
-type AttributesSchema<T = {}> = T & {
-  schemaVersion: string
-
-  defaultLocale?: string,
-
-  combineAllAttributesToOneProperty?: boolean
-
-  attributesToCombineToOneProperty?: string[]
-
-  schema: {
-    [K: string]: OneAttributeSchema<T>
+export type RoyaltySchema = {
+  royaltyVersion: string // '1'
+  primary?: {
+    addresses: {
+      [K: string]: number // address: percent with decimals 4, i. e. 1000000 = 100% or 10000 = 1%
+    }
+  }
+  secondary?: {
+    addresses: {
+      [K: string]: number // address: percent with decimals 4, i. e. 1000000 = 100% or 10000 = 1%
+    }
   }
 }
 
-type UniqueCollectionSchemaV2Generic<Permission, FullUrl> = Permission & {
+export type UniqueCollectionSchemaV2 = {
   schemaName: string // 'unique'
   schemaVersion: string // '2.x.x'
 
-  baseUrl?: string,
+  baseUrl: string
+  ipfsGateways?: string[]
   defaultLocale?: string
-  combineAllContentInOneProperty?: boolean
+  defaultPermission?: TokenPropertyPermissionValue
+  defaultPermissionForPropertyCommon?: TokenPropertyPermissionValue
 
   // additional field to add a free form information to the collection
   // without generic knowledge how to read this info for wallets
   info?: any
 
-  cover: LocalizedUrlOfInfix<FullUrl> & AnimationAppend
+  cover: ImageItem
 
-  content: {
-    images?: ContentTypeSchema<Permission>
-
-    videos?: ContentTypeSchema<Permission>
-
-    audios?: ContentTypeSchema<Permission>
-
-    volumes?: ContentTypeSchema<Permission>
-
-    files?: ContentTypeSchema<Permission>
+  media?: {
+    defaultPermission?: TokenPropertyPermissionValue
+    schema: {
+      [K: string]: TokenMediaInfo & {
+        type: TokenMediaType
+        required?: boolean
+        customPermission?: TokenPropertyPermissionValue
+      }
+    }
   }
 
-  attributes?: AttributesSchema<Permission>
+  attributes?: {
+    defaultPermission?: TokenPropertyPermissionValue
+    schema: {
+      [K: string]: AttributeBaseSchema & {
+        optional?: boolean
+        enumValues?: { [K: string | number]: LocalizedStringOrBoxedNumberWithDefault & { order?: number } }
+        defaultValue?: ScalarOrArrayOf<string | number | LocalizedStringOrBoxedNumberWithDefault>
+        customPermission?: TokenPropertyPermissionValue
+      }
+    }
+  }
+
+  royalties?: RoyaltySchema & {
+    defaultPermission?: TokenPropertyPermissionValue
+  }
 }
 
+type TokenMediaItem = TokenMediaInfo & {
+  url?: string
+  urlInfix?: undefined
+  ipfsCid?: string
+}
 
-// to encode the collection we need to append everywhere the 'defaultPermission' field
-export type UniqueCollectionSchemaV2ToEncode = UniqueCollectionSchemaV2Generic<{
-  defaultPermission?: TokenPropertyPermissionValue
-}, {}>
+type ImageItem = Omit<TokenMediaItem, 'type' | 'main' | 'order' | 'posterFor'>
 
-// collection schema in the blockchain has now permission data as well as full url data
-export type UniqueCollectionSchemaV2InCollection = UniqueCollectionSchemaV2Generic<{}, {}>
-
-// decoded collection schema has no permission data but has full url in cover
-export type UniqueCollectionSchemaV2Decoded = UniqueCollectionSchemaV2Generic<{}, {
-  url: string
-}>
-
-
-type TokenMediaContent<FullUrl, Append = {}> = LocalizedUrlOfInfix<FullUrl> & {
-  title?: LocalizedStringWithDefault
-  order?: number
-  isMain?: boolean
-} & Append
-
-type TokenCommonData<FullUrl> = {
-  preview?: LocalizedUrlOfInfix<FullUrl> & AnimationAppend
+type TokenCommonData = {
+  preview?: ImageItem
 
   defaultLocale?: string
 
@@ -141,36 +146,21 @@ type TokenCommonData<FullUrl> = {
   description?: LocalizedStringWithDefault
 
   info?: any // this field is needed for some free form data about the token
-}
-type TokenContentData<FullUrl> = {
-  images: Array<TokenMediaContent<FullUrl, AnimationAppend>>
-  videos?: Array<TokenMediaContent<FullUrl>>
-  audios?: Array<TokenMediaContent<FullUrl>>
-  volumes?: Array<TokenMediaContent<FullUrl>>
-  files?: Array<TokenMediaContent<FullUrl>>
+  ERC721TokenURI?: string
 }
 
-type UniqueTokenSchemaV2Generic<FullUrl> = {
-  common?: TokenCommonData<FullUrl>
-  content: TokenContentData<FullUrl>
-  attributes?: {
-    [K: string]: {
-      values: Array<LocalizedStringOrBoxedNumberWithDefault>
-      enumKeys?: undefined
-    } | {
-      values?: undefined
-      enumKeys: Array<number>
-    }
-  }
+type SchemaBasedAttributeInToken = {
+  values?: Array<LocalizedStringOrBoxedNumberWithDefault>
+  enumKeys?: Array<string | number>
 }
 
-export type UniqueTokenV2ToEncode = UniqueTokenSchemaV2Generic<{}>
+type DynamicAttributeInToken = AttributeBaseSchema & {
+  values: Array<LocalizedStringOrBoxedNumberWithDefault>
+}
 
-export type UniqueTokenV2Decoded = Omit<UniqueTokenSchemaV2Generic<{ url: string }>, 'attributes'> & {
-  attributes?: {
-    [K: string]: Omit<OneAttributeSchema<{}>, 'enumValues' | 'defaultValue'> & {
-      values: Array<LocalizedStringOrBoxedNumberWithDefault>
-      enumKeys?: Array<number>
-    }
-  }
+export type UniqueTokenV2 = {
+  common?: TokenCommonData
+  media: { [K: string]: TokenMediaItem }
+  royalties?: RoyaltySchema
+  attributes?: { [K: string]: SchemaBasedAttributeInToken | DynamicAttributeInToken }
 }
