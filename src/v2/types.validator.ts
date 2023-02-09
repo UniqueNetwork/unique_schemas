@@ -70,7 +70,7 @@ export const SCHEMA = {
                 "link"
             ]
         },
-        "LinkType": {
+        "SubType": {
             "type": "string",
             "enum": [
                 "youtube",
@@ -94,8 +94,8 @@ export const SCHEMA = {
                 "type": {
                     "$ref": "#/definitions/TokenMediaType"
                 },
-                "linkType": {
-                    "$ref": "#/definitions/LinkType"
+                "subType": {
+                    "$ref": "#/definitions/SubType"
                 },
                 "title": {
                     "type": "object",
@@ -117,19 +117,52 @@ export const SCHEMA = {
                 "main": {
                     "type": "boolean"
                 },
-                "baseUrlKey": {
+                "mimeType": {
                     "type": "string"
                 },
                 "loop": {
-                    "type": "boolean"
-                },
-                "animation": {
                     "type": "boolean"
                 },
                 "posterFor": {
                     "type": "string"
                 }
             },
+            "additionalProperties": false
+        },
+        "RoyaltyKind": {
+            "type": "object",
+            "properties": {
+                "addresses": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                }
+            },
+            "required": [
+                "addresses"
+            ],
+            "additionalProperties": false
+        },
+        "RoyaltySchema": {
+            "type": "object",
+            "properties": {
+                "royaltyVersion": {
+                    "type": "number"
+                },
+                "decimals": {
+                    "type": "number"
+                },
+                "primary": {
+                    "$ref": "#/definitions/RoyaltyKind"
+                },
+                "secondary": {
+                    "$ref": "#/definitions/RoyaltyKind"
+                }
+            },
+            "required": [
+                "royaltyVersion"
+            ],
             "additionalProperties": false
         },
         "UniqueCollectionSchemaV2": {
@@ -153,18 +186,41 @@ export const SCHEMA = {
                 "defaultLocale": {
                     "type": "string"
                 },
-                "defaultPermission": {
-                    "$ref": "#/definitions/TokenPropertyPermissionValue"
-                },
-                "defaultPermissionForPropertyCommon": {
-                    "$ref": "#/definitions/TokenPropertyPermissionValue"
+                "instantiateWith": {
+                    "type": "object",
+                    "properties": {
+                        "defaultPermission": {
+                            "$ref": "#/definitions/TokenPropertyPermissionValue"
+                        },
+                        "propertyCommonPermission": {
+                            "$ref": "#/definitions/TokenPropertyPermissionValue"
+                        },
+                        "allowERC721MetadataTokenURI": {
+                            "anyOf": [
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "$ref": "#/definitions/TokenPropertyPermissionValue"
+                                }
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
                 },
                 "info": {},
                 "cover": {
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
-                        "linkType": {
-                            "$ref": "#/definitions/LinkType"
+                        "url": {
+                            "type": "string"
+                        },
+                        "suffix": {
+                            "type": "string"
+                        },
+                        "cid": {
+                            "type": "string"
                         },
                         "title": {
                             "type": "object",
@@ -180,31 +236,18 @@ export const SCHEMA = {
                                 "type": "string"
                             }
                         },
-                        "baseUrlKey": {
+                        "mimeType": {
                             "type": "string"
                         },
                         "loop": {
                             "type": "boolean"
-                        },
-                        "animation": {
-                            "type": "boolean"
-                        },
-                        "url": {
-                            "type": "string"
-                        },
-                        "urlInfix": {
-                            "not": {}
-                        },
-                        "ipfsCid": {
-                            "type": "string"
                         }
-                    },
-                    "additionalProperties": false
+                    }
                 },
                 "media": {
                     "type": "object",
                     "properties": {
-                        "defaultPermission": {
+                        "permission": {
                             "$ref": "#/definitions/TokenPropertyPermissionValue"
                         },
                         "schema": {
@@ -216,14 +259,14 @@ export const SCHEMA = {
                                     "type": {
                                         "$ref": "#/definitions/TokenMediaType"
                                     },
-                                    "customPermission": {
-                                        "$ref": "#/definitions/TokenPropertyPermissionValue"
-                                    },
                                     "required": {
                                         "type": "boolean"
                                     },
-                                    "linkType": {
-                                        "$ref": "#/definitions/LinkType"
+                                    "permission": {
+                                        "$ref": "#/definitions/TokenPropertyPermissionValue"
+                                    },
+                                    "subType": {
+                                        "$ref": "#/definitions/SubType"
                                     },
                                     "title": {
                                         "type": "object",
@@ -245,13 +288,10 @@ export const SCHEMA = {
                                     "main": {
                                         "type": "boolean"
                                     },
-                                    "baseUrlKey": {
+                                    "mimeType": {
                                         "type": "string"
                                     },
                                     "loop": {
-                                        "type": "boolean"
-                                    },
-                                    "animation": {
                                         "type": "boolean"
                                     },
                                     "posterFor": {
@@ -272,7 +312,7 @@ export const SCHEMA = {
                 "attributes": {
                     "type": "object",
                     "properties": {
-                        "defaultPermission": {
+                        "permission": {
                             "$ref": "#/definitions/TokenPropertyPermissionValue"
                         },
                         "schema": {
@@ -323,82 +363,7 @@ export const SCHEMA = {
                                             ]
                                         }
                                     },
-                                    "defaultValue": {
-                                        "anyOf": [
-                                            {
-                                                "type": "string"
-                                            },
-                                            {
-                                                "type": "number"
-                                            },
-                                            {
-                                                "type": "object",
-                                                "properties": {
-                                                    "_": {
-                                                        "type": "number"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "_"
-                                                ],
-                                                "additionalProperties": false
-                                            },
-                                            {
-                                                "type": "object",
-                                                "properties": {
-                                                    "_": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "_"
-                                                ],
-                                                "additionalProperties": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            {
-                                                "type": "array",
-                                                "items": {
-                                                    "anyOf": [
-                                                        {
-                                                            "type": "string"
-                                                        },
-                                                        {
-                                                            "type": "number"
-                                                        },
-                                                        {
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "_": {
-                                                                    "type": "number"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "_"
-                                                            ],
-                                                            "additionalProperties": false
-                                                        },
-                                                        {
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "_": {
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "_"
-                                                            ],
-                                                            "additionalProperties": {
-                                                                "type": "string"
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    "customPermission": {
+                                    "permission": {
                                         "$ref": "#/definitions/TokenPropertyPermissionValue"
                                     },
                                     "order": {
@@ -451,57 +416,27 @@ export const SCHEMA = {
                 },
                 "royalties": {
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "royaltyVersion": {
-                                    "type": "string"
-                                },
-                                "primary": {
-                                    "type": "object",
-                                    "properties": {
-                                        "addresses": {
-                                            "type": "object",
-                                            "additionalProperties": {
-                                                "type": "number"
-                                            }
-                                        }
-                                    },
-                                    "required": [
-                                        "addresses"
-                                    ],
-                                    "additionalProperties": false
-                                },
-                                "secondary": {
-                                    "type": "object",
-                                    "properties": {
-                                        "addresses": {
-                                            "type": "object",
-                                            "additionalProperties": {
-                                                "type": "number"
-                                            }
-                                        }
-                                    },
-                                    "required": [
-                                        "addresses"
-                                    ],
-                                    "additionalProperties": false
-                                }
-                            },
-                            "required": [
-                                "royaltyVersion"
-                            ],
-                            "additionalProperties": false
-                        },
-                        "defaultPermission": {
+                        "permission": {
                             "$ref": "#/definitions/TokenPropertyPermissionValue"
+                        },
+                        "royaltyVersion": {
+                            "type": "number"
+                        },
+                        "decimals": {
+                            "type": "number"
+                        },
+                        "primary": {
+                            "$ref": "#/definitions/RoyaltyKind"
+                        },
+                        "secondary": {
+                            "$ref": "#/definitions/RoyaltyKind"
                         }
                     },
                     "required": [
-                        "schema"
-                    ],
-                    "additionalProperties": false
+                        "royaltyVersion"
+                    ]
                 }
             },
             "required": [
@@ -512,6 +447,420 @@ export const SCHEMA = {
             ],
             "additionalProperties": false
         },
+        "UniqueCollectionSchemaV2InCollection": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "schemaName": {
+                    "type": "string"
+                },
+                "schemaVersion": {
+                    "type": "string"
+                },
+                "baseUrl": {
+                    "type": "string"
+                },
+                "ipfsGateways": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "defaultLocale": {
+                    "type": "string"
+                },
+                "instantiateWith": {
+                    "type": "object",
+                    "properties": {
+                        "defaultPermission": {
+                            "$ref": "#/definitions/TokenPropertyPermissionValue"
+                        },
+                        "propertyCommonPermission": {
+                            "$ref": "#/definitions/TokenPropertyPermissionValue"
+                        },
+                        "allowERC721MetadataTokenURI": {
+                            "anyOf": [
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "$ref": "#/definitions/TokenPropertyPermissionValue"
+                                }
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "info": {},
+                "cover": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "url": {
+                            "type": "string"
+                        },
+                        "suffix": {
+                            "type": "string"
+                        },
+                        "cid": {
+                            "type": "string"
+                        },
+                        "title": {
+                            "type": "object",
+                            "properties": {
+                                "_": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "_"
+                            ],
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "mimeType": {
+                            "type": "string"
+                        },
+                        "loop": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "media": {
+                    "type": "object",
+                    "properties": {
+                        "permission": {
+                            "$ref": "#/definitions/TokenPropertyPermissionValue"
+                        },
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "type": {
+                                        "$ref": "#/definitions/TokenMediaType"
+                                    },
+                                    "required": {
+                                        "type": "boolean"
+                                    },
+                                    "permission": {
+                                        "$ref": "#/definitions/TokenPropertyPermissionValue"
+                                    },
+                                    "subType": {
+                                        "$ref": "#/definitions/SubType"
+                                    },
+                                    "title": {
+                                        "type": "object",
+                                        "properties": {
+                                            "_": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "_"
+                                        ],
+                                        "additionalProperties": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "order": {
+                                        "type": "number"
+                                    },
+                                    "main": {
+                                        "type": "boolean"
+                                    },
+                                    "mimeType": {
+                                        "type": "string"
+                                    },
+                                    "loop": {
+                                        "type": "boolean"
+                                    },
+                                    "posterFor": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "type"
+                                ]
+                            }
+                        }
+                    },
+                    "required": [
+                        "schema"
+                    ],
+                    "additionalProperties": false
+                },
+                "attributes": {
+                    "type": "object",
+                    "properties": {
+                        "permission": {
+                            "$ref": "#/definitions/TokenPropertyPermissionValue"
+                        },
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "optional": {
+                                        "type": "boolean"
+                                    },
+                                    "enumValues": {
+                                        "type": "object",
+                                        "additionalProperties": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "object",
+                                                    "additionalProperties": false,
+                                                    "properties": {
+                                                        "order": {
+                                                            "type": "number"
+                                                        },
+                                                        "_": {
+                                                            "type": "number"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "_"
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "string"
+                                                    },
+                                                    "properties": {
+                                                        "order": {
+                                                            "type": "number"
+                                                        },
+                                                        "_": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "_"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "permission": {
+                                        "$ref": "#/definitions/TokenPropertyPermissionValue"
+                                    },
+                                    "order": {
+                                        "type": "number"
+                                    },
+                                    "title": {
+                                        "type": "object",
+                                        "properties": {
+                                            "_": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "_"
+                                        ],
+                                        "additionalProperties": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "integer",
+                                            "float",
+                                            "boolean",
+                                            "timestamp",
+                                            "string",
+                                            "url",
+                                            "isoDate",
+                                            "time",
+                                            "colorRgba",
+                                            "colorLch"
+                                        ]
+                                    },
+                                    "array": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": [
+                                    "title",
+                                    "type"
+                                ]
+                            }
+                        }
+                    },
+                    "required": [
+                        "schema"
+                    ],
+                    "additionalProperties": false
+                },
+                "royalties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "permission": {
+                            "$ref": "#/definitions/TokenPropertyPermissionValue"
+                        },
+                        "royaltyVersion": {
+                            "type": "number"
+                        },
+                        "decimals": {
+                            "type": "number"
+                        },
+                        "primary": {
+                            "$ref": "#/definitions/RoyaltyKind"
+                        },
+                        "secondary": {
+                            "$ref": "#/definitions/RoyaltyKind"
+                        }
+                    },
+                    "required": [
+                        "royaltyVersion"
+                    ]
+                }
+            },
+            "required": [
+                "baseUrl",
+                "cover"
+            ]
+        },
+        "SchemaBasedAttributeInToken": {
+            "type": "object",
+            "properties": {
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "_": {
+                                        "type": "number"
+                                    }
+                                },
+                                "required": [
+                                    "_"
+                                ],
+                                "additionalProperties": false
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "_": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "_"
+                                ],
+                                "additionalProperties": {
+                                    "type": "string"
+                                }
+                            }
+                        ]
+                    }
+                },
+                "enumKeys": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "DynamicAttributeInToken": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "_": {
+                                        "type": "number"
+                                    }
+                                },
+                                "required": [
+                                    "_"
+                                ],
+                                "additionalProperties": false
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "_": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "_"
+                                ],
+                                "additionalProperties": {
+                                    "type": "string"
+                                }
+                            }
+                        ]
+                    }
+                },
+                "order": {
+                    "type": "number"
+                },
+                "title": {
+                    "type": "object",
+                    "properties": {
+                        "_": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "_"
+                    ],
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "integer",
+                        "float",
+                        "boolean",
+                        "timestamp",
+                        "string",
+                        "url",
+                        "isoDate",
+                        "time",
+                        "colorRgba",
+                        "colorLch"
+                    ]
+                },
+                "array": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "title",
+                "type",
+                "values"
+            ]
+        },
+        "TokenAttributeItem": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/SchemaBasedAttributeInToken"
+                },
+                {
+                    "$ref": "#/definitions/DynamicAttributeInToken"
+                }
+            ]
+        },
         "UniqueTokenV2": {
             "type": "object",
             "properties": {
@@ -520,9 +869,16 @@ export const SCHEMA = {
                     "properties": {
                         "preview": {
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
-                                "linkType": {
-                                    "$ref": "#/definitions/LinkType"
+                                "url": {
+                                    "type": "string"
+                                },
+                                "suffix": {
+                                    "type": "string"
+                                },
+                                "cid": {
+                                    "type": "string"
                                 },
                                 "title": {
                                     "type": "object",
@@ -538,26 +894,13 @@ export const SCHEMA = {
                                         "type": "string"
                                     }
                                 },
-                                "baseUrlKey": {
+                                "mimeType": {
                                     "type": "string"
                                 },
                                 "loop": {
                                     "type": "boolean"
-                                },
-                                "animation": {
-                                    "type": "boolean"
-                                },
-                                "url": {
-                                    "type": "string"
-                                },
-                                "urlInfix": {
-                                    "not": {}
-                                },
-                                "ipfsCid": {
-                                    "type": "string"
                                 }
-                            },
-                            "additionalProperties": false
+                            }
                         },
                         "defaultLocale": {
                             "type": "string"
@@ -606,17 +949,17 @@ export const SCHEMA = {
                             "url": {
                                 "type": "string"
                             },
-                            "urlInfix": {
-                                "not": {}
+                            "suffix": {
+                                "type": "string"
                             },
-                            "ipfsCid": {
+                            "cid": {
                                 "type": "string"
                             },
                             "type": {
                                 "$ref": "#/definitions/TokenMediaType"
                             },
-                            "linkType": {
-                                "$ref": "#/definitions/LinkType"
+                            "subType": {
+                                "$ref": "#/definitions/SubType"
                             },
                             "title": {
                                 "type": "object",
@@ -638,13 +981,10 @@ export const SCHEMA = {
                             "main": {
                                 "type": "boolean"
                             },
-                            "baseUrlKey": {
+                            "mimeType": {
                                 "type": "string"
                             },
                             "loop": {
-                                "type": "boolean"
-                            },
-                            "animation": {
                                 "type": "boolean"
                             },
                             "posterFor": {
@@ -654,185 +994,15 @@ export const SCHEMA = {
                     }
                 },
                 "royalties": {
-                    "type": "object",
-                    "properties": {
-                        "royaltyVersion": {
-                            "type": "string"
-                        },
-                        "primary": {
-                            "type": "object",
-                            "properties": {
-                                "addresses": {
-                                    "type": "object",
-                                    "additionalProperties": {
-                                        "type": "number"
-                                    }
-                                }
-                            },
-                            "required": [
-                                "addresses"
-                            ],
-                            "additionalProperties": false
-                        },
-                        "secondary": {
-                            "type": "object",
-                            "properties": {
-                                "addresses": {
-                                    "type": "object",
-                                    "additionalProperties": {
-                                        "type": "number"
-                                    }
-                                }
-                            },
-                            "required": [
-                                "addresses"
-                            ],
-                            "additionalProperties": false
-                        }
-                    },
-                    "required": [
-                        "royaltyVersion"
-                    ],
-                    "additionalProperties": false
+                    "$ref": "#/definitions/RoyaltySchema"
                 },
                 "attributes": {
                     "type": "object",
                     "additionalProperties": {
-                        "anyOf": [
-                            {
-                                "type": "object",
-                                "properties": {
-                                    "values": {
-                                        "type": "array",
-                                        "items": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "_": {
-                                                            "type": "number"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "_"
-                                                    ],
-                                                    "additionalProperties": false
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "_": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "_"
-                                                    ],
-                                                    "additionalProperties": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "enumKeys": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": [
-                                                "string",
-                                                "number"
-                                            ]
-                                        }
-                                    }
-                                },
-                                "additionalProperties": false
-                            },
-                            {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "properties": {
-                                    "values": {
-                                        "type": "array",
-                                        "items": {
-                                            "anyOf": [
-                                                {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "_": {
-                                                            "type": "number"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "_"
-                                                    ],
-                                                    "additionalProperties": false
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "_": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "_"
-                                                    ],
-                                                    "additionalProperties": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "order": {
-                                        "type": "number"
-                                    },
-                                    "title": {
-                                        "type": "object",
-                                        "properties": {
-                                            "_": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "required": [
-                                            "_"
-                                        ],
-                                        "additionalProperties": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": {
-                                        "type": "string",
-                                        "enum": [
-                                            "integer",
-                                            "float",
-                                            "boolean",
-                                            "timestamp",
-                                            "string",
-                                            "url",
-                                            "isoDate",
-                                            "time",
-                                            "colorRgba",
-                                            "colorLch"
-                                        ]
-                                    },
-                                    "array": {
-                                        "type": "boolean"
-                                    }
-                                },
-                                "required": [
-                                    "title",
-                                    "type",
-                                    "values"
-                                ]
-                            }
-                        ]
+                        "$ref": "#/definitions/TokenAttributeItem"
                     }
                 }
             },
-            "required": [
-                "media"
-            ],
             "additionalProperties": false
         }
     }
@@ -922,21 +1092,21 @@ export function isTokenMediaType(payload: unknown): payload is apiTypes.TokenMed
   }
 }
 
-export function validateLinkType(payload: unknown): apiTypes.LinkType {
-  /** Schema is defined in {@link SCHEMA.definitions.LinkType } **/
-  const validator = ajv.getSchema("SCHEMA#/definitions/LinkType");
+export function validateSubType(payload: unknown): apiTypes.SubType {
+  /** Schema is defined in {@link SCHEMA.definitions.SubType } **/
+  const validator = ajv.getSchema("SCHEMA#/definitions/SubType");
   const valid = validator(payload);
   if (!valid) {
-    const error = new Error('Invalid LinkType: ' + ajv.errorsText(validator.errors, {dataVar: "LinkType"}));
+    const error = new Error('Invalid SubType: ' + ajv.errorsText(validator.errors, {dataVar: "SubType"}));
     error.name = "ValidationError";
     throw error;
   }
   return payload;
 }
 
-export function isLinkType(payload: unknown): payload is apiTypes.LinkType {
+export function isSubType(payload: unknown): payload is apiTypes.SubType {
   try {
-    validateLinkType(payload);
+    validateSubType(payload);
     return true;
   } catch (error) {
     return false;
@@ -964,6 +1134,48 @@ export function isTokenMediaInfo(payload: unknown): payload is apiTypes.TokenMed
   }
 }
 
+export function validateRoyaltyKind(payload: unknown): apiTypes.RoyaltyKind {
+  /** Schema is defined in {@link SCHEMA.definitions.RoyaltyKind } **/
+  const validator = ajv.getSchema("SCHEMA#/definitions/RoyaltyKind");
+  const valid = validator(payload);
+  if (!valid) {
+    const error = new Error('Invalid RoyaltyKind: ' + ajv.errorsText(validator.errors, {dataVar: "RoyaltyKind"}));
+    error.name = "ValidationError";
+    throw error;
+  }
+  return payload;
+}
+
+export function isRoyaltyKind(payload: unknown): payload is apiTypes.RoyaltyKind {
+  try {
+    validateRoyaltyKind(payload);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function validateRoyaltySchema(payload: unknown): apiTypes.RoyaltySchema {
+  /** Schema is defined in {@link SCHEMA.definitions.RoyaltySchema } **/
+  const validator = ajv.getSchema("SCHEMA#/definitions/RoyaltySchema");
+  const valid = validator(payload);
+  if (!valid) {
+    const error = new Error('Invalid RoyaltySchema: ' + ajv.errorsText(validator.errors, {dataVar: "RoyaltySchema"}));
+    error.name = "ValidationError";
+    throw error;
+  }
+  return payload;
+}
+
+export function isRoyaltySchema(payload: unknown): payload is apiTypes.RoyaltySchema {
+  try {
+    validateRoyaltySchema(payload);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 export function validateUniqueCollectionSchemaV2(payload: unknown): apiTypes.UniqueCollectionSchemaV2 {
   /** Schema is defined in {@link SCHEMA.definitions.UniqueCollectionSchemaV2 } **/
   const validator = ajv.getSchema("SCHEMA#/definitions/UniqueCollectionSchemaV2");
@@ -979,6 +1191,90 @@ export function validateUniqueCollectionSchemaV2(payload: unknown): apiTypes.Uni
 export function isUniqueCollectionSchemaV2(payload: unknown): payload is apiTypes.UniqueCollectionSchemaV2 {
   try {
     validateUniqueCollectionSchemaV2(payload);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function validateUniqueCollectionSchemaV2InCollection(payload: unknown): apiTypes.UniqueCollectionSchemaV2InCollection {
+  /** Schema is defined in {@link SCHEMA.definitions.UniqueCollectionSchemaV2InCollection } **/
+  const validator = ajv.getSchema("SCHEMA#/definitions/UniqueCollectionSchemaV2InCollection");
+  const valid = validator(payload);
+  if (!valid) {
+    const error = new Error('Invalid UniqueCollectionSchemaV2InCollection: ' + ajv.errorsText(validator.errors, {dataVar: "UniqueCollectionSchemaV2InCollection"}));
+    error.name = "ValidationError";
+    throw error;
+  }
+  return payload;
+}
+
+export function isUniqueCollectionSchemaV2InCollection(payload: unknown): payload is apiTypes.UniqueCollectionSchemaV2InCollection {
+  try {
+    validateUniqueCollectionSchemaV2InCollection(payload);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function validateSchemaBasedAttributeInToken(payload: unknown): apiTypes.SchemaBasedAttributeInToken {
+  /** Schema is defined in {@link SCHEMA.definitions.SchemaBasedAttributeInToken } **/
+  const validator = ajv.getSchema("SCHEMA#/definitions/SchemaBasedAttributeInToken");
+  const valid = validator(payload);
+  if (!valid) {
+    const error = new Error('Invalid SchemaBasedAttributeInToken: ' + ajv.errorsText(validator.errors, {dataVar: "SchemaBasedAttributeInToken"}));
+    error.name = "ValidationError";
+    throw error;
+  }
+  return payload;
+}
+
+export function isSchemaBasedAttributeInToken(payload: unknown): payload is apiTypes.SchemaBasedAttributeInToken {
+  try {
+    validateSchemaBasedAttributeInToken(payload);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function validateDynamicAttributeInToken(payload: unknown): apiTypes.DynamicAttributeInToken {
+  /** Schema is defined in {@link SCHEMA.definitions.DynamicAttributeInToken } **/
+  const validator = ajv.getSchema("SCHEMA#/definitions/DynamicAttributeInToken");
+  const valid = validator(payload);
+  if (!valid) {
+    const error = new Error('Invalid DynamicAttributeInToken: ' + ajv.errorsText(validator.errors, {dataVar: "DynamicAttributeInToken"}));
+    error.name = "ValidationError";
+    throw error;
+  }
+  return payload;
+}
+
+export function isDynamicAttributeInToken(payload: unknown): payload is apiTypes.DynamicAttributeInToken {
+  try {
+    validateDynamicAttributeInToken(payload);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function validateTokenAttributeItem(payload: unknown): apiTypes.TokenAttributeItem {
+  /** Schema is defined in {@link SCHEMA.definitions.TokenAttributeItem } **/
+  const validator = ajv.getSchema("SCHEMA#/definitions/TokenAttributeItem");
+  const valid = validator(payload);
+  if (!valid) {
+    const error = new Error('Invalid TokenAttributeItem: ' + ajv.errorsText(validator.errors, {dataVar: "TokenAttributeItem"}));
+    error.name = "ValidationError";
+    throw error;
+  }
+  return payload;
+}
+
+export function isTokenAttributeItem(payload: unknown): payload is apiTypes.TokenAttributeItem {
+  try {
+    validateTokenAttributeItem(payload);
     return true;
   } catch (error) {
     return false;

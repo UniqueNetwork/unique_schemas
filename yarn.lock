@@ -337,10 +337,10 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.1.tgz#d3357479a0fdfdd5907fe67e17e0a85c906e1301"
   integrity sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==
 
-"@unique-nft/utils@^0.3.2":
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/@unique-nft/utils/-/utils-0.3.2.tgz#32d91cf78b5acee93a892f79e2bdebc472d87509"
-  integrity sha512-+LIzQrk15KVCOP03ij7dHl49ab66eHW5zyzjlEO+HAbdHxHJ+oxDikurJrvgbyuIo18m4YG/bASUm1+mlaUjTQ==
+"@unique-nft/utils@^0.3.5":
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/@unique-nft/utils/-/utils-0.3.5.tgz#80ffe22cb71b2e0be83b5ba7bc3d9f743f7739f7"
+  integrity sha512-7dmBTSiwDBrF7bg2ckv/aqIplkArVGIVvRaGIJzazY5rN8VnH1/xkBEXoocXxOdvYYyespo7fFDv2Eky/AiWJw==
   dependencies:
     "@noble/hashes" "^1.1.2"
     base-x "^4.0.0"

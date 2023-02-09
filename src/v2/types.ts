@@ -35,7 +35,7 @@ enum AttributeType {
 }
 
 export type TokenMediaType = 'image' | 'video' | 'audio' | '3d' | 'file' | 'link'
-export type LinkType =
+export type SubType =
   'youtube'
   | 'vimeo'
   | 'soundcloud'
@@ -51,16 +51,24 @@ export type LinkType =
   | 'figma'
 
 export type TokenMediaInfo = {
-  type?: TokenMediaType
-  linkType?: LinkType
+  type: TokenMediaType
+  subType?: SubType
   title?: LocalizedStringWithDefault
   order?: number
   main?: boolean
-  baseUrlKey?: string
+  mimeType?: string
   loop?: boolean
-  animation?: boolean
   posterFor?: string
 }
+
+type UrlSelect = {
+  url?: string
+  suffix?: string
+}
+
+type TokenMediaInfoWithUrl = Omit<TokenMediaInfo, 'type'> & {type?: TokenMediaType} & UrlSelect
+
+type ImageItem = Pick<TokenMediaInfo, 'title' | 'mimeType' | 'loop'> & UrlSelect
 
 type ScalarOrArrayOf<T> = T | T[]
 
@@ -68,21 +76,20 @@ type AttributeBaseSchema = {
   order?: number // to sort attrs
   title: LocalizedStringWithDefault
   type: keyof typeof AttributeType // or just make the type `string` and that's all?
-  array?: boolean
+  array: boolean
+}
+
+export type RoyaltyKind = {
+  addresses: {
+    [K: string]: number // address: percent with decimals [4], i. e. 1000000 = 100% or 10000 = 1%
+  }
 }
 
 export type RoyaltySchema = {
-  royaltyVersion: string // '1'
-  primary?: {
-    addresses: {
-      [K: string]: number // address: percent with decimals 4, i. e. 1000000 = 100% or 10000 = 1%
-    }
-  }
-  secondary?: {
-    addresses: {
-      [K: string]: number // address: percent with decimals 4, i. e. 1000000 = 100% or 10000 = 1%
-    }
-  }
+  royaltyVersion: number // 1
+  decimals?: number // DEFAULT_ROYALTIES_DECIMALS - 4
+  primary?: RoyaltyKind
+  secondary?: RoyaltyKind
 }
 
 export type UniqueCollectionSchemaV2 = {
@@ -92,8 +99,12 @@ export type UniqueCollectionSchemaV2 = {
   baseUrl: string
   ipfsGateways?: string[]
   defaultLocale?: string
-  defaultPermission?: TokenPropertyPermissionValue
-  defaultPermissionForPropertyCommon?: TokenPropertyPermissionValue
+
+  instantiateWith?: {
+    defaultPermission?: TokenPropertyPermissionValue
+    propertyCommonPermission?: TokenPropertyPermissionValue,
+    allowERC721MetadataTokenURI?: boolean | TokenPropertyPermissionValue
+  }
 
   // additional field to add a free form information to the collection
   // without generic knowledge how to read this info for wallets
@@ -102,40 +113,36 @@ export type UniqueCollectionSchemaV2 = {
   cover: ImageItem
 
   media?: {
-    defaultPermission?: TokenPropertyPermissionValue
+    permission?: TokenPropertyPermissionValue
     schema: {
       [K: string]: TokenMediaInfo & {
-        type: TokenMediaType
         required?: boolean
-        customPermission?: TokenPropertyPermissionValue
+        permission?: TokenPropertyPermissionValue
       }
     }
   }
 
   attributes?: {
-    defaultPermission?: TokenPropertyPermissionValue
+    permission?: TokenPropertyPermissionValue
     schema: {
       [K: string]: AttributeBaseSchema & {
         optional?: boolean
-        enumValues?: { [K: string | number]: LocalizedStringOrBoxedNumberWithDefault & { order?: number } }
-        defaultValue?: ScalarOrArrayOf<string | number | LocalizedStringOrBoxedNumberWithDefault>
-        customPermission?: TokenPropertyPermissionValue
+        enumValues?: { [K: string]: LocalizedStringOrBoxedNumberWithDefault & { order?: number } }
+        permission?: TokenPropertyPermissionValue
       }
     }
   }
 
+  // actually a fallback for token royalties. default for a collection
   royalties?: RoyaltySchema & {
-    defaultPermission?: TokenPropertyPermissionValue
+    permission?: TokenPropertyPermissionValue
   }
 }
 
-type TokenMediaItem = TokenMediaInfo & {
-  url?: string
-  urlInfix?: undefined
-  ipfsCid?: string
+export type UniqueCollectionSchemaV2InCollection = Omit<UniqueCollectionSchemaV2, 'schemaName' | 'schemaVersion'> & {
+  schemaName?: string
+  schemaVersion?: string
 }
-
-type ImageItem = Omit<TokenMediaItem, 'type' | 'main' | 'order' | 'posterFor'>
 
 type TokenCommonData = {
   preview?: ImageItem
@@ -149,18 +156,20 @@ type TokenCommonData = {
   ERC721TokenURI?: string
 }
 
-type SchemaBasedAttributeInToken = {
+export type SchemaBasedAttributeInToken = {
+  enumKeys?: string[]
   values?: Array<LocalizedStringOrBoxedNumberWithDefault>
-  enumKeys?: Array<string | number>
 }
 
-type DynamicAttributeInToken = AttributeBaseSchema & {
+export type DynamicAttributeInToken = AttributeBaseSchema & {
   values: Array<LocalizedStringOrBoxedNumberWithDefault>
 }
 
+export type TokenAttributeItem = SchemaBasedAttributeInToken | DynamicAttributeInToken
+
 export type UniqueTokenV2 = {
   common?: TokenCommonData
-  media: { [K: string]: TokenMediaItem }
+  media?: { [K: string]: TokenMediaInfoWithUrl }
   royalties?: RoyaltySchema
-  attributes?: { [K: string]: SchemaBasedAttributeInToken | DynamicAttributeInToken }
+  attributes?: { [K: string]: TokenAttributeItem }
 }

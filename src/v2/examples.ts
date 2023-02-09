@@ -23,12 +23,16 @@ export const schema = {
   baseUrl: 'https://ipfs.unique.network/ipfs/',
   ipfsGateways: ['https://ipfs.unique.network/ipfs/', 'https://gateway.pinata.cloud/ipfs/'],
   cover: {
-    ipfsCid: 'QmbJ7CGZ2GxWMp7s6jy71UGzRsMe4w3KANKXDAExYWdaFR'
+    suffix: 'QmbJ7CGZ2GxWMp7s6jy71UGzRsMe4w3KANKXDAExYWdaFR'
   },
   defaultLocale: 'en',
-  defaultPermission: PERMISSION.REWRITEABLE_FOR_COLLECTION_ADMIN,
+  instantiateWith: {
+    defaultPermission: PERMISSION.REWRITEABLE_FOR_COLLECTION_ADMIN,
+    propertyCommonPermission: PERMISSION.REWRITEABLE_FOR_COLLECTION_ADMIN,
+    allowERC721MetadataTokenURI: PERMISSION.REWRITEABLE_FOR_BOTH,
+  },
   media: {
-    defaultPermission: PERMISSION.WRITABLE_ONCE_FOR_BOTH,
+    permission: PERMISSION.WRITABLE_ONCE_FOR_BOTH,
     schema: {
       chel: {
         type: 'image',
@@ -37,7 +41,7 @@ export const schema = {
         order: 1,
         title: {_: 'Chel'},
         posterFor: 'promo',
-        customPermission: PERMISSION.WRITABLE_ONCE_FOR_COLLECTION_ADMIN,
+        permission: PERMISSION.WRITABLE_ONCE_FOR_COLLECTION_ADMIN,
       },
       promo: {
         type: 'video',
@@ -46,7 +50,7 @@ export const schema = {
     },
   },
   attributes: {
-    defaultPermission: PERMISSION.WRITABLE_ONCE_FOR_COLLECTION_ADMIN,
+    permission: PERMISSION.WRITABLE_ONCE_FOR_COLLECTION_ADMIN,
     schema: {
       traits: {
         type: 'string',
@@ -63,26 +67,28 @@ export const schema = {
       color: {
         type: 'colorRgba',
         optional: true,
+        array: false,
         title: {_: 'Color'},
-        customPermission: PERMISSION.REWRITEABLE_FOR_COLLECTION_ADMIN,
+        permission: PERMISSION.REWRITEABLE_FOR_COLLECTION_ADMIN,
       },
     },
   },
   royalties: {
-    royaltyVersion: '1',
+    royaltyVersion: 1,
+    decimals: 4,
     primary: {
       addresses: {
-        '0x0000000000000000000000000000000000000000': 10000, // 1%
-        '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY': 22500, // 2.25%
+        '0x0000000000000000000000000000000000000000': 100, // 1%
+        '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY': 225, // 2.25%
       },
     },
     secondary: {
       addresses: {
-        '0x0000000000000000000000000000000000000000': 10000, // 1%
-        '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY': 22500, // 2.25%
+        '0x0000000000000000000000000000000000000000': 100, // 1%
+        '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY': 225, // 2.25%
       },
     },
-    defaultPermission: PERMISSION.WRITABLE_ONCE_FOR_BOTH,
+    permission: PERMISSION.WRITABLE_ONCE_FOR_BOTH,
   },
   info: {abc: 123, def: '456'}, // collection can have additional info
 } satisfies UniqueCollectionSchemaV2
@@ -96,7 +102,7 @@ export const token = {
   common: {
     name: {_: 'Chel No. 1', en: 'Chel #1'},
     preview: {
-      ipfsCid: 'QmbJ7CGZ2GxWMp7s6jy71UGzRsMe4w3KANKXDAExYWdaFR'
+      suffix: 'QmbJ7CGZ2GxWMp7s6jy71UGzRsMe4w3KANKXDAExYWdaFR'
     },
     defaultLocale: 'fr',
     info: {abc: 789, def: '012'}, // token can have additional info
@@ -106,14 +112,14 @@ export const token = {
   },
   media: {
     chel: {
-      ipfsCid: 'QmbJ7CGZ2GxWMp7s6jy71UGzRsMe4w3KANKXDAExYWdaFR',
+      suffix: 'QmbJ7CGZ2GxWMp7s6jy71UGzRsMe4w3KANKXDAExYWdaFR',
     },
     promo: {
-      ipfsCid: 'QmbJ7CGZ2GxWMp7s6jy71UGzRsMe4w3KANKXDAExYWdaFR',
+      suffix: 'QmbJ7CGZ2GxWMp7s6jy71UGzRsMe4w3KANKXDAExYWdaFR',
     },
     ayaya: { // token can have media that are not in collection schema
       type: 'video',
-      linkType: 'youtube',
+      subType: 'youtube',
       url: 'https://www.youtube.com/watch?v=H8ZH_mkfPUY',
       order: 3,
       title: {_: 'Ayaya!'},
@@ -121,7 +127,7 @@ export const token = {
   },
   attributes: {
     traits: {
-      enumKeys: [0, 'eyesLeft', 'eyesRight'],
+      enumKeys: ['0', 'eyesLeft', 'eyesRight'],
     },
     color: {
       values: [{_: '0xff0000ff'}], // actually a single value, but array is used for consistency
@@ -130,20 +136,22 @@ export const token = {
       title: {_: 'Ayaya'},
       type: 'string',
       values: [{_: 'ayaya'}],
+      // array: false,
     },
   },
   royalties: { // customised royalties for the token
-    royaltyVersion: '1',
+    royaltyVersion: 1,
+    decimals: 6,
     primary: {
       addresses: {
-        '0x0000000000000000000000000000000000000000': 20000, // 2%
-        '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY': 52500, // 5.25%
+        '0x0000000000000000000000000000000000000000': 200000, // 0.2%
+        '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY': 6250, // 0.625%
       },
     },
     secondary: {
       addresses: {
-        '0x0000000000000000000000000000000000000000': 30000, // 3%
-        '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY': 72500, // 7.25%
+        '0x0000000000000000000000000000000000000000': 300, // 0.03%
+        '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY': 2500, // 0.25%
       },
     },
   },

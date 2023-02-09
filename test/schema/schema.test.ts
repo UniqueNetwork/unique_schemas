@@ -1,9 +1,9 @@
 import {describe, test, expect} from 'vitest'
-import {decodeUniqueCollectionFromProperties, encodeCollectionSchemaToProperties} from "src/tools/collection"
+import {decodeUniqueCollectionFromProperties, encodeCollectionSchemaToProperties} from 'src/tools/collection'
 
-import {dungeonsAndHeroesSchema} from '../samples/dungeonsAndHeroes.sample';
-import {UniqueCollectionSchemaDecoded, UniqueCollectionSchemaToCreate} from "src";
-import {DecodingResult} from "src/schemaUtils";
+import {dungeonsAndHeroesSchema} from '../samples/dungeonsAndHeroes.sample'
+import {UniqueCollectionSchemaDecoded, UniqueCollectionSchemaToCreate} from 'src'
+import {DecodingResult} from 'src/schemaUtils'
 
 const testDecodedSchema = (expected: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaToCreate, actual: DecodingResult<UniqueCollectionSchemaDecoded>): void => {
   const {result, error} = actual;

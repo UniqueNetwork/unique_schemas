@@ -11,3 +11,5 @@ export const PERMISSION = <const>{
 } satisfies {[K: string]: TokenPropertyPermissionValue}
 
 export const DEFAULT_PERMISSION = PERMISSION.WRITABLE_ONCE_FOR_COLLECTION_ADMIN satisfies TokenPropertyPermissionValue
+
+export const DEFAULT_ROYALTIES_DECIMALS = <const>4 satisfies number
