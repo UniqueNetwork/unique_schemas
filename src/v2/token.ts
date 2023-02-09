@@ -7,12 +7,22 @@ import {
   UniqueTokenV2
 } from './types'
 import {getEntries, getKeys} from '../tsUtils'
-import {validateUniqueTokenV2} from './types.validator'
+import {
+  validateAttributeValue,
+  validateAttributeValues,
+  validateDynamicAttributeInToken,
+  validateUniqueTokenV2
+} from './types.validator'
 import {deserializeRoyalties, serializeRoyalties, validateRoyalties} from './royalties'
 import JSON5 from 'json5'
 
-export const validateToken = (schema: UniqueCollectionSchemaV2, token: UniqueTokenV2): boolean => {
-  const tokenCopy = JSON5.parse(JSON5.stringify(token)) as UniqueTokenV2
+// The "softCheck" parameter is employed for validating a token in a manner
+// that does not result in error throwing. This means that after decoding the token,
+// there may be acceptable scenarios where some non-valid cases occur.
+// For example, token may have attributes with enumKeys and values fields at the same time.
+export const validateToken = (schema: UniqueCollectionSchemaV2, token: UniqueTokenV2, softCheck?: boolean): boolean => {
+  // const tokenCopy = JSON5.parse(JSON5.stringify(token)) as UniqueTokenV2c
+  const tokenCopy = token
   validateUniqueTokenV2(tokenCopy)
 
   const requiredMediaKeys = getEntries(schema.media?.schema || {})
@@ -27,6 +37,61 @@ export const validateToken = (schema: UniqueCollectionSchemaV2, token: UniqueTok
     const missingMediaErrorString = `Missing required media keys: ${missingMediaKeys.map(([key]) => key).join(', ')}. `
     const missingAttributesErrorString = `Missing required attributes keys: ${missingAttributesKeys.map(([key]) => key).join(', ')}.`
     throw new Error(`${missingMediaErrorString}${missingAttributesErrorString}`)
+  }
+
+  // validate attributes
+  const schemaAttributes = getKeys(schema.attributes?.schema || {})
+  const tokenAttributes = getKeys(tokenCopy.attributes || {})
+
+  const additionalAttributes = tokenAttributes.filter(key => !schemaAttributes.includes(key))
+  const schemaBasedAttributes = tokenAttributes.filter(key => schemaAttributes.includes(key))
+
+  // validate additional attributes - which are not in schema
+  if (additionalAttributes.length) {
+    for (const key of additionalAttributes) {
+      validateDynamicAttributeInToken(tokenCopy.attributes![key] as DynamicAttributeInToken)
+    }
+  }
+
+  // validate "known" attributes - which present in schema
+  if (schemaBasedAttributes.length) {
+    for (const key of schemaBasedAttributes) {
+      const attributeSchema = schema.attributes!.schema[key]
+      const attribute = tokenCopy.attributes![key]
+      const {enumKeys, values} = attribute as SchemaBasedAttributeInToken
+
+      // token should have either enumKeys or values
+      if (!softCheck && !(Number(!!enumKeys) ^ Number(!!values))) {
+        throw new Error(`Attribute ${key} should have only one of: enumKeys or values`)
+      }
+
+      // token should have enumKeys if schema has enumValues
+      // and should have values if schema has not enumValues
+      if (!!attributeSchema.enumValues) {
+        // check that token has the enumKeys field
+        if (!enumKeys) {
+          throw new Error(`Attribute ${key} should have enumKeys`)
+        }
+
+        // check that all enumKeys meet a corresponding enumValues entry in the schema
+        const schemaEnumKeys = getKeys(attributeSchema.enumValues)
+        for (const enumKey of enumKeys) {
+          if (!schemaEnumKeys.includes(enumKey)) {
+            throw new Error(`Attribute "${key}" has unknown enumKey: ${enumKey}`)
+          }
+        }
+      } else { // if schema has not enumValues
+        // check that token has the values field
+        if (!values) {
+          throw new Error(`Attribute "${key}" should have values`)
+        }
+        try {
+          validateAttributeValues(values)
+        } catch (e: any) {
+          throw new Error(`Attribute "${key}" has invalid values: ${e.message}`)
+        }
+      }
+    }
   }
 
   if (tokenCopy.royalties) {
@@ -68,13 +133,13 @@ const serializeTokenMediaOrAttributesToProperties = (TPPs: TokenPropertyPermissi
 export const encodeToken = (schema: UniqueCollectionSchemaV2, TPPs: TokenPropertyPermission[], token: UniqueTokenV2): { properties: Property[] } => {
   validateToken(schema, token)
 
-  const ERC721TokenURI = token.common?.ERC721TokenURI
-  if (ERC721TokenURI) {
-    delete token.common!.ERC721TokenURI
+  const ERC721MetadataTokenURI = token.common?.ERC721MetadataTokenURI
+  if (ERC721MetadataTokenURI) {
+    delete token.common!.ERC721MetadataTokenURI
   }
 
-  const URIProperty = ERC721TokenURI
-    ? [{key: 'URI', value: ERC721TokenURI}]
+  const URIProperty = ERC721MetadataTokenURI
+    ? [{key: 'URI', value: ERC721MetadataTokenURI}]
     : []
 
   const commonProperty = token.common
@@ -126,7 +191,7 @@ export const decodeToken = (schema: UniqueCollectionSchemaV2, TPPs: TokenPropert
   const URIProperty = properties.find(({key}) => key === 'URI')
   if (URIProperty) {
     token.common = token.common || {}
-    token.common.ERC721TokenURI = URIProperty.value
+    token.common.ERC721MetadataTokenURI = URIProperty.value
   }
 
   const royaltiesProperty = properties.find(({key}) => key === 'royalties')
@@ -176,13 +241,13 @@ export const decodeToken = (schema: UniqueCollectionSchemaV2, TPPs: TokenPropert
         if (attributeSchema.order) {
           attribute.order = attribute.order || attributeSchema.order
         }
-        if (attributeSchema.array) {
-          attribute.array = attribute.array || attributeSchema.array
+        if ('single' in attributeSchema) {
+          attribute.single = attribute.single || attributeSchema.single
         }
 
         if (!attribute.values) {
           const enumKeys = (attribute as SchemaBasedAttributeInToken)?.enumKeys
-          attribute.values = Array.isArray(enumKeys) && attributeSchema.enumValues
+          attribute.values = !!enumKeys && !!attributeSchema.enumValues
             ? enumKeys.map(key => attributeSchema.enumValues![key])
             : []
         }
@@ -193,7 +258,7 @@ export const decodeToken = (schema: UniqueCollectionSchemaV2, TPPs: TokenPropert
 
   let validationError = null
   try {
-    validateToken(schema, token)
+    validateToken(schema, token, true)
   } catch (e: any) {
     validationError = e as Error
   }

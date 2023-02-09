@@ -112,7 +112,7 @@ const checkRoyaltiesAddresses = (royalties: RoyaltySchema, kind: 'primary' | 'se
   for (const [address, amount] of Object.entries(addresses)) {
     // check that address is valid
     if (!Address.is.ethereumAddress(address) && !Address.is.substrateAddress(address) && !Address.is.substratePublicKey(address)) {
-      throw new Error(`Invalid address in primary royalties ${address}`)
+      throw new Error(`Invalid address in ${kind} royalties ${address}`)
     }
 
     //check that amount is integer

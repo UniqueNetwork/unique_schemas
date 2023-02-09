@@ -1,11 +1,10 @@
-type GenericLocalizedWithDefault<T> = {
-  _: T
-  [K: string]: T
+export type LocalizedStringWithDefault = {
+  _: string
+  [K: string]: string
 }
-type BoxedNumberWithDefault = { _: number }
 
-type LocalizedStringWithDefault = GenericLocalizedWithDefault<string>
-type LocalizedStringOrBoxedNumberWithDefault = BoxedNumberWithDefault | LocalizedStringWithDefault
+export type AttributeValue = ({ _: number } | LocalizedStringWithDefault) & {order?: number}
+export type AttributeValues = AttributeValue[]
 
 export type TokenPropertyPermissionValue = {
   mutable: boolean
@@ -61,22 +60,19 @@ export type TokenMediaInfo = {
   posterFor?: string
 }
 
-type UrlSelect = {
+export type TokenMediaInfoWithUrl = Omit<TokenMediaInfo, 'type'> & {
+  type?: TokenMediaType
   url?: string
   suffix?: string
 }
 
-type TokenMediaInfoWithUrl = Omit<TokenMediaInfo, 'type'> & {type?: TokenMediaType} & UrlSelect
-
-type ImageItem = Pick<TokenMediaInfo, 'title' | 'mimeType' | 'loop'> & UrlSelect
-
-type ScalarOrArrayOf<T> = T | T[]
+export type ImageItem = Pick<TokenMediaInfoWithUrl, 'title' | 'mimeType' | 'loop' | 'url' | 'suffix'>
 
 type AttributeBaseSchema = {
   order?: number // to sort attrs
   title: LocalizedStringWithDefault
   type: keyof typeof AttributeType // or just make the type `string` and that's all?
-  array: boolean
+  single?: boolean
 }
 
 export type RoyaltyKind = {
@@ -127,7 +123,7 @@ export type UniqueCollectionSchemaV2 = {
     schema: {
       [K: string]: AttributeBaseSchema & {
         optional?: boolean
-        enumValues?: { [K: string]: LocalizedStringOrBoxedNumberWithDefault & { order?: number } }
+        enumValues?: { [K: string]: AttributeValue }
         permission?: TokenPropertyPermissionValue
       }
     }
@@ -153,16 +149,16 @@ type TokenCommonData = {
   description?: LocalizedStringWithDefault
 
   info?: any // this field is needed for some free form data about the token
-  ERC721TokenURI?: string
+  ERC721MetadataTokenURI?: string
 }
 
 export type SchemaBasedAttributeInToken = {
   enumKeys?: string[]
-  values?: Array<LocalizedStringOrBoxedNumberWithDefault>
+  values?: AttributeValues
 }
 
 export type DynamicAttributeInToken = AttributeBaseSchema & {
-  values: Array<LocalizedStringOrBoxedNumberWithDefault>
+  values: AttributeValues
 }
 
 export type TokenAttributeItem = SchemaBasedAttributeInToken | DynamicAttributeInToken
