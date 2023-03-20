@@ -1,3 +1,5 @@
+type RequiredPick<T, K extends keyof T> = Required<Pick<T, K>>
+
 export type LocalizedStringWithDefault = {
   _: string
   [K: string]: string
@@ -69,10 +71,10 @@ export type TokenMediaInfoWithUrl = Omit<TokenMediaInfo, 'type'> & {
 export type ImageItem = Pick<TokenMediaInfoWithUrl, 'title' | 'mimeType' | 'loop' | 'url' | 'suffix'>
 
 type AttributeBaseSchema = {
-  order?: number // to sort attrs
-  title: LocalizedStringWithDefault
   type: keyof typeof AttributeType // or just make the type `string` and that's all?
-  single?: boolean
+  title: LocalizedStringWithDefault
+  order?: number // to sort attrs
+  single?: boolean // if true, then only one value is allowed, otherwise multiple values are allowed
 }
 
 export type RoyaltyKind = {
@@ -148,6 +150,8 @@ type TokenCommonData = {
   name?: LocalizedStringWithDefault
   description?: LocalizedStringWithDefault
 
+  mediaFallback?: { [K: string]: TokenMediaInfoWithUrl }
+
   info?: any // this field is needed for some free form data about the token
   ERC721MetadataTokenURI?: string
 }
@@ -168,4 +172,27 @@ export type UniqueTokenV2 = {
   media?: { [K: string]: TokenMediaInfoWithUrl }
   royalties?: RoyaltySchema
   attributes?: { [K: string]: TokenAttributeItem }
+}
+
+////////////////////////////////////
+// enriched types
+////////////////////////////////////
+
+export type TokenMediaInfoEnriched = TokenMediaInfo & {
+  url: string
+  suffix?: string
+}
+
+export type TokenAttributeItemEnriched = AttributeBaseSchema & {
+  values: AttributeValues
+  enumKeys?: string[]
+}
+
+export type UniqueTokenV2Enriched = UniqueTokenV2 & {
+  common?: TokenCommonData & {
+    mediaFallback?: { [K: string]: TokenMediaInfoEnriched }
+  }
+  preview?: ImageItem
+  media?: { [K: string]: TokenMediaInfoEnriched }
+  attributes?: { [K: string]:  TokenAttributeItemEnriched}
 }

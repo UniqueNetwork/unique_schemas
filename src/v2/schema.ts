@@ -1,6 +1,5 @@
 import JSON5 from 'json5'
 
-import {schema} from './examples'
 import {Property, TokenPropertyPermission, UniqueCollectionSchemaV2} from './types'
 import {getEntries} from '../tsUtils'
 import {DEFAULT_PERMISSION} from './constants'

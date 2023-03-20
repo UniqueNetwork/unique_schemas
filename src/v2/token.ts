@@ -4,9 +4,9 @@ import {
   SchemaBasedAttributeInToken, TokenMediaInfo,
   TokenPropertyPermission,
   UniqueCollectionSchemaV2,
-  UniqueTokenV2
+  UniqueTokenV2, UniqueTokenV2Enriched
 } from './types'
-import {getEntries, getKeys} from '../tsUtils'
+import {getEntries, getKeys, getValues} from '../tsUtils'
 import {
   validateAttributeValue,
   validateAttributeValues,
@@ -90,6 +90,18 @@ export const validateToken = (schema: UniqueCollectionSchemaV2, token: UniqueTok
         } catch (e: any) {
           throw new Error(`Attribute "${key}" has invalid values: ${e.message}`)
         }
+      }
+    }
+  }
+
+  // check that token media fallback has only keys from collection media schema
+  if (tokenCopy.common?.mediaFallback) {
+    const mediaFallback = tokenCopy.common.mediaFallback
+    const mediaFallbackKeys = getKeys(mediaFallback)
+    const schemaMediaKeys = getKeys(schema.media?.schema || {})
+    for (const key of mediaFallbackKeys) {
+      if (!schemaMediaKeys.includes(key)) {
+        throw new Error(`Media fallback has unknown key: ${key}`)
       }
     }
   }
@@ -180,12 +192,20 @@ const deserializeTokenMediaOrAttributesFromProperties = (token: UniqueTokenV2, p
   return token
 }
 
-export const decodeToken = (schema: UniqueCollectionSchemaV2, TPPs: TokenPropertyPermission[], properties: Property[]): { token: UniqueTokenV2, validationError?: Error | null } => {
-  const token = {} as UniqueTokenV2
+export const decodeToken = (schema: UniqueCollectionSchemaV2, TPPs: TokenPropertyPermission[], properties: Property[]): { token: UniqueTokenV2Enriched, validationError?: Error | null } => {
+  const token = {} as UniqueTokenV2Enriched
 
   const commonProperty = properties.find(({key}) => key === 'common')
   if (commonProperty) {
-    token.common = JSON5.parse(commonProperty.value)
+    token.common = JSON5.parse(commonProperty.value) as Required<UniqueTokenV2Enriched>['common']
+    if (token.common.mediaFallback) {
+      const mediaFallback = token.common.mediaFallback
+      const mediaFallbackKeys = getKeys(mediaFallback)
+      for (const key of mediaFallbackKeys) {
+        const {url, suffix} = mediaFallback[key]
+        mediaFallback[key].url = url || (schema.baseUrl + (suffix || ''))
+      }
+    }
   }
 
   const URIProperty = properties.find(({key}) => key === 'URI')
@@ -199,8 +219,21 @@ export const decodeToken = (schema: UniqueCollectionSchemaV2, TPPs: TokenPropert
     token.royalties = deserializeRoyalties(royaltiesProperty.value)
   }
 
-  // deserialize media and enrich media with schema
   deserializeTokenMediaOrAttributesFromProperties(token, properties, 'media')
+  deserializeTokenMediaOrAttributesFromProperties(token, properties, 'attributes')
+
+  let validationError = null
+  try {
+    validateToken(schema, token, true)
+  } catch (e: any) {
+    validationError = e as Error
+  }
+
+  ////////////////////////////////////////
+  // enrich token with schema
+  ////////////////////////////////////////
+
+  // enrich media with schema
   if (token.media) {
     const mediaKeys = getKeys(token.media)
     const mediaSchemaKeys = getKeys(schema.media?.schema || {})
@@ -220,15 +253,12 @@ export const decodeToken = (schema: UniqueCollectionSchemaV2, TPPs: TokenPropert
       }
 
       // set the media url as it is or as a combination of baseUrl and suffix
-      if (!media.url) {
-        media.url = schema.baseUrl + (media.suffix || '')
-      }
+      // if there is no url or suffix, return the baseUrl as the url
+      media.url = media.url || (schema.baseUrl + (media.suffix || ''))
     }
   }
 
-
-  // deserialize and enrich token attributes with schema (set values, titles, types, etc)
-  deserializeTokenMediaOrAttributesFromProperties(token, properties, 'attributes')
+  // enrich token attributes with schema (set values, titles, types, etc)
   if (token.attributes) {
     const attributesKeys = getKeys(token.attributes)
     for (const attributeKey of attributesKeys) {
@@ -255,12 +285,24 @@ export const decodeToken = (schema: UniqueCollectionSchemaV2, TPPs: TokenPropert
     }
   }
 
-
-  let validationError = null
-  try {
-    validateToken(schema, token, true)
-  } catch (e: any) {
-    validationError = e as Error
+  if (token.common?.preview) {
+    token.preview = token.common.preview
+  } else if (token.media) {
+    const mediaItems = getValues(token.media)
+    // get the media with flag 'main' if it's an image
+    const mainImage = mediaItems.find(item => item.main && item.type === 'image')
+    if (mainImage) {
+      token.preview = mainImage
+    } else {
+      // get the first image with the first order
+      token.preview = mediaItems
+        .filter(item => item.type === 'image')
+        .sort((a, b) => {
+          if (typeof a.order !== 'number') return 1
+          if (typeof b.order !== 'number') return -1
+          return a.order - b.order
+        })[0]
+    }
   }
 
   return {

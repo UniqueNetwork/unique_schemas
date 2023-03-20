@@ -77,13 +77,13 @@ export const schema = {
     decimals: 4,
     primary: {
       addresses: {
-        '0x0000000000000000000000000000000000000000': 100, // 1%
+        '0x1234A38988Dd5ecC93Dd9cE90a44A00e5FB91e4C': 100, // 1%
         '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY': 225, // 2.25%
       },
     },
     secondary: {
       addresses: {
-        '0x0000000000000000000000000000000000000000': 100, // 1%
+        '0x1234A38988Dd5ecC93Dd9cE90a44A00e5FB91e4C': 100, // 1%
         '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY': 225, // 2.25%
       },
     },
@@ -142,13 +142,13 @@ export const token = {
     decimals: 6,
     primary: {
       addresses: {
-        '0x0000000000000000000000000000000000000000': 200000, // 0.2%
+        '0x1234A38988Dd5ecC93Dd9cE90a44A00e5FB91e4C': 200000, // 0.2%
         '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY': 6250, // 0.625%
       },
     },
     secondary: {
       addresses: {
-        '0x0000000000000000000000000000000000000000': 300, // 0.03%
+        '0x1234A38988Dd5ecC93Dd9cE90a44A00e5FB91e4C': 300, // 0.03%
         '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY': 2500, // 0.25%
       },
     },

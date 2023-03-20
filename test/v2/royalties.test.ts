@@ -57,7 +57,12 @@ describe.concurrent('royalties', () => {
 
   test('serialize', () => {
     expect(serializeRoyalties(examples.token.royalties))
-      .toEqual('v:0001|d:06|r1-0125:e-0000000000000000000000000000000000000000-0200000;s-d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d-0006250|r2-0125:e-0000000000000000000000000000000000000000-0000300;s-d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d-0002500')
+      .toEqual('v:0001|d:06|' +
+        'P-0125:e-1234A38988Dd5ecC93Dd9cE90a44A00e5FB91e4C-0200000;' +
+        's-d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d-0006250|' +
+        'S-0125:e-1234A38988Dd5ecC93Dd9cE90a44A00e5FB91e4C-0000300;' +
+        's-d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d-0002500'
+      )
 
     expect(serializeRoyalties({
       royaltyVersion: 1,
@@ -65,7 +70,12 @@ describe.concurrent('royalties', () => {
   })
 
   test('serialize', () => {
-    expect(deserializeRoyalties('v:0001|d:06|r1-0125:e-0000000000000000000000000000000000000000-0200000;s-d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d-0006250|r2-0125:e-0000000000000000000000000000000000000000-0000300;s-d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d-0002500'))
+    expect(deserializeRoyalties('v:0001|d:06|' +
+      'P-0125:e-1234A38988Dd5ecC93Dd9cE90a44A00e5FB91e4C-0200000;' +
+      's-d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d-0006250|' +
+      'S-0125:e-1234A38988Dd5ecC93Dd9cE90a44A00e5FB91e4C-0000300;' +
+      's-d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d-0002500'
+    ))
       .toEqual(examples.token.royalties)
 
     expect(deserializeRoyalties('v:0001|d:04'))

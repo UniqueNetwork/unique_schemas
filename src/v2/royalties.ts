@@ -44,12 +44,12 @@ export const serializeRoyalties = (royalties: RoyaltySchema): string => {
 
   if (royalties.primary?.addresses && Object.keys(royalties.primary.addresses).length) {
     const str = serializeRoyaltyAddresses(royalties.primary.addresses, decimals)
-    royaltiesString += `|r1-${str.length.toString().padStart(4, '0')}:${str}`
+    royaltiesString += `|P-${str.length.toString().padStart(4, '0')}:${str}`
   }
 
   if (royalties.secondary?.addresses && Object.keys(royalties.secondary.addresses).length) {
     const str = serializeRoyaltyAddresses(royalties.secondary.addresses, decimals)
-    royaltiesString += `|r2-${str.length.toString().padStart(4, '0')}:${str}`
+    royaltiesString += `|S-${str.length.toString().padStart(4, '0')}:${str}`
   }
 
   return royaltiesString
@@ -82,9 +82,9 @@ export const deserializeRoyalties = (royaltiesString: string): RoyaltySchema => 
       }
     } else if (key === 'd') {
       royalties.decimals = parseInt(value, 10)
-    } else if (key.startsWith('r1')) {
+    } else if (key.startsWith('P')) {
       deserializeRoyaltyAddresses(royalties, 'primary', value)
-    } else if (key.startsWith('r2')) {
+    } else if (key.startsWith('S')) {
       deserializeRoyaltyAddresses(royalties, 'secondary', value)
     }
   }
