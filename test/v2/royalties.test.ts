@@ -3,7 +3,7 @@ import {deserializeRoyalties, serializeRoyalties, validateRoyalties} from '../..
 
 import * as examples from './examples'
 
-describe.concurrent('royalties', () => {
+describe('royalties', () => {
   test('validate', () => {
     expect(() => {
       validateRoyalties({

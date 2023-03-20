@@ -2,7 +2,7 @@ import {describe, expect, test} from 'vitest'
 import {AttributeType, CollectionAttributesSchema} from '../src/types'
 import {validateCollectionAttributesSchema} from '../src/tools/validators'
 
-describe.concurrent('validateCollectionAttributesSchema tests:', () => {
+describe('validateCollectionAttributesSchema tests:', () => {
   test('Right collection attributes', () => {
     const test_attribute: CollectionAttributesSchema = {
       '1': {
