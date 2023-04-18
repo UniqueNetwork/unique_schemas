@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "@unique-nft/utils": "^0.0.1",
-    "protobufjs": "^7.1.1"
+    "protobufjs": "^7.1.1",
+    "zod": "^3.21.4"
   }
 }
