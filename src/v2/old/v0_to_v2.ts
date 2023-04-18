@@ -43,7 +43,6 @@ const decodeSchema = (properties: Property[], options?: DecodingImageLinkOptions
     defaultLocale: 'en',
   }
 
-
   if (parsedVariableOnChainSchema && typeof parsedVariableOnChainSchema === 'object' && typeof parsedVariableOnChainSchema.collectionCover === 'string') {
     schema.cover.url = parsedVariableOnChainSchema.collectionCover
 

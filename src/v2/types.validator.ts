@@ -272,6 +272,89 @@ export const SCHEMA = {
                 "royaltyVersion"
             ]
         },
+        "AttributeSchemaInCollection": {
+            "type": "object",
+            "properties": {
+                "optional": {
+                    "type": "boolean"
+                },
+                "enumValues": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/AttributeValue"
+                    }
+                },
+                "permission": {
+                    "$ref": "#/definitions/TokenPropertyPermissionValue"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "integer",
+                        "float",
+                        "boolean",
+                        "timestamp",
+                        "string",
+                        "url",
+                        "isoDate",
+                        "time",
+                        "colorRgba",
+                        "colorLch"
+                    ]
+                },
+                "title": {
+                    "$ref": "#/definitions/LocalizedStringWithDefault"
+                },
+                "order": {
+                    "type": "number"
+                },
+                "single": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "title",
+                "type"
+            ]
+        },
+        "MediaSchemaInCollection": {
+            "type": "object",
+            "properties": {
+                "required": {
+                    "type": "boolean"
+                },
+                "permission": {
+                    "$ref": "#/definitions/TokenPropertyPermissionValue"
+                },
+                "type": {
+                    "$ref": "#/definitions/TokenMediaType"
+                },
+                "subType": {
+                    "$ref": "#/definitions/SubType"
+                },
+                "title": {
+                    "$ref": "#/definitions/LocalizedStringWithDefault"
+                },
+                "order": {
+                    "type": "number"
+                },
+                "main": {
+                    "type": "boolean"
+                },
+                "mimeType": {
+                    "type": "string"
+                },
+                "loop": {
+                    "type": "boolean"
+                },
+                "posterFor": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type"
+            ]
+        },
         "UniqueCollectionSchemaV2": {
             "type": "object",
             "properties": {
@@ -327,42 +410,7 @@ export const SCHEMA = {
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "type": "object",
-                                "properties": {
-                                    "required": {
-                                        "type": "boolean"
-                                    },
-                                    "permission": {
-                                        "$ref": "#/definitions/TokenPropertyPermissionValue"
-                                    },
-                                    "type": {
-                                        "$ref": "#/definitions/TokenMediaType"
-                                    },
-                                    "subType": {
-                                        "$ref": "#/definitions/SubType"
-                                    },
-                                    "title": {
-                                        "$ref": "#/definitions/LocalizedStringWithDefault"
-                                    },
-                                    "order": {
-                                        "type": "number"
-                                    },
-                                    "main": {
-                                        "type": "boolean"
-                                    },
-                                    "mimeType": {
-                                        "type": "string"
-                                    },
-                                    "loop": {
-                                        "type": "boolean"
-                                    },
-                                    "posterFor": {
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [
-                                    "type"
-                                ]
+                                "$ref": "#/definitions/MediaSchemaInCollection"
                             }
                         }
                     },
@@ -379,49 +427,7 @@ export const SCHEMA = {
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "type": "object",
-                                "properties": {
-                                    "optional": {
-                                        "type": "boolean"
-                                    },
-                                    "enumValues": {
-                                        "type": "object",
-                                        "additionalProperties": {
-                                            "$ref": "#/definitions/AttributeValue"
-                                        }
-                                    },
-                                    "permission": {
-                                        "$ref": "#/definitions/TokenPropertyPermissionValue"
-                                    },
-                                    "order": {
-                                        "type": "number"
-                                    },
-                                    "title": {
-                                        "$ref": "#/definitions/LocalizedStringWithDefault"
-                                    },
-                                    "type": {
-                                        "type": "string",
-                                        "enum": [
-                                            "integer",
-                                            "float",
-                                            "boolean",
-                                            "timestamp",
-                                            "string",
-                                            "url",
-                                            "isoDate",
-                                            "time",
-                                            "colorRgba",
-                                            "colorLch"
-                                        ]
-                                    },
-                                    "single": {
-                                        "type": "boolean"
-                                    }
-                                },
-                                "required": [
-                                    "title",
-                                    "type"
-                                ]
+                                "$ref": "#/definitions/AttributeSchemaInCollection"
                             }
                         }
                     },
@@ -515,42 +521,7 @@ export const SCHEMA = {
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "type": "object",
-                                "properties": {
-                                    "required": {
-                                        "type": "boolean"
-                                    },
-                                    "permission": {
-                                        "$ref": "#/definitions/TokenPropertyPermissionValue"
-                                    },
-                                    "type": {
-                                        "$ref": "#/definitions/TokenMediaType"
-                                    },
-                                    "subType": {
-                                        "$ref": "#/definitions/SubType"
-                                    },
-                                    "title": {
-                                        "$ref": "#/definitions/LocalizedStringWithDefault"
-                                    },
-                                    "order": {
-                                        "type": "number"
-                                    },
-                                    "main": {
-                                        "type": "boolean"
-                                    },
-                                    "mimeType": {
-                                        "type": "string"
-                                    },
-                                    "loop": {
-                                        "type": "boolean"
-                                    },
-                                    "posterFor": {
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [
-                                    "type"
-                                ]
+                                "$ref": "#/definitions/MediaSchemaInCollection"
                             }
                         }
                     },
@@ -567,49 +538,7 @@ export const SCHEMA = {
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "type": "object",
-                                "properties": {
-                                    "optional": {
-                                        "type": "boolean"
-                                    },
-                                    "enumValues": {
-                                        "type": "object",
-                                        "additionalProperties": {
-                                            "$ref": "#/definitions/AttributeValue"
-                                        }
-                                    },
-                                    "permission": {
-                                        "$ref": "#/definitions/TokenPropertyPermissionValue"
-                                    },
-                                    "order": {
-                                        "type": "number"
-                                    },
-                                    "title": {
-                                        "$ref": "#/definitions/LocalizedStringWithDefault"
-                                    },
-                                    "type": {
-                                        "type": "string",
-                                        "enum": [
-                                            "integer",
-                                            "float",
-                                            "boolean",
-                                            "timestamp",
-                                            "string",
-                                            "url",
-                                            "isoDate",
-                                            "time",
-                                            "colorRgba",
-                                            "colorLch"
-                                        ]
-                                    },
-                                    "single": {
-                                        "type": "boolean"
-                                    }
-                                },
-                                "required": [
-                                    "title",
-                                    "type"
-                                ]
+                                "$ref": "#/definitions/AttributeSchemaInCollection"
                             }
                         }
                     },
@@ -666,12 +595,6 @@ export const SCHEMA = {
                 "values": {
                     "$ref": "#/definitions/AttributeValues"
                 },
-                "order": {
-                    "type": "number"
-                },
-                "title": {
-                    "$ref": "#/definitions/LocalizedStringWithDefault"
-                },
                 "type": {
                     "type": "string",
                     "enum": [
@@ -686,6 +609,12 @@ export const SCHEMA = {
                         "colorRgba",
                         "colorLch"
                     ]
+                },
+                "title": {
+                    "$ref": "#/definitions/LocalizedStringWithDefault"
+                },
+                "order": {
+                    "type": "number"
                 },
                 "single": {
                     "type": "boolean"
@@ -725,6 +654,12 @@ export const SCHEMA = {
                         "description": {
                             "$ref": "#/definitions/LocalizedStringWithDefault"
                         },
+                        "mediaFallback": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/TokenMediaInfoWithUrl"
+                            }
+                        },
                         "info": {},
                         "ERC721MetadataTokenURI": {
                             "type": "string"
@@ -745,6 +680,138 @@ export const SCHEMA = {
                     "additionalProperties": {
                         "$ref": "#/definitions/TokenAttributeItem"
                     }
+                }
+            }
+        },
+        "TokenMediaInfoEnriched": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string"
+                },
+                "suffix": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/TokenMediaType"
+                },
+                "subType": {
+                    "$ref": "#/definitions/SubType"
+                },
+                "title": {
+                    "$ref": "#/definitions/LocalizedStringWithDefault"
+                },
+                "order": {
+                    "type": "number"
+                },
+                "main": {
+                    "type": "boolean"
+                },
+                "mimeType": {
+                    "type": "string"
+                },
+                "loop": {
+                    "type": "boolean"
+                },
+                "posterFor": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type",
+                "url"
+            ]
+        },
+        "TokenAttributeItemEnriched": {
+            "type": "object",
+            "properties": {
+                "values": {
+                    "$ref": "#/definitions/AttributeValues"
+                },
+                "enumKeys": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "integer",
+                        "float",
+                        "boolean",
+                        "timestamp",
+                        "string",
+                        "url",
+                        "isoDate",
+                        "time",
+                        "colorRgba",
+                        "colorLch"
+                    ]
+                },
+                "title": {
+                    "$ref": "#/definitions/LocalizedStringWithDefault"
+                },
+                "order": {
+                    "type": "number"
+                },
+                "single": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "title",
+                "type",
+                "values"
+            ]
+        },
+        "UniqueTokenV2Enriched": {
+            "type": "object",
+            "properties": {
+                "common": {
+                    "type": "object",
+                    "properties": {
+                        "preview": {
+                            "$ref": "#/definitions/ImageItem"
+                        },
+                        "defaultLocale": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "$ref": "#/definitions/LocalizedStringWithDefault"
+                        },
+                        "description": {
+                            "$ref": "#/definitions/LocalizedStringWithDefault"
+                        },
+                        "mediaFallback": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/TokenMediaInfoWithUrl"
+                            }
+                        },
+                        "info": {},
+                        "ERC721MetadataTokenURI": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "preview": {
+                    "$ref": "#/definitions/ImageItem"
+                },
+                "media": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/TokenMediaInfoWithUrl"
+                    }
+                },
+                "attributes": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/TokenAttributeItem"
+                    }
+                },
+                "royalties": {
+                    "$ref": "#/definitions/RoyaltySchema"
                 }
             }
         }
@@ -1024,6 +1091,48 @@ export function isRoyaltySchema(payload: unknown): payload is apiTypes.RoyaltySc
   }
 }
 
+export function validateAttributeSchemaInCollection(payload: unknown): apiTypes.AttributeSchemaInCollection {
+  /** Schema is defined in {@link SCHEMA.definitions.AttributeSchemaInCollection } **/
+  const validator = ajv.getSchema("SCHEMA#/definitions/AttributeSchemaInCollection");
+  const valid = validator(payload);
+  if (!valid) {
+    const error = new Error('Invalid AttributeSchemaInCollection: ' + ajv.errorsText(validator.errors, {dataVar: "AttributeSchemaInCollection"}));
+    error.name = "ValidationError";
+    throw error;
+  }
+  return payload;
+}
+
+export function isAttributeSchemaInCollection(payload: unknown): payload is apiTypes.AttributeSchemaInCollection {
+  try {
+    validateAttributeSchemaInCollection(payload);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function validateMediaSchemaInCollection(payload: unknown): apiTypes.MediaSchemaInCollection {
+  /** Schema is defined in {@link SCHEMA.definitions.MediaSchemaInCollection } **/
+  const validator = ajv.getSchema("SCHEMA#/definitions/MediaSchemaInCollection");
+  const valid = validator(payload);
+  if (!valid) {
+    const error = new Error('Invalid MediaSchemaInCollection: ' + ajv.errorsText(validator.errors, {dataVar: "MediaSchemaInCollection"}));
+    error.name = "ValidationError";
+    throw error;
+  }
+  return payload;
+}
+
+export function isMediaSchemaInCollection(payload: unknown): payload is apiTypes.MediaSchemaInCollection {
+  try {
+    validateMediaSchemaInCollection(payload);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 export function validateUniqueCollectionSchemaV2(payload: unknown): apiTypes.UniqueCollectionSchemaV2 {
   /** Schema is defined in {@link SCHEMA.definitions.UniqueCollectionSchemaV2 } **/
   const validator = ajv.getSchema("SCHEMA#/definitions/UniqueCollectionSchemaV2");
@@ -1144,6 +1253,69 @@ export function validateUniqueTokenV2(payload: unknown): apiTypes.UniqueTokenV2 
 export function isUniqueTokenV2(payload: unknown): payload is apiTypes.UniqueTokenV2 {
   try {
     validateUniqueTokenV2(payload);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function validateTokenMediaInfoEnriched(payload: unknown): apiTypes.TokenMediaInfoEnriched {
+  /** Schema is defined in {@link SCHEMA.definitions.TokenMediaInfoEnriched } **/
+  const validator = ajv.getSchema("SCHEMA#/definitions/TokenMediaInfoEnriched");
+  const valid = validator(payload);
+  if (!valid) {
+    const error = new Error('Invalid TokenMediaInfoEnriched: ' + ajv.errorsText(validator.errors, {dataVar: "TokenMediaInfoEnriched"}));
+    error.name = "ValidationError";
+    throw error;
+  }
+  return payload;
+}
+
+export function isTokenMediaInfoEnriched(payload: unknown): payload is apiTypes.TokenMediaInfoEnriched {
+  try {
+    validateTokenMediaInfoEnriched(payload);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function validateTokenAttributeItemEnriched(payload: unknown): apiTypes.TokenAttributeItemEnriched {
+  /** Schema is defined in {@link SCHEMA.definitions.TokenAttributeItemEnriched } **/
+  const validator = ajv.getSchema("SCHEMA#/definitions/TokenAttributeItemEnriched");
+  const valid = validator(payload);
+  if (!valid) {
+    const error = new Error('Invalid TokenAttributeItemEnriched: ' + ajv.errorsText(validator.errors, {dataVar: "TokenAttributeItemEnriched"}));
+    error.name = "ValidationError";
+    throw error;
+  }
+  return payload;
+}
+
+export function isTokenAttributeItemEnriched(payload: unknown): payload is apiTypes.TokenAttributeItemEnriched {
+  try {
+    validateTokenAttributeItemEnriched(payload);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function validateUniqueTokenV2Enriched(payload: unknown): apiTypes.UniqueTokenV2Enriched {
+  /** Schema is defined in {@link SCHEMA.definitions.UniqueTokenV2Enriched } **/
+  const validator = ajv.getSchema("SCHEMA#/definitions/UniqueTokenV2Enriched");
+  const valid = validator(payload);
+  if (!valid) {
+    const error = new Error('Invalid UniqueTokenV2Enriched: ' + ajv.errorsText(validator.errors, {dataVar: "UniqueTokenV2Enriched"}));
+    error.name = "ValidationError";
+    throw error;
+  }
+  return payload;
+}
+
+export function isUniqueTokenV2Enriched(payload: unknown): payload is apiTypes.UniqueTokenV2Enriched {
+  try {
+    validateUniqueTokenV2Enriched(payload);
     return true;
   } catch (error) {
     return false;

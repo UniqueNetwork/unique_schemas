@@ -1,11 +1,9 @@
-type RequiredPick<T, K extends keyof T> = Required<Pick<T, K>>
-
 export type LocalizedStringWithDefault = {
   _: string
   [K: string]: string
 }
 
-export type AttributeValue = ({ _: number } | LocalizedStringWithDefault) & {order?: number}
+export type AttributeValue = LocalizedStringWithDefault & {order?: number}
 export type AttributeValues = AttributeValue[]
 
 export type TokenPropertyPermissionValue = {
@@ -90,6 +88,17 @@ export type RoyaltySchema = {
   secondary?: RoyaltyKind
 }
 
+export type AttributeSchemaInCollection = AttributeBaseSchema & {
+  optional?: boolean
+  enumValues?: { [K: string]: LocalizedStringWithDefault & {order?: number}}
+  permission?: TokenPropertyPermissionValue
+}
+
+export type MediaSchemaInCollection = TokenMediaInfo & {
+  required?: boolean
+  permission?: TokenPropertyPermissionValue
+}
+
 export type UniqueCollectionSchemaV2 = {
   schemaName: string // 'unique'
   schemaVersion: string // '2.x.x'
@@ -113,21 +122,14 @@ export type UniqueCollectionSchemaV2 = {
   media?: {
     permission?: TokenPropertyPermissionValue
     schema: {
-      [K: string]: TokenMediaInfo & {
-        required?: boolean
-        permission?: TokenPropertyPermissionValue
-      }
+      [K: string]: MediaSchemaInCollection
     }
   }
 
   attributes?: {
     permission?: TokenPropertyPermissionValue
     schema: {
-      [K: string]: AttributeBaseSchema & {
-        optional?: boolean
-        enumValues?: { [K: string]: AttributeValue }
-        permission?: TokenPropertyPermissionValue
-      }
+      [K: string]: AttributeSchemaInCollection
     }
   }
 
