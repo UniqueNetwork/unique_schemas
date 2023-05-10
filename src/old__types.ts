@@ -1,5 +1,5 @@
-import {getEnumValues} from './tsUtils'
-import {CrossAccountId} from './unique_types'
+import {getEnumValues} from "./tsUtils";
+import {CrossAccountId} from "./unique_types";
 
 export class ValidationError extends TypeError {
   constructor(message: string) {

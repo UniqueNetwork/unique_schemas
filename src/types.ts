@@ -1,34 +1,59 @@
-import {getEnumValues} from "./tsUtils";
-import {CrossAccountId} from "./unique_types";
+import {getEnumValues} from './tsUtils'
+import {z} from 'zod'
 
 export class ValidationError extends TypeError {
   constructor(message: string) {
     super(message)
     this.name = 'ValidationError'
   }
+
+  static fromZodError(varName: string, error: z.ZodError) {
+    const errorMessages = error.issues.map(issue => issue.message).join(', ')
+    return new ValidationError(`Error in ${varName}: ${errorMessages}`)
+  }
+
+  static throwIfZodValidationFailed<I, O>(varName: string, result: z.SafeParseReturnType<I, O>) {
+    if (!result.success) {
+      throw ValidationError.fromZodError(varName, result.error)
+    }
+    return true
+  }
 }
 
-export type InfixOrUrlOrCid =
-  { url: string, urlInfix?: undefined, ipfsCid?: undefined }
-  |
-  { urlInfix: string, url?: undefined, ipfsCid?: undefined }
-  |
-  { ipfsCid: string, url?: undefined, urlInfix?: undefined }
-export type InfixOrUrlOrCidAndHash = InfixOrUrlOrCid & { hash?: string }
 export const URL_TEMPLATE_INFIX = <const>'{infix}'
 
+export const zUrlOrInfix = z.union([
+  z.object({
+    url: z.string().url(),
+    urlInfix: z.never().optional()
+  }),
+  z.object({
+    urlInfix: z.string(),
+    url: z.never().optional()
+  }),
+])
+export const zUrlAndMaybeInfix = z.object({
+  url: z.string(),
+  urlInfix: z.string().optional(),
+})
+
+export type UrlOrInfix = z.infer<typeof zUrlOrInfix>
+export type UrlAndMaybeInfix = z.infer<typeof zUrlAndMaybeInfix>
+
 export enum AttributeType {
-  number = "number",          // number
-  integer = "integer",        // number
-  float = "float",            // number
-  boolean = "boolean",        // number
-  timestamp = "timestamp",    // number // js, milliseconds from epoch
-  string = "string",          // string
-  url = "url",                // string
-  isoDate = "isoDate",        // string // ISO Date: YYYY-MM-DD
-  time = "time",              // string // 24h time: HH:mm:ss
-  colorRgba = "colorRgba",    // string // 'rrggbbaa'
+  number = 'number',          // number
+  integer = 'integer',        // number
+  float = 'float',            // number
+  boolean = 'boolean',        // number
+  timestamp = 'timestamp',    // number // js, milliseconds from epoch
+  string = 'string',          // string
+  url = 'url',                // string
+  isoDate = 'isoDate',        // string // ISO Date: YYYY-MM-DD
+  time = 'time',              // string // 24h time: HH:mm:ss
+  colorRgba = 'colorRgba',    // string // 'rrggbbaa'
 }
+
+export const zAttributeType = z.nativeEnum(AttributeType)
 
 export const NumberAttributeTypes = [
   AttributeType.number, AttributeType.integer, AttributeType.float, AttributeType.boolean, AttributeType.timestamp,
@@ -41,155 +66,196 @@ export const StringAttributeTypes = [
 ]
 export const AttributeTypeValues = getEnumValues(AttributeType)
 
+export const zBoxedNumberWithDefault = z.object({
+  _: z.number(),
+})
 
-export type BoxedNumberWithDefault = {
-  _: number
-}
-export type LocalizedStringWithDefault = {
-  _: string
-  [K: string]: string
-}
-export type LocalizedStringOrBoxedNumberWithDefault = BoxedNumberWithDefault | LocalizedStringWithDefault
+export type BoxedNumberWithDefault = z.infer<typeof zBoxedNumberWithDefault>
 
-export interface AttributeSchema {
-  name: LocalizedStringWithDefault
-  optional?: boolean
-  isArray?: boolean
-  type: AttributeType
-  enumValues?: { [K: number]: LocalizedStringOrBoxedNumberWithDefault }
-}
 
-type EncodedEnumAttributeValue = number | Array<number>
-export type EncodedTokenAttributeValue =
-  number |
-  Array<number> |
-  LocalizedStringOrBoxedNumberWithDefault
-  | LocalizedStringOrBoxedNumberWithDefault[]
+export const LANGUAGE_CODE_REGEX = /^[A-Za-z]{2,4}([_-][A-Za-z]{4})?([_-]([A-Za-z]{2}|[0-9]{3}))?$/
 
-export interface EncodedTokenAttributes {
-  [K: number]: EncodedTokenAttributeValue
-}
+export const zLocalizedStringWithDefault = z.union([
+  z.record(z.string().regex(LANGUAGE_CODE_REGEX), z.string()),
+  z.object({_: z.string()})
+])
 
-export type CollectionAttributesSchema = {
-  [K: number]: AttributeSchema
-}
+export type LocalizedStringWithDefault = z.infer<typeof zLocalizedStringWithDefault>
 
-export enum COLLECTION_SCHEMA_NAME {
-  unique = 'unique',
-  old = '_old_',
-  ERC721Metadata = 'ERC721Metadata'
-}
+export const zLocalizedStringOrBoxedNumberWithDefault = z.union([
+  zLocalizedStringWithDefault,
+  zBoxedNumberWithDefault,
+])
 
-export interface UniqueCollectionSchemaToCreate {
-  schemaName: string
-  schemaVersion: string // semver
+export type LocalizedStringOrBoxedNumberWithDefault = z.infer<typeof zLocalizedStringOrBoxedNumberWithDefault>
 
-  coverPicture: InfixOrUrlOrCidAndHash
-  coverPicturePreview?: InfixOrUrlOrCidAndHash
+export const zAttributeSchema = z.object({
+  name: zLocalizedStringWithDefault,
+  optional: z.boolean().optional(),
+  isArray: z.boolean().optional(),
+  type: zAttributeType,
+  enumValues: z.record(z.number(), zLocalizedStringOrBoxedNumberWithDefault).optional(),
+})
 
-  attributesSchemaVersion?: string
-  attributesSchema?: CollectionAttributesSchema
+export type AttributeSchema = z.infer<typeof zAttributeSchema>
 
-  image: {
-    urlTemplate: string
-  }
+export const zEncodedEnumAttributeValue = z.union([
+  z.number(),
+  z.array(z.number()),
+])
+export type EncodedEnumAttributeValue = z.infer<typeof zEncodedEnumAttributeValue>
 
-  imagePreview?: {
-    urlTemplate?: string
-  }
+export const zEncodedNumberAttributeValue = z.union([
+  z.number(),
+  z.array(z.number()),
+  zLocalizedStringOrBoxedNumberWithDefault,
+  z.array(zLocalizedStringOrBoxedNumberWithDefault),
+])
 
-  file?: {
-    urlTemplate?: string
-  }
+export type EncodedTokenAttributeValue = z.infer<typeof zEncodedNumberAttributeValue>
 
-  video?: {
-    urlTemplate?: string
-  }
+export const zEncodedTokenAttributes = z.record(z.number(), zEncodedNumberAttributeValue)
+export type EncodedTokenAttributes = z.infer<typeof zEncodedTokenAttributes>
 
-  audio?: {
-    urlTemplate?: string
-    format?: string
-    isLossless?: boolean
-  }
+export const zCollectionAttributesSchema = z.record(z.number(), zAttributeSchema)
+export type CollectionAttributesSchema = z.infer<typeof zCollectionAttributesSchema>
 
-  spatialObject?: {
-    urlTemplate?: string
-    format?: string
-  }
-}
+export const zCollectionSchemaMediaItem = z.object({
+  urlTemplate: z.string(),
+})
 
-export type UniqueCollectionSchemaDecoded =
-  Omit<UniqueCollectionSchemaToCreate, 'schemaName' | 'coverPicture' | 'coverPicturePreview'>
-  & {
-  schemaName: COLLECTION_SCHEMA_NAME
-  collectionId: number
-  coverPicture: DecodedInfixOrUrlOrCidAndHash
-  coverPicturePreview?: DecodedInfixOrUrlOrCidAndHash
-  oldProperties?: {
-    _old_schemaVersion?: string
-    _old_offchainSchema?: string
-    _old_constOnChainSchema?: string
-    _old_variableOnChainSchema?: string
-  }
-  baseURI?: string
-}
+const zTokenPropertyPermission = z.object({
+  mutable: z.boolean().optional(),
+  collectionAdmin: z.boolean().optional(),
+  tokenOwner: z.boolean().optional(),
+})
 
-interface IToken<GenericInfixUrlOrCidWithHash> {
-  name?: LocalizedStringWithDefault
-  description?: LocalizedStringWithDefault
-  image: GenericInfixUrlOrCidWithHash
-  imagePreview?: GenericInfixUrlOrCidWithHash
-  file?: GenericInfixUrlOrCidWithHash
-  video?: GenericInfixUrlOrCidWithHash
-  audio?: GenericInfixUrlOrCidWithHash
-  spatialObject?: GenericInfixUrlOrCidWithHash
-}
+export const zUniqueCollectionSchemaToCreate = z.object({
+  coverPicture: zUrlOrInfix,
+  coverPicturePreview: zUrlOrInfix.optional(),
 
-export interface UniqueTokenToCreate extends IToken<InfixOrUrlOrCidAndHash> {
-  encodedAttributes?: EncodedTokenAttributes
-}
+  attributesSchemaVersion: z.string().regex(/^(\d+\.)?(\d+\.)?(\*|\d+)$/).optional(),
+  attributesSchema: zCollectionAttributesSchema.optional(),
 
-export type DecodedAttributes = {
-  [K: number]: {
-    name: LocalizedStringWithDefault
-    value: LocalizedStringOrBoxedNumberWithDefault | Array<LocalizedStringOrBoxedNumberWithDefault>
-    type: AttributeType
-    isArray: boolean
-    rawValue: EncodedTokenAttributeValue | string | Array<string>
-    isEnum: boolean
-  }
-}
+  image: zCollectionSchemaMediaItem,
+  imagePreview: zCollectionSchemaMediaItem.optional(),
+  file: zCollectionSchemaMediaItem.optional(),
+  video: zCollectionSchemaMediaItem.optional(),
+  audio: zCollectionSchemaMediaItem.extend({
+    format: z.string().optional(),
+    isLossless: z.boolean().optional(),
+  }).optional(),
+  spatialObject: zCollectionSchemaMediaItem.extend({
+    format: z.string().optional(),
+  }).optional(),
 
-export type DecodedInfixOrUrlOrCidAndHash = InfixOrUrlOrCidAndHash & { fullUrl: string | null }
+  defaultPermission: zTokenPropertyPermission.optional(),
+})
 
-export interface UniqueTokenDecoded extends IToken<DecodedInfixOrUrlOrCidAndHash> {
-  tokenId: number
-  collectionId: number
-  owner: CrossAccountId | null
-  nestingParentToken?: {
-    collectionId: number
-    tokenId: number
-  }
-  attributes: DecodedAttributes
-  erc721Metadata?: {
-    metadata: ERC721Metadata
-    tokenURI: string
-  }
-}
+export type UniqueCollectionSchemaToCreate = z.infer<typeof zUniqueCollectionSchemaToCreate>
 
-export type DecodingImageLinkOptions = {
-  imageUrlTemplate?: string
-  dummyImageFullUrl?: string
-}
+export const zCollectionSchemaDecoded = zUniqueCollectionSchemaToCreate.omit({
+  coverPicture: true,
+  coverPicturePreview: true,
+}).extend({
+  collectionId: z.number(),
+  coverPicture: zUrlAndMaybeInfix,
+  coverPicturePreview: zUrlAndMaybeInfix.optional(),
+  oldProperties: z.object({
+    _old_schemaVersion: z.string().optional(),
+    _old_offchainSchema: z.string().optional(),
+    _old_constOnChainSchema: z.string().optional(),
+    _old_variableOnChainSchema: z.string().optional(),
+  }).optional(),
+  baseURI: z.string().optional(),
+})
 
-export type ERC721MetadataAttribute = {
-  trait_type: string
-  value: string | number
-}
+export type UniqueCollectionSchemaDecoded = z.infer<typeof zCollectionSchemaDecoded>
 
-export type ERC721Metadata = {
-  name: string
-  description: string
-  image: string
-  attributes: ERC721MetadataAttribute[]
-}
+export const zUniqueTokenToCreate = z.object({
+  name: zLocalizedStringWithDefault.optional(),
+  description: zLocalizedStringWithDefault.optional(),
+  image: zUrlOrInfix,
+  imagePreview: zUrlOrInfix.optional(),
+  file: zUrlOrInfix.optional(),
+  video: zUrlOrInfix.optional(),
+  audio: zUrlOrInfix.optional(),
+  spatialObject: zUrlOrInfix.optional(),
+  encodedAttributes: zEncodedTokenAttributes.optional(),
+})
+
+export type UniqueTokenToCreate = z.infer<typeof zUniqueTokenToCreate>
+
+export const zDecodedAttributes = z.record(z.number(), z.object({
+  name: zLocalizedStringWithDefault,
+  value: z.union([
+    zLocalizedStringOrBoxedNumberWithDefault,
+    z.array(zLocalizedStringOrBoxedNumberWithDefault),
+  ]),
+  type: zAttributeType,
+  isArray: z.boolean(),
+  rawValue: z.union([
+    zEncodedNumberAttributeValue,
+    z.string(),
+    z.array(z.string()),
+  ]),
+  isEnum: z.boolean(),
+}))
+
+export type DecodedAttributes = z.infer<typeof zDecodedAttributes>
+
+export const zCrossAccountId = z.union([
+  z.object({
+    Substrate: z.string(),
+    Ethereum: z.never().optional(),
+  }),
+  z.object({
+    Substrate: z.never().optional(),
+    Ethereum: z.string(),
+  }),
+])
+
+export const zDecodingImageLinkOptions = z.object({
+  imageUrlTemplate: z.string().optional(),
+  dummyImageFullUrl: z.string().optional(),
+})
+
+export const zERC721MetadataAttribute = z.object({
+  trait_type: z.string(),
+  value: z.union([z.string(), z.number()]),
+})
+
+export type ERC721MetadataAttribute = z.infer<typeof zERC721MetadataAttribute>
+
+export const zERC721Metadata = z.object({
+  name: z.string(),
+  description: z.string(),
+  image: z.string(),
+  attributes: z.array(zERC721MetadataAttribute),
+})
+
+export type ERC721Metadata = z.infer<typeof zERC721Metadata>
+
+export const zUniqueTokenDecoded = z.object({
+  name: zLocalizedStringWithDefault.optional(),
+  description: zLocalizedStringWithDefault.optional(),
+
+  image: zUrlAndMaybeInfix,
+  imagePreview: zUrlAndMaybeInfix.optional(),
+  file: zUrlAndMaybeInfix.optional(),
+  video: zUrlAndMaybeInfix.optional(),
+  audio: zUrlAndMaybeInfix.optional(),
+  spatialObject: zUrlAndMaybeInfix.optional(),
+
+  tokenId: z.number(),
+  collectionId: z.number(),
+  owner: z.nullable(zCrossAccountId),
+  nestingParentToken: z.object({collectionId: z.number(), tokenId: z.number(),}).optional(),
+  attributes: zDecodedAttributes,
+  erc721Metadata: z.object({
+    metadata: zERC721Metadata,
+    tokenURI: z.string(),
+  }),
+})
+
+export type UniqueTokenDecoded = z.infer<typeof zUniqueTokenDecoded>

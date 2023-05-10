@@ -1,6 +1,4 @@
-
-export type CrossAccountId = { Substrate: string } & { Ethereum?: never } | { Ethereum: string } & { Substrate?: never }
-
+export type CrossAccountId = { Substrate: string, Ethereum?: never } | { Ethereum: string, Substrate?: never }
 
 export interface TokenPropertyPermission {
   mutable: boolean

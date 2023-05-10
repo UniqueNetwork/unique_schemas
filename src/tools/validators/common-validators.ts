@@ -1,29 +1,15 @@
-import {ValidationError} from "../../types";
+import {ValidationError, zUrlOrInfix} from '../../types';
 import {TokenPropertyPermissionObject} from "../../unique_types";
 import {
   BoxedNumberWithDefault,
-  InfixOrUrlOrCidAndHash,
+  UrlOrInfix,
+  UrlAndMaybeInfix,
   LocalizedStringWithDefault,
   URL_TEMPLATE_INFIX,
 } from "../../types";
 import {getKeys} from "../../tsUtils";
 import {Semver} from "../../semver";
 import {LANG_REGEX} from "./constants";
-
-export const isPlainObject = (obj: any, varName: string): obj is Object => {
-  if (typeof obj !== 'object')
-    throw new ValidationError(`${varName} is not an object, got ${typeof obj}: ${obj}`)
-  if (obj === null)
-    throw new ValidationError(`${varName} is a null, should be valid object`)
-  if (obj instanceof Map)
-    throw new ValidationError(`${varName} is a Map, should be plain object`)
-  if (obj instanceof Set)
-    throw new ValidationError(`${varName} is a Set, should be plain object`)
-  if (Array.isArray(obj))
-    throw new ValidationError(`${varName} is an array, should be plain object`)
-
-  return true
-}
 
 export const validateNumber = (num: any, shouldBeInteger: boolean, varName: string): num is number => {
   if (typeof num !== 'number' || isNaN(num)) {
@@ -137,36 +123,10 @@ export const validateBoxedNumberWithDefault = (dict: BoxedNumberWithDefault, sho
   return true
 }
 
-export const validateUrlTemplateString = (str: any, varName: string): str is string => {
-  const prefix = `TemplateUrlString is not valid, ${varName}`
-  if (typeof str !== 'string')
-    throw new ValidationError(`${prefix} is not a string, got ${str}`)
-  if (str.indexOf(URL_TEMPLATE_INFIX) < 0)
-    throw new ValidationError(`${prefix} doesn't contain "${URL_TEMPLATE_INFIX}", got ${str}`)
-  return true
-}
 
-export const validateUrlWithHashObject = (obj: any, varName: string): obj is InfixOrUrlOrCidAndHash => {
-  isPlainObject(obj, varName)
 
-  const keysAmount = ['urlInfix', 'url', 'ipfsCid']
-    .map(field => Number(typeof obj[field] === 'string'))
-    .reduce((prev, curr) => {
-      return prev + curr
-    }, 0)
-
-  if (keysAmount !== 1) {
-    throw new ValidationError(`${varName} should have one and only one of "urlInfix" or "url" or "ipfsCid" string fields, got ${JSON.stringify(obj)}`)
-  }
-
-  if (typeof obj.url === 'string') {
-    validateURL(obj.url, `${varName}.url`)
-  }
-
-  if (obj.hasOwnProperty('hash'))
-    validateFieldByType(obj, 'hash', 'string', false, varName)
-
-  return true
+export const validateUrlWithHashObject = (obj: any, varName: string): obj is UrlOrInfix => {
+  return ValidationError.throwIfZodValidationFailed(varName, zUrlOrInfix.safeParse(obj))
 }
 
 export const validateFieldByType = <T extends object>(obj: T, key: keyof T, type: string, optional: boolean, varName: string): boolean => {
