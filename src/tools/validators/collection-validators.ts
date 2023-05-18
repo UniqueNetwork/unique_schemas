@@ -9,6 +9,7 @@ import {
   StringAttributeTypes,
   UniqueCollectionSchemaToCreate, ValidationError
 } from "../../types";
+import {Royalties} from '@unique-nft/utils/royalties'
 
 import {
   validateAndParseSemverString,
@@ -177,6 +178,11 @@ export const validateUniqueCollectionSchema = <C extends UniqueCollectionSchemaT
     validateUrlTemplateString(schema.spatialObject.urlTemplate, 'spatialObject')
 
     validateFieldByType(schema.spatialObject, 'format', 'string', true, 'spatialObject')
+  }
+
+
+  if (schema.hasOwnProperty('royalties')) {
+    Royalties.validate(schema.royalties)
   }
 
   return true

@@ -1,4 +1,4 @@
-import { UniqueRoyaltyPart, RoyaltyType } from '../src/tools/royalties'
+import { UniqueRoyaltyPart, RoyaltyType } from '@unique-nft/utils/royalties'
 
 type Sample = {
   decoded: UniqueRoyaltyPart

@@ -1,5 +1,6 @@
 import {getEnumValues} from "./tsUtils";
 import {CrossAccountId} from "./unique_types";
+import {UniqueRoyaltyPartToEncode} from "@unique-nft/utils/royalties";
 
 export class ValidationError extends TypeError {
   constructor(message: string) {
@@ -90,6 +91,8 @@ export interface UniqueCollectionSchemaToCreate {
   attributesSchemaVersion?: string
   attributesSchema?: CollectionAttributesSchema
 
+  royalties?: UniqueRoyaltyPartToEncode[]
+
   image: {
     urlTemplate: string
   }
@@ -137,6 +140,7 @@ export type UniqueCollectionSchemaDecoded =
 interface IToken<GenericInfixUrlOrCidWithHash> {
   name?: LocalizedStringWithDefault
   description?: LocalizedStringWithDefault
+  royalties?: UniqueRoyaltyPartToEncode[]
   image: GenericInfixUrlOrCidWithHash
   imagePreview?: GenericInfixUrlOrCidWithHash
   file?: GenericInfixUrlOrCidWithHash

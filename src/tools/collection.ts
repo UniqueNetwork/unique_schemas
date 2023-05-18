@@ -3,10 +3,20 @@ import {converters2Layers, decodeTokenUrlOrInfixOrCidWithHashField, DecodingResu
 import {getKeys} from '../tsUtils'
 import {validateCollectionTokenPropertyPermissions, validateUniqueCollectionSchema} from './validators'
 import {PropertiesArray, CollectionTokenPropertyPermissions, TokenPropertyPermissionObject} from '../unique_types'
+import {Royalties} from '@unique-nft/utils/royalties'
 
 export const encodeCollectionSchemaToProperties = (schema: UniqueCollectionSchemaToCreate): PropertiesArray => {
   validateUniqueCollectionSchema(schema)
-  return converters2Layers.objectToProperties(schema)
+  const properties = converters2Layers.objectToProperties(schema)
+
+  if (schema.royalties) {
+    properties.push({
+      key: 'royalties',
+      value: Royalties.encode(schema.royalties)
+    })
+  }
+
+  return properties
 }
 
 export const unpackCollectionSchemaFromProperties = (properties: PropertiesArray): any => {
@@ -87,6 +97,7 @@ export const generateTokenPropertyPermissionsFromCollectionSchema = (schema: Uni
   const permissions: CollectionTokenPropertyPermissions = [
     generateDefaultTPPObjectForKey('n'), // name
     generateDefaultTPPObjectForKey('d'), // description
+    generateDefaultTPPObjectForKey('royalties'), // royalties
   ]
 
   generateDefaultTPPsForInfixOrUrlOrCidAndHashObject(permissions, 'i')     // image url, urlInfix, ipfsCid and hash (i.u, i.i, i.c, i.h)

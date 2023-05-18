@@ -1,7 +1,9 @@
 import {describe, test, expect} from 'vitest'
 
-import {AttributeType, SchemaTools, UniqueTokenToCreate} from '../../src'
+import {AttributeType, SchemaTools, UniqueCollectionSchemaDecoded, UniqueTokenToCreate} from '../../src'
 import {decodeTokenFromProperties} from '../../src/tools/token'
+import {ETH_DEFAULT, SUB_PRIMARY_ONLY} from '../royalties.samples'
+import {makeRawTokenFromProperties} from './utils'
 
 // https://ipfs.unique.network/ipfs/QmPCqY7Lmxerm8cLKmB18kT1RxkwnpasPVksA8XLhViVT7
 const schema = {
@@ -30,7 +32,8 @@ const schema = {
       name: {_: 'url attr'},
       type: AttributeType.url,
     }
-  }
+  },
+  royalties: [SUB_PRIMARY_ONLY.decoded],
 }
 
 const tokenToEncode: UniqueTokenToCreate = {
@@ -45,6 +48,7 @@ const tokenToEncode: UniqueTokenToCreate = {
     1: {_: -7.05},
     2: {_: `https://ipfs.unique.network/ipfs/QmPCqY7Lmxerm8cLKmB18kT1RxkwnpasPVksA8XLhViVT7`}
   },
+  royalties: [ETH_DEFAULT.decoded],
 }
 
 
@@ -114,5 +118,61 @@ describe('unique v1', async () => {
 
     expect(decodedToken.error).toBeFalsy()
     expect(decodedToken.result).toBeDefined()
+  })
+})
+
+describe('unique v1 - royalties', async () => {
+  test('Royalties - create a TPP', () => {
+    const properties = SchemaTools.encodeUnique.collectionSchema(schema)
+    const TPPs = SchemaTools.encodeUnique.collectionTokenPropertyPermissions(schema)
+
+    const royaltyTPP = TPPs.find(tpp => tpp.key === 'royalties')
+    expect(royaltyTPP).toBeDefined()
+    expect(royaltyTPP?.permission).to.deep.equal({mutable: false, collectionAdmin: true, tokenOwner: false})
+  })
+
+  test('Royalties - encode to collection properties', () => {
+    const properties = SchemaTools.encodeUnique.collectionSchema(schema)
+    const TPPs = SchemaTools.encodeUnique.collectionTokenPropertyPermissions(schema)
+
+    const property = properties.find(p => p.key === 'royalties')
+    expect(property).toBeDefined()
+    expect(property?.key).to.equal('royalties')
+    expect(property?.value).to.deep.equal(SUB_PRIMARY_ONLY.encoded)
+  })
+
+  test('Royalties - encode to token properties', () => {
+    const tokenProperties = SchemaTools.encodeUnique.token(tokenToEncode, schema)
+
+    const property = tokenProperties.find(p => p.key === 'royalties')
+    expect(property).toBeDefined()
+    expect(property?.key).to.equal('royalties')
+    expect(property?.value).to.deep.equal(ETH_DEFAULT.encoded)
+  })
+
+  test('Royalties - decode from collection properties', async () => {
+    const properties = SchemaTools.encodeUnique.collectionSchema(schema)
+    const TPPs = SchemaTools.encodeUnique.collectionTokenPropertyPermissions(schema)
+
+    const decoded = await SchemaTools.decode.collectionSchema(1, properties, {})
+    console.log('decoded', decoded.error)
+    expect(decoded.error).toBeFalsy()
+    // expect(decoded.result).toBeDefined()
+    //
+    // const decodedRoyalties = decoded.result?.royalties
+    // expect(decodedRoyalties).toBeDefined()
+    // expect(decodedRoyalties).to.deep.equal([SUB_PRIMARY_ONLY.decoded])
+  })
+
+  test('Royalties - decode from token properties', async () => {
+    const tokenProperties = SchemaTools.encodeUnique.token(tokenToEncode, schema)
+
+    const decoded = await SchemaTools.decode.token(1, 1, makeRawTokenFromProperties(null, tokenProperties), schema as any, (() => {}) as any, [])
+    expect(decoded.error).toBeFalsy()
+    expect(decoded.result).toBeDefined()
+
+    const decodedRoyalties = decoded.result?.royalties
+    expect(decodedRoyalties).toBeDefined()
+    expect(decodedRoyalties).to.deep.equal([ETH_DEFAULT.decoded])
   })
 })

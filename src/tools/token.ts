@@ -22,6 +22,7 @@ import {
 import {Address} from '@unique-nft/utils/address'
 import {getCid, isCID, isIpfsLink, isIpfsUrl} from './ipfs'
 import {DEFAULT_IPFS_GATEWAYS} from 'src/constants'
+import {Royalties} from '@unique-nft/utils/royalties'
 
 const addUrlObjectToTokenProperties = (properties: PropertiesArray, prefix: string, source: InfixOrUrlOrCidAndHash) => {
   if (typeof source.urlInfix === 'string') {
@@ -66,6 +67,13 @@ export const encodeTokenToProperties = (token: UniqueTokenToCreate, schema: Uniq
   if (schema.video && token.video) addUrlObjectToTokenProperties(properties, 'v', token.video)
   if (schema.audio && token.audio) addUrlObjectToTokenProperties(properties, 'au', token.audio)
   if (schema.spatialObject && token.spatialObject) addUrlObjectToTokenProperties(properties, 'so', token.spatialObject)
+
+  if (token.royalties) {
+    properties.push({
+      key: 'royalties',
+      value: Royalties.encode(token.royalties)
+    })
+  }
 
   return properties
 }

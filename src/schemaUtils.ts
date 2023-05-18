@@ -4,17 +4,20 @@ import {
   DecodedInfixOrUrlOrCidAndHash,
   InfixOrUrlOrCidAndHash,
   URL_TEMPLATE_INFIX,
-} from "./types";
-import {safeJsonParseStringOrHexString} from "./tsUtils";
+} from './types';
+import {safeJsonParseStringOrHexString} from './tsUtils';
 
 const convert2LayerObjectToProperties = <T extends object>(obj: T, separator: string): PropertiesArray => {
-  if (typeof obj !== "object" || obj === null) {
+  if (typeof obj !== 'object' || obj === null) {
     throw new Error(`Object is not valid: ${obj}`)
   }
 
   const collectionProperties: PropertiesArray = []
 
   for (let key in obj) {
+
+    if (key === 'royalties') continue
+
     const value = obj[key]
     if (
       typeof value === 'object' &&
@@ -42,6 +45,8 @@ export const convertPropertyArrayTo2layerObject = <T extends object>(properties:
   const obj: any = {}
 
   for (let {key, value} of properties) {
+    if (key === 'royalties') continue
+
     const keyParts = key.split(separator)
     const length = keyParts.length
     if (length === 1) {
@@ -68,7 +73,9 @@ export const converters2Layers = {
   }
 }
 
-export const decodeTokenUrlOrInfixOrCidWithHashField = <U extends { urlTemplate?: string }>(obj: InfixOrUrlOrCidAndHash, urlTemplateObj: U | undefined): DecodedInfixOrUrlOrCidAndHash => {
+export const decodeTokenUrlOrInfixOrCidWithHashField = <U extends {
+  urlTemplate?: string
+}>(obj: InfixOrUrlOrCidAndHash, urlTemplateObj: U | undefined): DecodedInfixOrUrlOrCidAndHash => {
   const result: DecodedInfixOrUrlOrCidAndHash = {
     ...obj,
     fullUrl: null

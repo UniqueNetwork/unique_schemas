@@ -12,6 +12,7 @@ import {ValidationError} from '../types'
 import * as token from './token'
 import {validateUrlTemplateStringSafe} from './validators'
 import {IFetch, safeJsonParseStringOrHexString} from '../tsUtils'
+import {Royalties} from '@unique-nft/utils/royalties'
 
 type UpDataStructsTokenData = any
 
@@ -35,26 +36,38 @@ export const parseImageLinkOptions = (options?: DecodingImageLinkOptions): Requi
   }
 }
 
-
 export const universallyDecodeCollectionSchema = async (collectionId: number, properties: PropertiesArray, flags: CollectionFlags, options?: DecodingImageLinkOptions): Promise<DecodingResult<UniqueCollectionSchemaDecoded>> => {
   const schemaNameProp = properties.find(({key}) => key === 'schemaName')?.value || null
   const schemaName = typeof schemaNameProp === 'string' ? safeJsonParseStringOrHexString<string>(schemaNameProp) : null
   const isOldSchema = !!properties.find(({key}) => key === '_old_schemaVersion')
   const isERC721Metadata = flags.erc721metadata === true
 
+  let decoded: DecodingResult<UniqueCollectionSchemaDecoded> | null = null
+
   if (isOldSchema) {
     const imageLinkOptions = parseImageLinkOptions(options)
-    return await oldSchema.decodeOldSchemaCollection(collectionId, properties, imageLinkOptions)
+    decoded = await oldSchema.decodeOldSchemaCollection(collectionId, properties, imageLinkOptions)
   } else if (schemaName === COLLECTION_SCHEMA_NAME.unique) {
-    return await collection.decodeUniqueCollectionFromProperties(collectionId, properties)
+    decoded = await collection.decodeUniqueCollectionFromProperties(collectionId, properties)
   } else if (isERC721Metadata) {
-    return collection.decodeUniqueCollectionFromERC721Metadata(collectionId, properties)
+    decoded = collection.decodeUniqueCollectionFromERC721Metadata(collectionId, properties)
+  } else {
+    return {
+      result: null,
+      error: new ValidationError(`Unknown collection schema`)
+    }
   }
 
-  return {
-    result: null,
-    error: new ValidationError(`Unknown collection schema`)
+  const encodedRoyalties = properties.find((p) => p.key === 'royalties')?.value
+  if (decoded.result && encodedRoyalties) {
+    try {
+      decoded.result.royalties = Royalties.decode(encodedRoyalties)
+    } catch (e) {
+      // ignore
+    }
   }
+
+  return decoded
 }
 
 export const universallyDecodeToken = async (collectionId: number, tokenId: number, rawToken: UpDataStructsTokenData, schema: UniqueCollectionSchemaDecoded, fetch: IFetch, ipfsGateways: string[], options?: DecodingImageLinkOptions): Promise<DecodingResult<UniqueTokenDecoded>> => {
@@ -66,13 +79,15 @@ export const universallyDecodeToken = async (collectionId: number, tokenId: numb
   }
   const humanizedToken: HumanizedNftToken = rawToken.toHuman() as HumanizedNftToken
 
+  let decoded: DecodingResult<UniqueTokenDecoded> | null = null
+
   if (schema.schemaName === COLLECTION_SCHEMA_NAME.unique) {
-    return await token.decodeTokenFromProperties(collectionId, tokenId, humanizedToken, schema)
+    decoded = await token.decodeTokenFromProperties(collectionId, tokenId, humanizedToken, schema)
   } else if (schema.schemaName === COLLECTION_SCHEMA_NAME.old) {
     const imageLinkOptions = parseImageLinkOptions(options)
-    return await oldSchema.decodeOldSchemaToken(collectionId, tokenId, rawToken, schema, imageLinkOptions)
+    decoded = await oldSchema.decodeOldSchemaToken(collectionId, tokenId, rawToken, schema, imageLinkOptions)
   } else if (schema.schemaName === COLLECTION_SCHEMA_NAME.ERC721Metadata) {
-    return token.decodeTokenFromERC721Metadata(
+    decoded = await token.decodeTokenFromERC721Metadata(
       collectionId,
       tokenId,
       humanizedToken,
@@ -80,10 +95,21 @@ export const universallyDecodeToken = async (collectionId: number, tokenId: numb
       fetch,
       ipfsGateways
     )
+  } else {
+    return {
+      result: null,
+      error: new ValidationError(`unable to parse: collection schemaName is unknown (passed ${schema.schemaName}`)
+    }
   }
 
-  return {
-    result: null,
-    error: new ValidationError(`unable to parse: collection schemaName is unknown (passed ${schema.schemaName}`)
+  const encodedRoyalties = humanizedToken.properties.find((p: {key: string, value: string}) => p.key === 'royalties')?.value
+  if (encodedRoyalties && decoded.result) {
+    try {
+      decoded.result.royalties = Royalties.decode(encodedRoyalties)
+    } catch (e) {
+      // ignore
+    }
   }
+
+  return decoded
 }
