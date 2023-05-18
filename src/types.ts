@@ -1,5 +1,5 @@
 import {getEnumValues} from './tsUtils'
-import {z} from 'zod'
+import {z, ZodObject} from 'zod'
 
 export class ValidationError extends TypeError {
   constructor(message: string) {
@@ -19,6 +19,11 @@ export class ValidationError extends TypeError {
     return true
   }
 }
+
+export const zPropertyKey = z.string().regex(/^[\w.-]+$/)
+
+export const zSemVer = z.string().regex(/^\d+\.\d+\.\d+$/)
+
 
 export const URL_TEMPLATE_INFIX = <const>'{infix}'
 
@@ -56,10 +61,10 @@ export enum AttributeType {
 export const zAttributeType = z.nativeEnum(AttributeType)
 
 export const NumberAttributeTypes = [
-  AttributeType.number, AttributeType.integer, AttributeType.float, AttributeType.boolean, AttributeType.timestamp,
+  AttributeType.number, AttributeType.integer, AttributeType.float, AttributeType.timestamp,
 ]
 export const IntegerAttributeTypes = [
-  AttributeType.integer, AttributeType.boolean, AttributeType.timestamp,
+  AttributeType.integer, AttributeType.timestamp,
 ]
 export const StringAttributeTypes = [
   AttributeType.string, AttributeType.url, AttributeType.isoDate, AttributeType.time, AttributeType.colorRgba,
@@ -75,10 +80,9 @@ export type BoxedNumberWithDefault = z.infer<typeof zBoxedNumberWithDefault>
 
 export const LANGUAGE_CODE_REGEX = /^[A-Za-z]{2,4}([_-][A-Za-z]{4})?([_-]([A-Za-z]{2}|[0-9]{3}))?$/
 
-export const zLocalizedStringWithDefault = z.union([
-  z.record(z.string().regex(LANGUAGE_CODE_REGEX), z.string()),
+export const zLocalizedStringWithDefault =
   z.object({_: z.string()})
-])
+    .and(z.record(z.string().regex(LANGUAGE_CODE_REGEX), z.string()))
 
 export type LocalizedStringWithDefault = z.infer<typeof zLocalizedStringWithDefault>
 
@@ -94,7 +98,7 @@ export const zAttributeSchema = z.object({
   optional: z.boolean().optional(),
   isArray: z.boolean().optional(),
   type: zAttributeType,
-  enumValues: z.record(z.number(), zLocalizedStringOrBoxedNumberWithDefault).optional(),
+  enumValues: z.record(zLocalizedStringOrBoxedNumberWithDefault).optional(),
 })
 
 export type AttributeSchema = z.infer<typeof zAttributeSchema>
@@ -114,30 +118,42 @@ export const zEncodedNumberAttributeValue = z.union([
 
 export type EncodedTokenAttributeValue = z.infer<typeof zEncodedNumberAttributeValue>
 
-export const zEncodedTokenAttributes = z.record(z.number(), zEncodedNumberAttributeValue)
+export const zEncodedTokenAttributes = z.record(zEncodedNumberAttributeValue)
 export type EncodedTokenAttributes = z.infer<typeof zEncodedTokenAttributes>
 
-export const zCollectionAttributesSchema = z.record(z.number(), zAttributeSchema)
+export const zCollectionAttributesSchema = z.record(zAttributeSchema)
 export type CollectionAttributesSchema = z.infer<typeof zCollectionAttributesSchema>
 
 export const zCollectionSchemaMediaItem = z.object({
   urlTemplate: z.string(),
 })
 
-const zTokenPropertyPermission = z.object({
-  mutable: z.boolean().optional(),
-  collectionAdmin: z.boolean().optional(),
-  tokenOwner: z.boolean().optional(),
+export const zTokenPropertyPermission = z.object({
+  mutable: z.boolean(),
+  collectionAdmin: z.boolean(),
+  tokenOwner: z.boolean(),
 })
 
+
+export const zCollectionTokenPropertyPermission = z.object({
+  key: zPropertyKey,
+  permission: zTokenPropertyPermission,
+})
+
+
 export const zUniqueCollectionSchemaToCreate = z.object({
+  schemaName: z.string().min(3).max(64),
+  schemaVersion: zSemVer,
+
   coverPicture: zUrlOrInfix,
   coverPicturePreview: zUrlOrInfix.optional(),
 
-  attributesSchemaVersion: z.string().regex(/^(\d+\.)?(\d+\.)?(\*|\d+)$/).optional(),
+  attributesSchemaVersion: zSemVer.optional(),
   attributesSchema: zCollectionAttributesSchema.optional(),
 
-  image: zCollectionSchemaMediaItem,
+  baseUrl: z.string().url().optional(),
+
+  image: zCollectionSchemaMediaItem.optional(),
   imagePreview: zCollectionSchemaMediaItem.optional(),
   file: zCollectionSchemaMediaItem.optional(),
   video: zCollectionSchemaMediaItem.optional(),
@@ -186,7 +202,7 @@ export const zUniqueTokenToCreate = z.object({
 
 export type UniqueTokenToCreate = z.infer<typeof zUniqueTokenToCreate>
 
-export const zDecodedAttributes = z.record(z.number(), z.object({
+export const zDecodedAttributes = z.record(z.object({
   name: zLocalizedStringWithDefault,
   value: z.union([
     zLocalizedStringOrBoxedNumberWithDefault,
@@ -259,3 +275,8 @@ export const zUniqueTokenDecoded = z.object({
 })
 
 export type UniqueTokenDecoded = z.infer<typeof zUniqueTokenDecoded>
+
+export type DecodingImageLinkOptions = {
+  imageUrlTemplate?: string
+  dummyImageFullUrl?: string
+}

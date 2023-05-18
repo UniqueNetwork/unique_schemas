@@ -1,7 +1,11 @@
-import {COLLECTION_SCHEMA_NAME, UniqueCollectionSchemaDecoded, UniqueCollectionSchemaToCreate} from '../types'
+import {
+  UniqueCollectionSchemaDecoded,
+  UniqueCollectionSchemaToCreate,
+  ValidationError, zCollectionTokenPropertyPermission, zTokenPropertyPermission
+} from '../types'
 import {converters2Layers, decodeTokenUrlOrInfixOrCidWithHashField, DecodingResult} from '../schemaUtils'
 import {getKeys} from '../tsUtils'
-import {validateCollectionTokenPropertyPermissions, validateUniqueCollectionSchema} from './validators'
+import {validateUniqueCollectionSchema} from './validators'
 import {PropertiesArray, CollectionTokenPropertyPermissions, TokenPropertyPermissionObject} from '../unique_types'
 
 export const encodeCollectionSchemaToProperties = (schema: UniqueCollectionSchemaToCreate): PropertiesArray => {
@@ -42,12 +46,11 @@ export const decodeUniqueCollectionFromERC721Metadata = (collectionId: number, p
     const baseURI = properties.find((p) => p.key === 'baseURI')?.value
 
     const result: UniqueCollectionSchemaDecoded = {
-      schemaName: COLLECTION_SCHEMA_NAME.ERC721Metadata,
+      schemaName: 'ERC721Metadata',
       schemaVersion: '1.0.0',
       collectionId,
       coverPicture: {
         url: '',
-        fullUrl: null,
       },
       image: {
         urlTemplate: '{infix}',
@@ -118,11 +121,7 @@ export const generateTokenPropertyPermissionsFromCollectionSchema = (schema: Uni
   }
 
   if (options?.overwriteTPPs) {
-    const {overwriteTPPs} = options
-
-    if (!validateCollectionTokenPropertyPermissions(overwriteTPPs)) {
-      throw new Error(`overwriteTPPs are not valid`)
-    }
+    const overwriteTPPs = zCollectionTokenPropertyPermission.array().parse(options.overwriteTPPs)
 
     for (const tpp of overwriteTPPs) {
       const index = permissions.findIndex(permission => permission.key === tpp.key)

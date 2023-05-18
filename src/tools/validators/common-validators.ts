@@ -1,4 +1,11 @@
-import {ValidationError, zUrlOrInfix} from '../../types';
+import {
+  AttributeType, IntegerAttributeTypes, NumberAttributeTypes, StringAttributeTypes,
+  ValidationError,
+  zBoxedNumberWithDefault,
+  zLocalizedStringWithDefault,
+  zTokenPropertyPermission,
+  zUrlOrInfix
+} from '../../types';
 import {TokenPropertyPermissionObject} from "../../unique_types";
 import {
   BoxedNumberWithDefault,
@@ -10,6 +17,7 @@ import {
 import {getKeys} from "../../tsUtils";
 import {Semver} from "../../semver";
 import {LANG_REGEX} from "./constants";
+import {z, ZodError} from 'zod'
 
 export const validateNumber = (num: any, shouldBeInteger: boolean, varName: string): num is number => {
   if (typeof num !== 'number' || isNaN(num)) {
@@ -18,35 +26,6 @@ export const validateNumber = (num: any, shouldBeInteger: boolean, varName: stri
   if (shouldBeInteger && num !== Math.round(num)) {
     throw new ValidationError(`${varName} is not an integer number, got ${num}`)
   }
-  return true
-}
-
-export const validateAttributeKey = (num: string | number | symbol, varName: string): boolean => {
-  let isOk = false
-
-  if (typeof num === 'number') {
-    isOk = num === Math.round(num);
-  } else if (typeof num === 'string') {
-    const parsed = parseFloat(num);
-
-    isOk = !isNaN(parsed) && parsed === Math.round(parsed);
-  }
-
-  if (!isOk) {
-    throw new ValidationError(`${varName}["${String(num)}"] is not a valid number key, got ${String(num)}`)
-  }
-
-  return true
-}
-
-const validateLangCode = (key: string | number | symbol, varName: string): boolean => {
-  if (typeof key !== 'string') {
-    throw new ValidationError(`${varName}: key ${String(key)} should be a string`)
-  }
-  if (!key.match(LANG_REGEX)) {
-    throw new ValidationError(`${varName} should be a valid Language code string (like 'co' or 'ca-ES'), got ${key}`)
-  }
-
   return true
 }
 
@@ -71,95 +50,28 @@ export const validateAndParseSemverString = (str: string, varName: string): Semv
 }
 
 export const validateLocalizedStringWithDefault = (dict: any, canHaveLocalization: boolean, varName: string): dict is LocalizedStringWithDefault => {
-  isPlainObject(dict, varName)
+  return ValidationError.throwIfZodValidationFailed(varName, zLocalizedStringWithDefault.safeParse(dict))
 
-  const keys = getKeys(dict)
-
-  if (keys.length === 0) {
-    throw new ValidationError(`${varName} is an empty object, should have at least one key`)
-  }
-
-  if (!dict.hasOwnProperty('_')) {
-    throw new ValidationError(`${varName} is doesn't contain field "_"`)
-  }
-
-  if (typeof dict._ !== 'string') {
-    throw new ValidationError(`${varName}._ is not a string`)
-  }
+  const keys = getKeys(zLocalizedStringWithDefault.parse(dict))
 
   if (!canHaveLocalization && keys.length !== 1) {
     throw new ValidationError(`${varName} cannot have localization strings, got object with keys ["${keys.join('", "')}"]`)
-  }
-
-  for (const key in dict) {
-    if (key === '_') continue
-
-    validateLangCode(key, `${varName}["${key}"]`)
-    if (typeof dict[key] !== 'string') {
-      throw new ValidationError(`${varName}["${key}"] should be a string, got ${typeof key}: ${key}`)
-    }
   }
 
   return true
 }
 
 export const validateBoxedNumberWithDefault = (dict: BoxedNumberWithDefault, shouldBeInteger: boolean, varName: string): dict is BoxedNumberWithDefault => {
-  isPlainObject(dict, varName)
-
-  if (getKeys(dict).length === 0) {
-    throw new ValidationError(`${varName} is an empty object, should have at least one key`)
-  }
-
-  if (!dict.hasOwnProperty('_')) {
-    throw new ValidationError(`${varName} is doesn't contain field "_"`)
-  }
-
-  validateNumber(dict._, shouldBeInteger, `${varName}._`)
-
-  for (const key in dict) {
-    if (key === '_') continue
-  }
-
-  return true
+  return ValidationError.throwIfZodValidationFailed(varName, zBoxedNumberWithDefault.safeParse(dict))
 }
-
 
 
 export const validateUrlWithHashObject = (obj: any, varName: string): obj is UrlOrInfix => {
   return ValidationError.throwIfZodValidationFailed(varName, zUrlOrInfix.safeParse(obj))
 }
 
-export const validateFieldByType = <T extends object>(obj: T, key: keyof T, type: string, optional: boolean, varName: string): boolean => {
-  isPlainObject(obj, varName)
-
-  if (optional) {
-    if (obj.hasOwnProperty(key) && typeof obj[key] !== type) {
-      throw new ValidationError(`${varName}.${String(key)} is passed and not a ${type}, got ${typeof obj[key]}: ${obj[key]}`)
-    }
-  } else {
-    if (!obj.hasOwnProperty(key)) {
-      throw new ValidationError(`${varName}.${String(key)} not found in ${varName}`)
-    }
-    if (typeof obj[key] !== type) {
-      throw new ValidationError(`${varName}.${String(key)} should be a ${type}, got ${typeof obj[key]}: ${obj[key]}`)
-    }
-  }
-  return true
-}
-
 export const validateSingleTokenPropertyPermission = (tpp: any, varName: string): tpp is TokenPropertyPermissionObject => {
-  isPlainObject(tpp, varName)
-  validateFieldByType(tpp, 'key', 'string', false, varName)
-
-  const permissionVarName = `${varName}.permission`
-
-  isPlainObject(tpp.permission, permissionVarName)
-
-  validateFieldByType(tpp.permission, 'mutable', 'boolean', false, permissionVarName)
-  validateFieldByType(tpp.permission, 'collectionAdmin', 'boolean', false, permissionVarName)
-  validateFieldByType(tpp.permission, 'tokenOwner', 'boolean', false, permissionVarName)
-
-  return true
+  return ValidationError.throwIfZodValidationFailed(varName, zTokenPropertyPermission.safeParse(tpp))
 }
 
 export const checkSafeFactory = <T extends (...args: any) => any>(fn: T) => {
@@ -173,7 +85,58 @@ export const checkSafeFactory = <T extends (...args: any) => any>(fn: T) => {
   return returnFn as T
 }
 
-export const validateUrlTemplateStringSafe = checkSafeFactory(validateUrlTemplateString)
+export const validateAttributeValueVsAttributeType = (value: any, type: AttributeType, varName: string): value is typeof type => {
+  ValidationError.throwIfZodValidationFailed(varName, z.object({}).safeParse(value))
+
+  if (NumberAttributeTypes.includes(type)) {
+    const shouldBeInteger = IntegerAttributeTypes.includes(type)
+    ValidationError.throwIfZodValidationFailed(
+      varName,
+      zBoxedNumberWithDefault.refine(({_}) => {
+        return shouldBeInteger ? (_ === Math.round(_)) : true
+      }).safeParse(value)
+    )
+
+    return true
+  }
+
+  if (type === AttributeType.boolean) {
+    ValidationError.throwIfZodValidationFailed(varName, z.boolean().safeParse(value))
+  }
+
+  if (StringAttributeTypes.includes(type)) {
+    const canHaveLocalization = type === AttributeType.string
+    ValidationError.throwIfZodValidationFailed(varName, zLocalizedStringWithDefault.safeParse(value))
+
+    if (type === AttributeType.isoDate) {
+      ValidationError.throwIfZodValidationFailed(varName, z.string().datetime({ offset: true }).safeParse(value._))
+    }
+
+    if (type === AttributeType.time && isNaN(new Date('1970-01-01T' + value._).valueOf())) {
+      ValidationError.throwIfZodValidationFailed(
+        varName,
+        z.string().regex(/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/, 'should be a valid time (hh:mm or hh:mm:ss)').safeParse(value._)
+      )
+    }
+
+    if (type === AttributeType.colorRgba) {
+      ValidationError.throwIfZodValidationFailed(
+        varName,
+        z.string().regex(/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/, 'should be a valid rgb or rgba color (like "#ff00ff" or "#ff00ff00")').safeParse(value._)
+      )
+    }
+
+    return true
+  }
+
+  throw new ValidationError(`${varName}: unknown attribute type: ${type}`)
+}
+
+
+export const validateUrlTemplateString = (str: string, varName: string): boolean => {
+  return ValidationError.throwIfZodValidationFailed(varName, z.string().url().includes('{infix}').safeParse(str))
+}
+
 
 export const validateURLSafe = checkSafeFactory(validateURL)
 

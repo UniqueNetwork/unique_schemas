@@ -1,7 +1,6 @@
 import {CollectionFlags, HumanizedNftToken, PropertiesArray,} from '../unique_types'
 import {DecodingResult} from '../schemaUtils'
 import {
-  COLLECTION_SCHEMA_NAME,
   DecodingImageLinkOptions,
   UniqueCollectionSchemaDecoded,
   UniqueTokenDecoded,
@@ -10,7 +9,7 @@ import * as oldSchema from './oldSchemaDecoder'
 import * as collection from './collection'
 import {ValidationError} from '../types'
 import * as token from './token'
-import {validateUrlTemplateStringSafe} from './validators'
+import {validateURLSafe} from './validators'
 import {IFetch, safeJsonParseStringOrHexString} from '../tsUtils'
 
 type UpDataStructsTokenData = any
@@ -21,7 +20,7 @@ const DEFAULT_DUMMY_IMAGE_FULL_URL = `https://ipfs.unique.network/ipfs/QmPCqY7Lm
 
 export const parseImageLinkOptions = (options?: DecodingImageLinkOptions): Required<DecodingImageLinkOptions> => {
   let imageUrlTemplate = DEFAULT_IMAGE_URL_TEMPLATE
-  if (validateUrlTemplateStringSafe(options?.imageUrlTemplate, 'options.imageUrlTemplate')) {
+  if (validateURLSafe(options?.imageUrlTemplate, 'options.imageUrlTemplate')) {
     imageUrlTemplate = options!.imageUrlTemplate
   }
 

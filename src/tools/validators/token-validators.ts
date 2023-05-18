@@ -6,7 +6,7 @@ import {
 } from "../../types";
 import {getKeys} from "../../tsUtils";
 import {ValidationError} from "../../types";
-import {validateValueVsAttributeType} from "./collection-validators";
+import {validateAttributeValueVsAttributeType} from "./collection-validators";
 import {
   validateAndParseSemverString,
   validateLocalizedStringWithDefault,
@@ -80,7 +80,7 @@ export const validateUniqueToken = <T, C extends UniqueCollectionSchemaToCreate 
         })
       } else {
         attrs.forEach((attrElem: any, index: number) => {
-          validateValueVsAttributeType(attrElem, schema.type, `${varName}[${index}]`)
+          validateAttributeValueVsAttributeType(attrElem, schema.type, `${varName}[${index}]`)
         })
       }
     }
