@@ -1,6 +1,6 @@
 import {getEnumValues} from "./tsUtils";
 import {CrossAccountId} from "./unique_types";
-import {UniqueRoyaltyPartToEncode} from "@unique-nft/utils/royalties";
+import {UniqueRoyaltyPart, UniqueRoyaltyPartToEncode} from "@unique-nft/utils/royalties";
 
 export class ValidationError extends TypeError {
   constructor(message: string) {
@@ -122,7 +122,7 @@ export interface UniqueCollectionSchemaToCreate {
 }
 
 export type UniqueCollectionSchemaDecoded =
-  Omit<UniqueCollectionSchemaToCreate, 'schemaName' | 'coverPicture' | 'coverPicturePreview'>
+  Omit<UniqueCollectionSchemaToCreate, 'schemaName' | 'coverPicture' | 'coverPicturePreview' | 'royalties'>
   & {
   schemaName: COLLECTION_SCHEMA_NAME
   collectionId: number
@@ -135,12 +135,12 @@ export type UniqueCollectionSchemaDecoded =
     _old_variableOnChainSchema?: string
   }
   baseURI?: string
+  royalties?: UniqueRoyaltyPart[]
 }
 
 interface IToken<GenericInfixUrlOrCidWithHash> {
   name?: LocalizedStringWithDefault
   description?: LocalizedStringWithDefault
-  royalties?: UniqueRoyaltyPartToEncode[]
   image: GenericInfixUrlOrCidWithHash
   imagePreview?: GenericInfixUrlOrCidWithHash
   file?: GenericInfixUrlOrCidWithHash
@@ -151,6 +151,7 @@ interface IToken<GenericInfixUrlOrCidWithHash> {
 
 export interface UniqueTokenToCreate extends IToken<InfixOrUrlOrCidAndHash> {
   encodedAttributes?: EncodedTokenAttributes
+  royalties?: UniqueRoyaltyPartToEncode[]
 }
 
 export type DecodedAttributes = {
@@ -179,6 +180,7 @@ export interface UniqueTokenDecoded extends IToken<DecodedInfixOrUrlOrCidAndHash
     metadata: ERC721Metadata
     tokenURI: string
   }
+  royalties?: UniqueRoyaltyPart[]
 }
 
 export type DecodingImageLinkOptions = {
