@@ -256,6 +256,8 @@ export const extractAttributesFromERC721Metadata = (
 ): DecodedAttributes => {
   let attributes: DecodedAttributes = {}
 
+  if (!metadata?.attributes?.length) return attributes;
+
   const keys = [...new Set(metadata.attributes.map((a) => a.trait_type))]
 
   keys.forEach((key, index) => {
