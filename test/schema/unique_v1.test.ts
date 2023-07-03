@@ -15,6 +15,9 @@ const schema = {
   image: {
     urlTemplate: `https://ipfs.unique.network/ipfs/{infix}`,
   },
+  imagePreview: {
+    urlTemplate: `https://ipfs.unique.network/ipfs/{infix}`,
+  },
   file: {
     urlTemplate: `https://ipfs.unique.network/ipfs/{infix}`,
   },
