@@ -152,7 +152,7 @@ export const validateUniqueCollectionSchema = <C extends UniqueCollectionSchemaT
 
   if (schema.hasOwnProperty('imagePreview')) {
     isPlainObject(schema.imagePreview, 'imagePreview')
-    validateUrlTemplateString(schema.video.urlTemplate, 'imagePreview')
+    validateUrlTemplateString(schema.imagePreview.urlTemplate, 'imagePreview')
   }
 
   if (schema.hasOwnProperty('file')) {
