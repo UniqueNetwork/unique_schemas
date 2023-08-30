@@ -1,0 +1,43 @@
+{
+  name: 'Lofi Guy #022',
+  created_by: 'Lofi Guy NFT',
+  external_url: 'lofiguynft.com',
+  description: 'Lofi Guy #022  \nBeat Title - Roscoes Wetsuit',
+  attributes: [
+    {
+      trait_type: 'Visual Artist',
+      value: 'Cody A Banks',
+    },
+    {
+      trait_type: 'Music Producer',
+      value: 'L.Dre',
+    },
+    {
+      trait_type: 'Rarity',
+      value: '20',
+    },
+  ],
+  animation_details: {
+    bytes: 30263895,
+    format: 'MP4',
+    duration: 23,
+    sha256: '29818f053e7ea512feba088737c65ceeaec147838821222fa9ea378b235ebedd',
+    width: 1000,
+    height: 1000,
+    codecs: [
+      'H.264',
+      'AAC',
+    ],
+  },
+  animation: 'https://arweave.net/CzMLMOAGYvEPT0-xhoxUyc3iF4enmV42boyHgx4qp9A',
+  animation_url: 'https://arweave.net/CzMLMOAGYvEPT0-xhoxUyc3iF4enmV42boyHgx4qp9A',
+  image_details: {
+    bytes: 3303696,
+    format: 'GIF',
+    sha256: 'a2c34d3e0477873523e044947c41e2c8312d6a9b0eb375ddd0a881fc89032d11',
+    width: 1000,
+    height: 1000,
+  },
+  image: 'https://arweave.net/74APWxh_OsWbJf-aOfnE-Yfzl_CNPuyvGjwl7UH1nOo',
+  image_url: 'https://arweave.net/74APWxh_OsWbJf-aOfnE-Yfzl_CNPuyvGjwl7UH1nOo',
+}
