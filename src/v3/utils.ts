@@ -3,6 +3,8 @@ import {sha256} from '@noble/hashes/sha256'
 import {bytesToHex} from '@noble/hashes/utils'
 import type {IImageDetails, IMediaDetails} from './token_schema.zod'
 
+import type Sdk from '@unique-nft/sdk'
+
 export type IGetDetailsOptions<T> = {
   details?: T,
   dontRetrieveSha256?: boolean,
@@ -112,3 +114,11 @@ console.log(await getImageDetailsOnline(FULL_RES_IMAGE))
 // console.log(await getVideoDetailsOnline(ANIMATION_URL))
 // console.log(await getAudioDetailsOnline(MP3_URL))
 // console.log(await getImageDetailsOnline(SVG_URL))
+
+export const getLinkToCollection = (sdk: Sdk, collectionId: number) => {
+  return `${sdk.options.baseUrl}/collections?collectionId=${collectionId}`
+}
+
+export const getLinkToToken = (sdk: Sdk, collectionId: number, tokenId: number) => {
+  return `${sdk.options.baseUrl}/tokens?collectionId=${collectionId}&tokenId=${tokenId}`
+}

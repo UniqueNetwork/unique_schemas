@@ -1,13 +1,12 @@
 import {ethers, Wallet} from 'ethers'
 import {CollectionHelpersFactory, parseEthersV5TxReceipt, UniqueNFTFactory} from '@unique-nft/solidity-interfaces'
-import {UniqueNFT} from '@unique-nft/solidity-interfaces/ethers/UniqueNFT'
 import * as dotenv from 'dotenv'
-import {ICollectionSchema} from "./collection_schema.zod";
-import {IImageDetails, IMediaDetails, ITokenSchema} from "./token_schema.zod";
-import {uploadFile} from "./minio";
-import {getLinkToCollection, getLinkToToken} from "../utils";
-import Sdk from "@unique-nft/sdk";
-import {Address} from "@unique-nft/utils";
+import {ICollectionSchema} from './collection_schema.zod'
+import {IImageDetails, IMediaDetails, ITokenSchema} from './token_schema.zod'
+import {uploadFile} from './minio'
+import {getLinkToCollection, getLinkToToken} from './utils'
+import Sdk from '@unique-nft/sdk'
+import {Address} from '@unique-nft/utils'
 
 dotenv.config()
 
