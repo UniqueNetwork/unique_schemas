@@ -3,6 +3,7 @@
   "version": "0.0.5",
   "description": "Unique Network schemas encoding, validating and decoding toolkit",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "clean": "rimraf dist && mkdirp dist",
     "build": "npm run clean && tsup --config configs/tsup.config.ts && npm run copy_files",
@@ -11,7 +12,8 @@
     "release": "dotenv -e ./configs/.release.env -- release-it --config ./configs/.release-it.js --github.release",
     "generate_types": "create-validator-ts \"src/v2/types.ts\" --additionalProperties",
     "testrun": "vitest run",
-    "test": "vitest"
+    "test": "vitest",
+    "opensea-decoding": "tsx src/v3/opensea/decoding/main.ts"
   },
   "repository": {
     "type": "git",
@@ -50,7 +52,7 @@
     "vitest": "^0.29.3"
   },
   "dependencies": {
-    "@unique-nft/sdk": "^0.2.20",
+    "@unique-nft/sdk": "^0.2.21",
     "@unique-nft/solidity-interfaces": "^0.57.1",
     "@unique-nft/utils": "^0.3.5",
     "ajv": "^8.12.0",
@@ -61,6 +63,7 @@
     "mime": "^3.0.0",
     "opensea-js": "^6.1.9",
     "protobufjs": "^7.2.1",
+    "tsx": "^3.12.8",
     "uuid": "^9.0.0",
     "zod": "^3.22.2"
   }
