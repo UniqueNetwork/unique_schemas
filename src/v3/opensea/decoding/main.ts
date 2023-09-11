@@ -13,7 +13,7 @@ async function main() {
   })
   console.log(JSON.stringify(token, null, 2));
 
-  const withMediaDetails = false;
+  const withMediaDetails = true;
 
   const openseaExample = await decoding(token, withMediaDetails);
 

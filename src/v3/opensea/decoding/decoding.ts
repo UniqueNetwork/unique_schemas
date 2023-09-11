@@ -62,11 +62,11 @@ const decodeAdditionalMedia = async (
   let details: any;
   if (withDetails) {
     if (type === MediaType.VIDEO) {
-      details = getVideoDetailsOnline(data.fullUrl);
+      details = await getVideoDetailsOnline(data.fullUrl);
     } else if (type === MediaType.AUDIO) {
-      details = getAudioDetailsOnline(data.fullUrl);
+      details = await getAudioDetailsOnline(data.fullUrl);
     } else if (type === MediaType.IMAGE) {
-      details = getImageDetailsOnline(data.fullUrl);
+      details = await getImageDetailsOnline(data.fullUrl);
     }
   }
 
