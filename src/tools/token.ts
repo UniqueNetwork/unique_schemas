@@ -78,7 +78,7 @@ export const encodeTokenToProperties = (token: UniqueTokenToCreate, schema: Uniq
   return properties
 }
 
-const fillTokenFieldByKeyPrefix = <T extends UniqueTokenToCreate>(token: T, properties: PropertiesArray, prefix: string, tokenField: keyof T) => {
+const fillTokenFieldByKeyPrefix = <T extends UniqueTokenToCreate>(token: T, properties: PropertiesArray, prefix: string, tokenField: keyof T, schema: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaDecoded) => {
   const keysMatchingPrefix = [`${prefix}.i`, `${prefix}.u`, `${prefix}.c`, `${prefix}.h`]
   if (properties.some(({key}) => keysMatchingPrefix.includes(key))) token[tokenField] = {} as any
 
@@ -95,6 +95,14 @@ const fillTokenFieldByKeyPrefix = <T extends UniqueTokenToCreate>(token: T, prop
 
   const hashProperty = properties.find(({key}) => key === keysMatchingPrefix[3])
   if (hashProperty) field.hash = hashProperty.value
+
+
+  const urlTemplate = ((schema as any)[tokenField])?.urlTemplate as string | undefined
+  if (!token[tokenField] && typeof urlTemplate === 'string') {
+    token[tokenField] = {
+      url: urlTemplate.replace('{infix}', '')
+    } as any
+  }
 }
 
 
@@ -117,12 +125,12 @@ export const unpackEncodedTokenFromProperties = <T extends UniqueTokenToCreate>(
     }
   }
 
-  fillTokenFieldByKeyPrefix(token, properties, 'i', 'image')
-  fillTokenFieldByKeyPrefix(token, properties, 'p', 'imagePreview')
-  fillTokenFieldByKeyPrefix(token, properties, 'f', 'file')
-  fillTokenFieldByKeyPrefix(token, properties, 'v', 'video')
-  fillTokenFieldByKeyPrefix(token, properties, 'au', 'audio')
-  fillTokenFieldByKeyPrefix(token, properties, 'so', 'spatialObject')
+  fillTokenFieldByKeyPrefix(token, properties, 'i', 'image', schema)
+  fillTokenFieldByKeyPrefix(token, properties, 'p', 'imagePreview', schema)
+  fillTokenFieldByKeyPrefix(token, properties, 'f', 'file', schema)
+  fillTokenFieldByKeyPrefix(token, properties, 'v', 'video', schema)
+  fillTokenFieldByKeyPrefix(token, properties, 'au', 'audio', schema)
+  fillTokenFieldByKeyPrefix(token, properties, 'so', 'spatialObject', schema)
 
   const attributeProperties = properties.filter(({key}) => key.startsWith('a.'))
   if (attributeProperties.length) {
