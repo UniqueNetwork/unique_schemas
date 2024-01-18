@@ -1,0 +1,149 @@
+{
+  version: '2.0.0',
+  name: 'My first token',
+  description: 'My first token description',
+  image: 'https://bafkreigtgjjhukwsha4r3oxstegsozsvwbpoyqdes6bd62iptb7wz7qki4.ipfs.nftstorage.link/',
+  image_details: {
+    format: 'png',
+    width: 960,
+    height: 720,
+    bytes: 106293,
+    type: 'image',
+    sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47'
+  },
+  media: [
+    {
+      type: 'audio',
+      url: 'https://bafybeib6mj7xucopbcthisz6pvkxhro5lylpjlin33df33rxbibbrprmlq.ipfs.nftstorage.link/',
+      details: {
+        format: 'mp3',
+        bytes: 3971657,
+        duration: 198.556735,
+        codecs: [
+          'mp3'
+        ],
+        type: 'audio',
+        sha256: '519d73239d62f067f51cebadc040a769c17a56b9e9640f640c545383ffd19312'
+      },
+      tag: 'beat',
+      name: 'SecondHand - Aretha'
+    },
+    {
+      type: 'image',
+      url: 'https://bafkreigtgjjhukwsha4r3oxstegsozsvwbpoyqdes6bd62iptb7wz7qki4.ipfs.nftstorage.link/',
+      name: 'Main Character',
+      tag: 'character',
+      details: {
+        format: 'png',
+        width: 960,
+        height: 720,
+        bytes: 106293,
+        type: 'image',
+        sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47'
+      },
+      composing: {
+        layer: 0,
+        order_in_layer: 0,
+        offset_x: 0,
+        offset_y: 0,
+        opacity: 1,
+        rotation: 0,
+        scale: 1,
+        tag: 'main_character'
+      },
+    }
+  ],
+  attributes: [
+    {
+      trait_type: 'Color',
+      value: 'red'
+    },
+    {
+      trait_type: 'Amount',
+      value: 100
+    },
+    {
+      trait_type: 'Start time',
+      value: '2021-01-01T00:00:00Z'
+    },
+    {
+      trait_type: 'Some additional trait not in collection schema and it is ok',
+      value: 'some value'
+    }
+  ],
+  onchain_fields: [
+    'media.beat'
+  ],
+  animation_url: 'https://bafybeicjljjghgaalajvzctfbph5cff45l55fwqpxuhtkaaxssvshi5alm.ipfs.nftstorage.link/',
+  animation_details: {
+    format: 'mp4',
+    width: 960,
+    height: 720,
+    bytes: 2248862,
+    duration: 16.191667,
+    codecs: [
+      'h264',
+      'aac'
+    ],
+    type: 'video',
+    sha256: '98c3c998cec0bf4c52327dda020d06c2e954427d1c67f651c52385742870da1e'
+  },
+  youtube_url: 'https://www.youtube.com/watch?v=jfKfPfyJRdk',
+  created_by: 'James Bond',
+  background_color: '#00D6FF',
+  external_url: 'https://achorusofehoes.wordpress.com/',
+  additional_media: [
+    {
+      url: 'https://bafybeib6mj7xucopbcthisz6pvkxhro5lylpjlin33df33rxbibbrprmlq.ipfs.nftstorage.link/',
+      details: {
+        format: 'mp3',
+        bytes: 3971657,
+        duration: 198.556735,
+        codecs: [
+          'mp3'
+        ],
+        type: 'audio',
+        sha256: '519d73239d62f067f51cebadc040a769c17a56b9e9640f640c545383ffd19312'
+      },
+      tag: 'beat',
+      name: 'SecondHand - Aretha'
+    }
+  ],
+  image_stacking: {
+    image_url: 'https://bafkreigtgjjhukwsha4r3oxstegsozsvwbpoyqdes6bd62iptb7wz7qki4.ipfs.nftstorage.link/',
+    image_details: {
+      format: 'png',
+      width: 960,
+      height: 720,
+      bytes: 106293,
+      type: 'image',
+      sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47'
+    },
+    layer: 0,
+    order_in_layer: 0,
+    offset_x: 0,
+    offset_y: 0,
+    opacity: 1,
+    rotation: 0,
+    scale: 1,
+    tag: 'background'
+  },
+  royalties: [
+    {
+      address: '0x7D73aDe1F0374CB86AA45Af07353fb314574C63f',
+      percent: 2.5
+    },
+    {
+      address: '5CFrzx2ottkJ5GbeS5kGmJRBKH9kEWcKgE9gAJVwAgfLs6ip',
+      percent: 0.333
+    }
+  ],
+  carbon_offsets: [
+    {
+      collection_id: 1,
+      token_id: 1,
+      co2_g: 1
+    }
+  ],
+  locale: 'en'
+}

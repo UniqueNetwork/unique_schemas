@@ -1,0 +1,171 @@
+{
+  version: '2.0.0',
+  name: 'Punk',
+  description: 'Token From Parent Collection [Character] (123) - Punk.',
+  image: 'https://bafkreigtgjjhukwsha4r3oxstegsozsvwbpoyqdes6bd62iptb7wz7qki4.ipfs.nftstorage.link/',
+  image_details: {
+    format: 'png',
+    width: 960,
+    height: 720,
+    bytes: 106293,
+    type: 'image',
+    sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47'
+  },
+  media: {
+    beat: {
+      type: 'audio',
+      url: 'https://bafybeib6mj7xucopbcthisz6pvkxhro5lylpjlin33df33rxbibbrprmlq.ipfs.nftstorage.link/',
+      name: 'SecondHand - Aretha',
+      details: {
+        format: 'mp3',
+        bytes: 3971657,
+        duration: 198.556735,
+        codecs: [
+          'mp3'
+        ],
+        type: 'audio',
+        sha256: '519d73239d62f067f51cebadc040a769c17a56b9e9640f640c545383ffd19312'
+      },
+    },
+  },
+  attributes: [
+    {
+      trait_type: 'Color',
+      value: 'red'
+    },
+    {
+      trait_type: 'Amount',
+      value: 100
+    },
+    {
+      trait_type: 'Start time',
+      value: '2021-01-01T00:00:00Z'
+    },
+    {
+      trait_type: 'Some additional trait not in collection schema and it is ok',
+      value: 'some value'
+    }
+  ],
+  animation_url: 'https://bafybeicjljjghgaalajvzctfbph5cff45l55fwqpxuhtkaaxssvshi5alm.ipfs.nftstorage.link/',
+  animation_details: {
+    format: 'mp4',
+    width: 960,
+    height: 720,
+    bytes: 2248862,
+    duration: 16.191667,
+    codecs: [
+      'h264',
+      'aac'
+    ],
+    type: 'video',
+    sha256: '98c3c998cec0bf4c52327dda020d06c2e954427d1c67f651c52385742870da1e'
+  },
+  youtube_url: 'https://www.youtube.com/watch?v=jfKfPfyJRdk',
+  created_by: 'James Bond',
+  background_color: '#00D6FF',
+  external_url: 'https://achorusofehoes.wordpress.com/',
+  royalties: [
+    {
+      address: '0x7D73aDe1F0374CB86AA45Af07353fb314574C63f',
+      percent: 2.5
+    },
+    {
+      address: '5CFrzx2ottkJ5GbeS5kGmJRBKH9kEWcKgE9gAJVwAgfLs6ip',
+      percent: 0.333
+    }
+  ],
+  composing: {
+    // assuming that parent collection - is collection with ID 123
+    root: {
+      tag: 'character',
+      type: 'image',
+      url: 'https://bafkreigtgjjhukwsha4r3oxstegsozsvwbpoyqdes6bd62iptb7wz7qki4.ipfs.nftstorage.link/',
+      name: 'Main Character',
+      hidden: true,
+      details: {
+        format: 'png',
+        width: 960,
+        height: 720,
+        bytes: 106293,
+        type: 'image',
+        sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47'
+      },
+      image_overlay_specs: {
+        layer: 0,
+        order_in_layer: 0,
+        offset: {
+          x: 0,
+          y: 0,
+        },
+        opacity: 1,
+        rotation: 0,
+        scale: {
+          x: 1,
+          y: 1,
+        },
+      },
+    },
+    slots: {
+      hat: {
+        collections: [124],
+        slot_for: 'character',
+        type: 'image',
+        mount_point: {
+          x: 100,
+          y: 150,
+        },
+        overrides: {
+          offset_x: {absolute: 100,},
+          offset_y: {relative: -20,},
+        },
+      },
+      background: {
+        collections: ['0x17C4E6453CC49AAaAEACA894E6D9683E0000007d'], // this address is for collection number 125
+        slot_for: 'character',
+        type: 'image',
+        defaults: {
+          offset_x: {
+            absolute: 0,
+          },
+          offset_y: {
+            absolute: 0,
+          },
+        },
+      },
+    },
+    mutator_reactions: {
+      smooth_hair: {
+        character: {
+          url: 'https://bafkreigtgjjhukwsha4r3oxstegsozsvwbpoyqdes6bd62iptb7wz7qki4.ipfs.nftstorage.link/',
+          details: {
+            format: 'png',
+            width: 960,
+            height: 720,
+            bytes: 106293,
+            type: 'image',
+            sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47'
+          },
+        }
+      },
+      wide_bruh: {
+        all: {
+          scale_x: 1.2,
+        }
+      },
+      huge_monkey: {
+        all: {
+          url: 'https://bafkreigtgjjhukwsha4r3oxstegsozsvwbpoyqdes6bd62iptb7wz7qki4.ipfs.nftstorage.link/',
+          details: {
+            format: 'png',
+            width: 960,
+            height: 720,
+            bytes: 106293,
+            type: 'image',
+            sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47'
+          },
+        },
+      },
+    },
+  },
+  locale: 'en'
+}
