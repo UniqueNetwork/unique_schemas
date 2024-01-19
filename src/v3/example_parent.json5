@@ -74,14 +74,13 @@
       percent: 0.333
     }
   ],
-  composing: {
+  customizing: {
     // assuming that parent collection - is collection with ID 123
-    root: {
+    self: {
       tag: 'character',
       type: 'image',
       url: 'https://bafkreigtgjjhukwsha4r3oxstegsozsvwbpoyqdes6bd62iptb7wz7qki4.ipfs.nftstorage.link/',
       name: 'Main Character',
-      hidden: true,
       details: {
         format: 'png',
         width: 960,
@@ -91,7 +90,7 @@
         sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47'
       },
       image_overlay_specs: {
-        layer: 0,
+        layer: 10,
         order_in_layer: 0,
         offset: {
           x: 0,
@@ -110,32 +109,28 @@
         collections: [124],
         slot_for: 'character',
         type: 'image',
-        mount_point: {
-          x: 100,
-          y: 150,
-        },
-        overrides: {
-          offset_x: {absolute: 100,},
-          offset_y: {relative: -20,},
+        image_overlay_specs: {
+          parent_mount_point: {
+            x: 100,
+            y: 150,
+          }
         },
       },
       background: {
         collections: ['0x17C4E6453CC49AAaAEACA894E6D9683E0000007d'], // this address is for collection number 125
         slot_for: 'character',
         type: 'image',
-        defaults: {
-          offset_x: {
-            absolute: 0,
-          },
-          offset_y: {
-            absolute: 0,
+        image_overlay_specs: {
+          offset: {
+            x: 0,
+            y: 0,
           },
         },
       },
     },
     mutator_reactions: {
       smooth_hair: {
-        character: {
+        self: {
           url: 'https://bafkreigtgjjhukwsha4r3oxstegsozsvwbpoyqdes6bd62iptb7wz7qki4.ipfs.nftstorage.link/',
           details: {
             format: 'png',
@@ -149,7 +144,8 @@
       },
       wide_bruh: {
         all: {
-          scale_x: 1.2,
+          scale: {x: 1.25},
+          crop: {x: 0.8, type: 'horizontal-central',}
         }
       },
       huge_monkey: {
@@ -166,6 +162,16 @@
         },
       },
     },
+    overrides: {
+      hat: {
+        image: {
+          offset: {
+            x: {absolute: 100},
+            y: {relative: -20},
+          }
+        }
+      },
+    }
   },
   locale: 'en'
 }

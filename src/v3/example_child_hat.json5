@@ -1,7 +1,7 @@
 {
   version: '2.0.0',
   name: 'Crown',
-  description: 'Token From Child Collection [Hats] (125) - Crown',
+  description: 'Token From Child Collection [Hats] (124) - Crown',
   image: 'https://bafkreigtgjjhukwsha4r3oxstegsozsvwbpoyqdes6bd62iptb7wz7qki4.ipfs.nftstorage.link/',
   image_details: {
     format: 'png',
@@ -11,19 +11,38 @@
     type: 'image',
     sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47'
   },
-  composing: {
-    // assuming that parent collection - is collection with ID 125
+  customizing: {
+    // assuming this collection is number 124 (hats)
     customizes: {
-      collections: [123], // assuming this collection is number 124
+      collections: [123], // assuming that parent collection - is collection with id 123 (characters)
     },
-  },
-  media: {
-
+    mutators: ['smooth_hair', 'wide_bruh'],
+    self: {
+      tag: 'hat',
+      type: 'image',
+      url: 'https://bafkreigtgjjhukwsha4r3oxstegsozsvwbpoyqdes6bd62iptb7wz7qki4.ipfs.nftstorage.link/',
+      name: 'Crown',
+      details: {
+        format: 'png',
+        width: 960,
+        height: 720,
+        bytes: 106293,
+        type: 'image',
+        sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47'
+      },
+      image_overlay_specs: {
+        layer: 20,
+        mount_point: {
+          x: 100,
+          y: 50,
+        }
+      },
+    }
   },
   attributes: [
     {
-      trait_type: 'Color',
-      value: 'red'
+      trait_type: 'Type',
+      value: 'Crown'
     },
     {
       trait_type: 'Size',
