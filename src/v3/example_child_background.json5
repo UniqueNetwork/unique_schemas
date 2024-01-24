@@ -16,23 +16,21 @@
     customizes: {
       collections: [123], // assuming that parent collection - is collection with id 123 (characters)
     },
-    mutators: ['smooth_hair', 'wide_bruh'],
     self: {
       tag: 'background',
       type: 'image',
       url: 'https://bafkreigtgjjhukwsha4r3oxstegsozsvwbpoyqdes6bd62iptb7wz7qki4.ipfs.nftstorage.link/',
-      name: 'Default Background',
-      image_overlay_specs: {
-        layer: 0,
-      },
-      details: {
-        format: 'png',
-        width: 960,
-        height: 720,
-        bytes: 106293,
-        type: 'image',
-        sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47'
-      },
+      placeholder: {
+        url: 'https://bafybeib6mj7xucopbcthisz6pvkxhro5lylpjlin33df33rxbibbrprmlq.ipfs.nftstorage.link/',
+        details: {
+          format: 'png',
+          width: 300,
+          height: 450,
+          bytes: 40999,
+          type: 'image',
+          sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47',
+        },
+      }
     }
   },
   attributes: [

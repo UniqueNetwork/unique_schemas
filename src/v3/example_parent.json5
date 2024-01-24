@@ -24,8 +24,19 @@
           'mp3'
         ],
         type: 'audio',
-        sha256: '519d73239d62f067f51cebadc040a769c17a56b9e9640f640c545383ffd19312'
+        sha256: '519d73239d62f067f51cebadc040a769c17a56b9e9640f640c545383ffd19312',
       },
+      thumbnail: {
+        url: 'https://bafybeib6mj7xucopbcthisz6pvkxhro5lylpjlin33df33rxbibbrprmlq.ipfs.nftstorage.link/',
+        details: {
+          format: 'png',
+          width: 100,
+          height: 100,
+          bytes: 4099,
+          type: 'image',
+          sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47',
+        },
+      }
     },
   },
   attributes: [
@@ -103,6 +114,17 @@
           y: 1,
         },
       },
+      placeholder: {
+        url: 'https://bafybeib6mj7xucopbcthisz6pvkxhro5lylpjlin33df33rxbibbrprmlq.ipfs.nftstorage.link/',
+        details: {
+          format: 'png',
+          width: 300,
+          height: 450,
+          bytes: 40999,
+          type: 'image',
+          sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47',
+        },
+      },
     },
     slots: {
       hat: {
@@ -113,7 +135,7 @@
           parent_mount_point: {
             x: 100,
             y: 150,
-          }
+          },
         },
       },
       background: {
@@ -138,15 +160,14 @@
             height: 720,
             bytes: 106293,
             type: 'image',
-            sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47'
+            sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47',
           },
-        }
+        },
       },
       wide_bruh: {
         all: {
           scale: {x: 1.25},
-          crop: {x: 0.8, type: 'horizontal-central',}
-        }
+        },
       },
       huge_monkey: {
         all: {
@@ -157,7 +178,7 @@
             height: 720,
             bytes: 106293,
             type: 'image',
-            sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47'
+            sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47',
           },
         },
       },
@@ -168,10 +189,10 @@
           offset: {
             x: {absolute: 100},
             y: {relative: -20},
-          }
-        }
+          },
+        },
       },
-    }
+    },
   },
   locale: 'en'
 }

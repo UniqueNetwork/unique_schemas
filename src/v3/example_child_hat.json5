@@ -35,8 +35,19 @@
         mount_point: {
           x: 100,
           y: 50,
-        }
+        },
       },
+      placeholder: {
+        url: 'https://bafybeib6mj7xucopbcthisz6pvkxhro5lylpjlin33df33rxbibbrprmlq.ipfs.nftstorage.link/',
+        details: {
+          format: 'png',
+          width: 300,
+          height: 450,
+          bytes: 40999,
+          type: 'image',
+          sha256: 'd332527a2ad238391dbaf2990d276655b05eec406497823f690f987f6cfe0a47',
+        },
+      }
     }
   },
   attributes: [
