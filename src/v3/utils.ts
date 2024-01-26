@@ -1,7 +1,7 @@
 import Axios from 'axios'
 import {sha256} from '@noble/hashes/sha256'
 import {bytesToHex} from '@noble/hashes/utils'
-import type {IImageDetails, IMediaDetails} from './token_schema.zod'
+import type {IV2MediaType, IV2MediaDetails, IV2Media, IV2ImageDetails} from './schemaV2.zod'
 
 import type Sdk from '@unique-nft/sdk'
 
@@ -29,14 +29,14 @@ const getInfoFromShotstack = async (url: string): Promise<any> => {
   }
 }
 
-export const getImageDetailsOnline = async (url: string, options?: IGetDetailsOptions<IImageDetails>): Promise<IImageDetails> => {
+export const getImageDetailsOnline = async (url: string, options?: IGetDetailsOptions<IV2ImageDetails>): Promise<IV2ImageDetails> => {
   const {streams, format} = await getInfoFromShotstack(url)
   const stream = streams[0]
   if (!stream) {
     throw new Error('Remote ffprobe: no stream found')
   }
 
-  const details: IImageDetails = {
+  const details: IV2MediaDetails = {
     format: stream.codec_name,
     width: stream.width,
     height: stream.height,
@@ -52,7 +52,7 @@ export const getImageDetailsOnline = async (url: string, options?: IGetDetailsOp
   return details
 }
 
-export const getVideoDetailsOnline = async (url: string, options?: IGetDetailsOptions<IMediaDetails>): Promise<IMediaDetails> => {
+export const getVideoDetailsOnline = async (url: string, options?: IGetDetailsOptions<IV2MediaDetails>): Promise<IV2MediaDetails> => {
   const {streams, format} = await getInfoFromShotstack(url)
   const videoStream = streams.find((stream: any) => stream.codec_type === 'video')
   const audioStream = streams.find((stream: any) => stream.codec_type === 'audio')
@@ -61,7 +61,7 @@ export const getVideoDetailsOnline = async (url: string, options?: IGetDetailsOp
   }
   const formatNames = format.format_name.split(',')
 
-  const details: IMediaDetails = {
+  const details: IV2MediaDetails = {
     format: formatNames.includes('mp4') ? 'mp4' : formatNames[0],
     width: videoStream.width,
     height: videoStream.height,
@@ -79,14 +79,14 @@ export const getVideoDetailsOnline = async (url: string, options?: IGetDetailsOp
   return details
 }
 
-export const getAudioDetailsOnline = async (url: string, options?: IGetDetailsOptions<IMediaDetails>): Promise<IMediaDetails> => {
+export const getAudioDetailsOnline = async (url: string, options?: IGetDetailsOptions<IV2MediaDetails>): Promise<IV2MediaDetails> => {
   const {streams, format} = await getInfoFromShotstack(url)
   const audioStream = streams.find((stream: any) => stream.codec_type === 'audio')
   if (!audioStream) {
     throw new Error('No audio stream found')
   }
 
-  const details: IMediaDetails = {
+  const details: IV2MediaDetails = {
     format: format.format_name.split(',')[0],
     bytes: parseInt(format.size, 10),
     duration: parseFloat(format.duration),
@@ -109,7 +109,7 @@ const ANIMATION_URL = 'https://bafybeicjljjghgaalajvzctfbph5cff45l55fwqpxuhtkaax
 
 const FULL_RES_IMAGE = 'https://bafybeiedjjrn4q7h5zmxfc4jsmafn524s6w266v7se66avakl3tyu2asem.ipfs.nftstorage.link/'
 
-console.log(await getImageDetailsOnline(FULL_RES_IMAGE))
+// console.log(await getImageDetailsOnline(FULL_RES_IMAGE))
 // console.log(await getImageDetailsOnline(IMAGE_URL))
 // console.log(await getVideoDetailsOnline(ANIMATION_URL))
 // console.log(await getAudioDetailsOnline(MP3_URL))

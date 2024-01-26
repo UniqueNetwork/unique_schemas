@@ -46,6 +46,7 @@ const decodeSchema = (properties: Property[], options?: DecodingImageLinkOptions
   if (parsedVariableOnChainSchema && typeof parsedVariableOnChainSchema === 'object' && typeof parsedVariableOnChainSchema.collectionCover === 'string') {
     schema.cover.url = parsedVariableOnChainSchema.collectionCover
 
+
     imageUrlTemplate.replace('{infix}', parsedVariableOnChainSchema.collectionCover)
   } else if (offchainSchemaIsValidUrl) {
     const coverUrl = offchainSchema.replace('{id}', '1')

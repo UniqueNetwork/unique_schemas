@@ -183,13 +183,13 @@
         },
       },
     },
-    overrides: {
-      hat: {
-        image: {
-          offset: {
-            x: {absolute: 100},
-            y: {relative: -20},
-          },
+  },
+  customizing_overrides: {
+    hat: {
+      image: {
+        offset: {
+          x: {absolute: 100},
+          y: {relative: -20},
         },
       },
     },
