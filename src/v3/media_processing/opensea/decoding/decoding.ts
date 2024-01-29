@@ -1,13 +1,14 @@
 import {DecodedAttributeDto, TokenByIdResponse, UniqueRoyaltyPartDto} from "@unique-nft/sdk"
 import type {AdditionalMedia, Attribute, Royalty} from "./types"
 import {AttributeDisplayTypes} from "./types"
-import {getAudioDetailsOnline, getImageDetailsOnline, getVideoDetailsOnline} from "../../utils"
-import {IV2Media, IV2MediaType, IV2Token, zMedia, zMediaType} from '../../schemaV2.zod'
+import {getAudioDetailsOnline, getImageDetailsOnline, getVideoDetailsOnline} from "../../../utils"
+import {IV2Collection, IV2Media, IV2MediaType, IV2Token, zMedia, zMediaType} from '../../../schemaV2.zod'
 
 interface LocalizeObject {
   _?: string | number
   en?: string | number
 }
+
 const parseLocalizeObject = (data?: LocalizeObject): string => {
   if (data?._) return `${data?._}`
   if (data?.en) return `${data?.en}`
@@ -48,7 +49,7 @@ const parseAttributes = (token: TokenByIdResponse): Attribute[] => {
 
 const decodeAdditionalMedia = async (
   type: MediaType,
-  data?: {fullUrl?: string | null},
+  data?: { fullUrl?: string | null },
   withDetails?: boolean
 ): Promise<IV2Media | null> => {
   if (!data?.fullUrl) return null
@@ -72,7 +73,7 @@ const decodeAdditionalMedia = async (
   }
 }
 
-const decodeAllAdditionalMedia = async (token: TokenByIdResponse, withDetails: boolean): Promise<IV2Media>  => {
+const decodeAllAdditionalMedia = async (token: TokenByIdResponse, withDetails: boolean): Promise<IV2Media> => {
   const mediaList = (await Promise.all([
     decodeAdditionalMedia(zMediaType.enum.image, token.video, withDetails),
     decodeAdditionalMedia(zMediaType.enum.audio, token.audio, withDetails),
@@ -87,7 +88,7 @@ const decodeRoyalty = (royalty: UniqueRoyaltyPartDto): Royalty => {
   const decimals = +royalty.decimals
   return {
     address: royalty.address,
-    percent: value/Math.pow(10, decimals-2)
+    percent: value / Math.pow(10, decimals - 2)
   }
 }
 
@@ -105,7 +106,8 @@ const decodeRoyalties = (token: TokenByIdResponse): Royalty[] => {
   return royalties
 }
 
-export const decoding = async (token: TokenByIdResponse, withMediaDetails: boolean): Promise<IV2Token> => {
+export const decoding = async (options: any): Promise<IV2Token> => {
+
   const openseaExample = {
     version: '2.0.0',
     name: token.name?._ || '',
@@ -116,7 +118,7 @@ export const decoding = async (token: TokenByIdResponse, withMediaDetails: boole
     // preview_image_details:  undefined,
     // use_preview_as_main_image: undefined,
     attributes: parseAttributes(token),
-    animation_url: token.animat,
+    animation_url: token.animati,
     animation_details: undefined,
     youtube_url: undefined,
     created_by: undefined,

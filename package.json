@@ -13,7 +13,7 @@
     "generate_types": "create-validator-ts \"src/v2/types.ts\" --additionalProperties",
     "testrun": "vitest run",
     "test": "vitest",
-    "opensea-decoding": "tsx src/v3/opensea/decoding/main.ts"
+    "opensea-decoding": "tsx src/v3/media_processing/opensea/decoding/main.ts"
   },
   "repository": {
     "type": "git",
