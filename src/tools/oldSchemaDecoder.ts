@@ -21,6 +21,9 @@ import {ValidationError} from "../types";
 import {getEntries, getKeys, getValues, safeJSONParse} from "../tsUtils";
 import {StringUtils, Address} from "@unique-nft/utils";
 import {PropertiesArray} from "../unique_types";
+import {buildDictionaryFromPropertiesArray, safeJSONParseWithPossibleEmptyInput} from '../v3/utils'
+import {ProbablyDecodedProperty} from '../v3/types'
+import {parseImageLinkOptions} from './universal'
 
 
 const isOffchainSchemaAValidUrl = (offchainSchema: string | undefined): offchainSchema is string => {
@@ -29,11 +32,11 @@ const isOffchainSchemaAValidUrl = (offchainSchema: string | undefined): offchain
     offchainSchema.indexOf('{id}') >= 0
 }
 
-export const decodeOldSchemaCollection = async (collectionId: number, properties: PropertiesArray, options: Required<DecodingImageLinkOptions>): Promise<DecodingResult<UniqueCollectionSchemaDecoded>> => {
-  const {imageUrlTemplate, dummyImageFullUrl} = options
+export const decodeOldSchemaCollection = async (collectionId: number, properties: ProbablyDecodedProperty[], decodingImageLinkOptions?: DecodingImageLinkOptions): Promise<DecodingResult<UniqueCollectionSchemaDecoded>> => {
+  const {imageUrlTemplate, dummyImageFullUrl} = parseImageLinkOptions(decodingImageLinkOptions)
 
-  const propObj = properties.reduce((acc, {key, value}) => {
-    acc[key] = value;
+  const propObj = properties.reduce((acc, {key, value, valueHex}) => {
+    acc[key] = value ?? StringUtils.Utf8.hexStringToString(valueHex)
     return acc
   }, {} as Record<string, string>)
 
@@ -100,24 +103,22 @@ export const decodeOldSchemaCollection = async (collectionId: number, properties
       continue
     }
 
-    const options = !['string', 'number'].includes(field.type) && root.lookupEnum(field.type).options;
+    const options = !['string', 'number'].includes(field.type) && root.lookupEnum(field.type).options || {}
+    const values = !['string', 'number'].includes(field.type) && root.lookupEnum(field.type).values || {}
 
-    const parsedOptions: LocalizedStringWithDefault[] = options
-      ? getValues(options)
-        .map(v => safeJSONParse<{ en: string | undefined }>(v))
-        .filter(v => typeof v !== 'string' && typeof v.en === 'string')
-        .map(v => {
-          const result: any = {...(v as any)}
-          if (typeof result._ === 'string') return result
+    const rawValueToDecodedValueDict: Record<number, any> = {}
+    for (const [innerKey, realJSONStr] of Object.entries(options || {})) {
+      const numberedKey = values[innerKey] as number | undefined
+      if (typeof numberedKey !== 'number') continue
 
-          result._ = result.en || result[getKeys(result)[0]] || undefined
+      const realJSON = safeJSONParseWithPossibleEmptyInput(realJSONStr) as any
+      if (typeof realJSON === 'string') continue
 
-          if (typeof result._ !== 'string') return null
+      realJSON._ = realJSON._ || realJSON.en || realJSON[getKeys(realJSON)[0]] || null
+      if (typeof realJSON._ !== 'string') continue
 
-          return result;
-        })
-        .filter(v => !!v)
-      : []
+      rawValueToDecodedValueDict[numberedKey] = realJSON
+    }
 
     const attr: AttributeSchema = {
       type: AttributeType.string,
@@ -125,14 +126,8 @@ export const decodeOldSchemaCollection = async (collectionId: number, properties
       isArray: field.repeated,
       optional: !field.required,
     }
-    if (parsedOptions.length) {
-      attr.enumValues = parsedOptions.reduce(
-        (acc, el, index) => {
-          acc[index] = el
-          return acc
-        },
-        {} as { [K: number]: LocalizedStringWithDefault }
-      )
+    if (Object.keys(rawValueToDecodedValueDict).length > 0) {
+      attr.enumValues = rawValueToDecodedValueDict
     }
 
     attributesSchema[i++] = attr
@@ -151,8 +146,14 @@ export const decodeOldSchemaCollection = async (collectionId: number, properties
   return {result: schema, error: null}
 }
 
-//todo: replace rawToken type with humanized token after core team's fix
-export const decodeOldSchemaToken = async (collectionId: number, tokenId: number, rawToken: { owner: any, properties: any[] }, schema: UniqueCollectionSchemaDecoded, options: Required<DecodingImageLinkOptions>): Promise<DecodingResult<UniqueTokenDecoded>> => {
+export const decodeOldSchemaToken = async (
+  collectionId: number,
+  tokenId: number,
+  owner: string | undefined,
+  propertiesArray: ProbablyDecodedProperty[],
+  schema: UniqueCollectionSchemaDecoded,
+  decodingImageLinkOptions?: DecodingImageLinkOptions
+): Promise<DecodingResult<UniqueTokenDecoded>> => {
   const constOnchainSchema = schema.oldProperties?._old_constOnChainSchema
 
   if (!constOnchainSchema) {
@@ -174,25 +175,16 @@ export const decodeOldSchemaToken = async (collectionId: number, tokenId: number
     }
   }
 
-  if (!rawToken) {
+  if (!propertiesArray) {
     return {
       result: null,
-      error: new ValidationError(`parsing token with old schema: no token passed`)
+      error: new ValidationError(`parsing token with old schema: no token properties passed`)
     }
   }
 
-  const parsedToken: HumanizedNftToken = {
-    owner: rawToken.owner.toHuman() as CrossAccountId,
-    properties: rawToken.properties.map(property => {
-      return {
-        key: property.key.toHuman() as string,
-        value: property.value.toJSON() as string,
-        // valueH: property.value.toHuman() as string,
-      }
-    })
-  }
+  const props = buildDictionaryFromPropertiesArray(propertiesArray)
 
-  const constDataProp = parsedToken.properties.find(({key}) => key === '_old_constData')
+  const constDataProp = props._old_constData
   if (!constDataProp) {
     return {
       result: null,
@@ -200,7 +192,7 @@ export const decodeOldSchemaToken = async (collectionId: number, tokenId: number
     }
   }
 
-  const u8aToken = StringUtils.HexString.toU8a(constDataProp.value)
+  const u8aToken = StringUtils.HexString.toU8a(constDataProp.valueHex)
   let tokenDecoded: Message<{}> = {} as any
   let tokenDecodedHuman: Record<string, any> = {}
   let tokenDecodedWithRawValues: Array<{
@@ -290,7 +282,7 @@ export const decodeOldSchemaToken = async (collectionId: number, tokenId: number
   const offchainSchema = schema.oldProperties?._old_offchainSchema
 
 
-  const {imageUrlTemplate, dummyImageFullUrl} = options
+  const {imageUrlTemplate, dummyImageFullUrl} = parseImageLinkOptions(decodingImageLinkOptions)
 
   let image: DecodedInfixOrUrlOrCidAndHash = {
     url: dummyImageFullUrl,
@@ -320,13 +312,13 @@ export const decodeOldSchemaToken = async (collectionId: number, tokenId: number
   const decodedToken: UniqueTokenDecoded = {
     collectionId,
     tokenId,
-    owner: parsedToken.owner,
+    owner,
     image,
     attributes: tokenAttributesResult,
   }
 
-  if (parsedToken.owner.Ethereum && Address.is.nestingAddress(parsedToken.owner.Ethereum)) {
-    decodedToken.nestingParentToken = Address.nesting.addressToIds(parsedToken.owner.Ethereum)
+  if (owner && Address.is.nestingAddress(owner)) {
+    decodedToken.nestingParentToken = Address.nesting.addressToIds(owner)
   }
 
   return {

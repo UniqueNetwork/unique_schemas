@@ -8,8 +8,8 @@ import * as universal from './tools/universal'
 
 export const SchemaTools = {
   decode: {
-    collectionSchema: universal.universallyDecodeCollectionSchema,
-    token: universal.universallyDecodeToken
+    collectionSchema: universal.universallyDecodeCollectionSchemaV0OrV1ToIntermediateRepresentation,
+    token: universal.universallyDecodeTokenV0OrV1ToIntermediateRepresentation
   },
   encodeUnique: {
     collectionSchema: collection.encodeCollectionSchemaToProperties,

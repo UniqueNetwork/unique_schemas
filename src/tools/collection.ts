@@ -4,17 +4,18 @@ import {converters2Layers, decodeTokenUrlOrInfixOrCidWithHashField, DecodingResu
 import {getKeys} from '../tsUtils'
 import {validateCollectionTokenPropertyPermissions, validateUniqueCollectionSchema} from './validators'
 import {PropertiesArray, CollectionTokenPropertyPermissions, TokenPropertyPermissionObject} from '../unique_types'
+import {ProbablyDecodedProperty} from '../v3/types'
 
 export const encodeCollectionSchemaToProperties = (schema: UniqueCollectionSchemaToCreate): PropertiesArray => {
   validateUniqueCollectionSchema(schema)
   return converters2Layers.objectToProperties(schema)
 }
 
-export const unpackCollectionSchemaFromProperties = (properties: PropertiesArray): any => {
+export const unpackCollectionSchemaFromProperties = (properties: ProbablyDecodedProperty[]): any => {
   return converters2Layers.propertiesToObject(properties) as any
 }
 
-export const decodeUniqueCollectionFromProperties = async (collectionId: number, properties: PropertiesArray): Promise<DecodingResult<UniqueCollectionSchemaDecoded>> => {
+export const decodeUniqueCollectionFromProperties = async (collectionId: number, properties: ProbablyDecodedProperty[]): Promise<DecodingResult<UniqueCollectionSchemaDecoded>> => {
   try {
     const unpackedSchema: UniqueCollectionSchemaDecoded = unpackCollectionSchemaFromProperties(properties)
     validateUniqueCollectionSchema(unpackedSchema)
@@ -76,6 +77,10 @@ export const generateTokenPropertyPermissionsFromCollectionSchema = (schema: Uni
 
   if (schema.hasOwnProperty('spatialObject')) {
     generateDefaultTPPsForInfixOrUrlOrCidAndHashObject(permissions, 'so')   // spatialObject url, urlInfix, ipfsCid and hash (so.u, so.i, so.c, so.h)
+  }
+
+  if (schema.hasOwnProperty('file')) {
+    generateDefaultTPPsForInfixOrUrlOrCidAndHashObject(permissions, 'f')   // spatialObject url, urlInfix, ipfsCid and hash (so.u, so.i, so.c, so.h)
   }
 
   if (schema.attributesSchema) {

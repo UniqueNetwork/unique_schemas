@@ -113,6 +113,10 @@ export interface UniqueCollectionSchemaToCreate {
     urlTemplate?: UrlTemplateString
     format?: string
   }
+
+  file?: {
+    urlTemplate?: UrlTemplateString
+  }
 }
 
 export type UniqueCollectionSchemaDecoded =
@@ -137,6 +141,7 @@ interface IToken<GenericInfixUrlOrCidWithHash> {
   imagePreview?: GenericInfixUrlOrCidWithHash
   video?: GenericInfixUrlOrCidWithHash
   audio?: GenericInfixUrlOrCidWithHash
+  file?: GenericInfixUrlOrCidWithHash
   spatialObject?: GenericInfixUrlOrCidWithHash
 }
 
@@ -160,7 +165,7 @@ export type DecodedInfixOrUrlOrCidAndHash = InfixOrUrlOrCidAndHash & { fullUrl: 
 export interface UniqueTokenDecoded extends IToken<DecodedInfixOrUrlOrCidAndHash> {
   tokenId: number
   collectionId: number
-  owner: CrossAccountId
+  owner?: string,
   nestingParentToken?: {
     collectionId: number
     tokenId: number

@@ -1,4 +1,3 @@
-import {HumanizedNftToken, PropertiesArray} from '../unique_types'
 import {
   DecodedAttributes,
   EncodedTokenAttributes,
@@ -8,13 +7,20 @@ import {
   UniqueTokenDecoded,
   UniqueTokenToCreate
 } from '../types'
-import {validateLocalizedStringWithDefaultSafe, validateUniqueToken} from './validators'
-import {getEntries, safeJsonParseStringOrHexString} from '../tsUtils'
+import {validateUniqueToken} from './validators'
+import {
+  decodeHexAndParseJSONOrReturnNull,
+  getEntries,
+  safeJsonParseStringOrHexString
+} from '../tsUtils'
 import {
   decodeTokenUrlOrInfixOrCidWithHashField,
   DecodingResult
 } from "../schemaUtils";
 import {Address} from "@unique-nft/utils/address";
+import {ProbablyDecodedProperty} from '../v3/types'
+import {StringUtils} from '@unique-nft/utils'
+import {PropertiesArray} from '../unique_types'
 
 const addUrlObjectToTokenProperties = (properties: PropertiesArray, prefix: string, source: InfixOrUrlOrCidAndHash) => {
   if (typeof source.urlInfix === 'string') {
@@ -62,43 +68,39 @@ export const encodeTokenToProperties = (token: UniqueTokenToCreate, schema: Uniq
   return properties
 }
 
-const fillTokenFieldByKeyPrefix = <T extends UniqueTokenToCreate>(token: T, properties: PropertiesArray, prefix: string, tokenField: keyof T) => {
+const fillTokenFieldByKeyPrefix = <T extends UniqueTokenToCreate>(token: T, properties: ProbablyDecodedProperty[], prefix: string, tokenField: keyof T) => {
   const keysMatchingPrefix = [`${prefix}.i`, `${prefix}.u`, `${prefix}.c`, `${prefix}.h`]
   if (properties.some(({key}) => keysMatchingPrefix.includes(key))) token[tokenField] = {} as any
 
   const field = token[tokenField] as any as InfixOrUrlOrCidAndHash
 
   const urlInfixProperty = properties.find(({key}) => key === keysMatchingPrefix[0])
-  if (urlInfixProperty) field.urlInfix = urlInfixProperty.value
+  if (urlInfixProperty) field.urlInfix = StringUtils.Utf8.hexStringToString(urlInfixProperty.valueHex)
 
   const urlProperty = properties.find(({key}) => key === keysMatchingPrefix[1])
-  if (urlProperty) field.url = urlProperty.value
+  if (urlProperty) field.url = StringUtils.Utf8.hexStringToString(urlProperty.valueHex)
 
   const ipfsCidProperty = properties.find(({key}) => key === keysMatchingPrefix[2])
-  if (ipfsCidProperty) field.ipfsCid = ipfsCidProperty.value
+  if (ipfsCidProperty) field.ipfsCid = StringUtils.Utf8.hexStringToString(ipfsCidProperty.valueHex)
 
   const hashProperty = properties.find(({key}) => key === keysMatchingPrefix[3])
-  if (hashProperty) field.hash = hashProperty.value
+  if (hashProperty) field.hash = StringUtils.Utf8.hexStringToString(hashProperty.valueHex)
 }
 
 
-export const unpackEncodedTokenFromProperties = <T extends UniqueTokenToCreate>(properties: PropertiesArray, schema: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaDecoded): T => {
+export const unpackEncodedTokenFromProperties = <T extends UniqueTokenToCreate>(properties: ProbablyDecodedProperty[], schema: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaDecoded): T => {
   const token: T = {} as T
 
   const nameProperty = properties.find(({key}) => key === 'n')
   if (nameProperty) {
-    const parsedName = safeJsonParseStringOrHexString<LocalizedStringWithDefault>(nameProperty.value)
-    if (typeof parsedName !== 'string') {
-      token.name = parsedName
-    }
+    const parsedName = decodeHexAndParseJSONOrReturnNull<LocalizedStringWithDefault>(nameProperty.valueHex)
+    if (parsedName) token.name = parsedName
   }
 
   const descriptionProperty = properties.find(({key}) => key === 'd')
   if (descriptionProperty) {
-    const parsedDescription = safeJsonParseStringOrHexString<LocalizedStringWithDefault>(descriptionProperty.value)
-    if (typeof parsedDescription !== 'string') {
-      token.description = parsedDescription
-    }
+    const parsedDescription = decodeHexAndParseJSONOrReturnNull<LocalizedStringWithDefault>(descriptionProperty.valueHex)
+    if (parsedDescription) token.description = parsedDescription
   }
 
   fillTokenFieldByKeyPrefix(token, properties, 'i', 'image')
@@ -112,7 +114,8 @@ export const unpackEncodedTokenFromProperties = <T extends UniqueTokenToCreate>(
     const attrs = {} as EncodedTokenAttributes
 
     for (const attrProp of attributeProperties) {
-      const {key, value} = attrProp
+      const {key, valueHex} = attrProp
+      const value = StringUtils.Utf8.hexStringToString(valueHex)
       const parsed = safeJsonParseStringOrHexString<any>(value)
       const attributeKey = parseInt(key.split('.')[1] || '')
 
@@ -128,8 +131,8 @@ export const unpackEncodedTokenFromProperties = <T extends UniqueTokenToCreate>(
 }
 
 
-export const decodeTokenFromProperties = async (collectionId: number, tokenId: number, rawToken: HumanizedNftToken, schema: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaDecoded): Promise<DecodingResult<UniqueTokenDecoded>> => {
-  const unpackedToken = unpackEncodedTokenFromProperties(rawToken.properties, schema)
+export const decodeTokenFromProperties = async (collectionId: number, tokenId: number, owner: string | undefined, propertiesArray: ProbablyDecodedProperty[], schema: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaDecoded): Promise<DecodingResult<UniqueTokenDecoded>> => {
+  const unpackedToken = unpackEncodedTokenFromProperties(propertiesArray, schema)
 
   try {
     validateUniqueToken(unpackedToken, schema)
@@ -141,14 +144,14 @@ export const decodeTokenFromProperties = async (collectionId: number, tokenId: n
   }
 
   const token: UniqueTokenDecoded = {
-    owner: rawToken.owner,
+    owner,
     tokenId,
     collectionId,
     attributes: fullDecodeTokenAttributes(unpackedToken, schema),
     image: decodeTokenUrlOrInfixOrCidWithHashField(unpackedToken.image, schema.image)
   }
-  if (token.owner.Ethereum && Address.is.nestingAddress(token.owner.Ethereum)) {
-    token.nestingParentToken = Address.nesting.addressToIds(token.owner.Ethereum)
+  if (owner && Address.is.nestingAddress(owner)) {
+    token.nestingParentToken = Address.nesting.addressToIds(owner)
   }
 
   if (unpackedToken.name) token.name = unpackedToken.name
@@ -165,6 +168,9 @@ export const decodeTokenFromProperties = async (collectionId: number, tokenId: n
   }
   if (unpackedToken.spatialObject) {
     token.spatialObject = decodeTokenUrlOrInfixOrCidWithHashField(unpackedToken.spatialObject, schema.spatialObject)
+  }
+  if (unpackedToken.file) {
+    token.file = decodeTokenUrlOrInfixOrCidWithHashField(unpackedToken.file, schema.file)
   }
 
   return {

@@ -42,3 +42,11 @@ export const safeJsonParseStringOrHexString = <T = any>(stringOrHexString: strin
     return safeJSONParse<T>(StringUtils.Utf8.hexStringToString(stringOrHexString))
   }
 }
+
+export const decodeHexAndParseJSONOrReturnNull = <T = any>(hexString: string): T | null => {
+  try {
+    return JSON.parse(StringUtils.Utf8.hexStringToString(hexString)) as T
+  } catch {
+    return null
+  }
+}

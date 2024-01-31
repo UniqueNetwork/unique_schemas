@@ -76,7 +76,8 @@ export type IV2Media = z.infer<typeof zMedia>
 
 export const zAttribute = z.object({
   trait_type: z.string(),
-  value: z.string()
+  value: z.union([z.string(), z.number()]),
+  display_type: z.string().optional(),
 })
 export type IV2Attribute = z.infer<typeof zAttribute>
 
@@ -142,7 +143,7 @@ export const zCustomizingOverrides = z.object({
 })
 export type IV2CustomizingOverrides = z.infer<typeof zCustomizingOverrides>
 
-export const tokenSchema = z.object({
+export const zTokenSchema = z.object({
   // base stuff
   schemaName: z.string().optional(),
   version: zSemverString2xx.optional(),
@@ -167,11 +168,12 @@ export const tokenSchema = z.object({
   external_url: z.string().optional(),
   locale: z.string().optional(),
 })
-export type IV2Token = z.infer<typeof tokenSchema>
+export type IV2Token = z.infer<typeof zTokenSchema>
 
-export const collectionSchema = z.object({
+export const zCollectionSchema = z.object({
   schemaName: z.string().refine((v) => v === 'unique', {message: 'schemaName must be "unique"'}),
-  version: zSemverString2xx,
+  schemaVersion: zSemverString2xx,
+  originalSchemaVersion: zSemverString.optional(),
 
   name: z.string().optional(),
   description: z.string().optional(),
@@ -187,8 +189,8 @@ export const collectionSchema = z.object({
   customizing: z.object({
     slots: z.record(zCustomizingSlot).optional(),
     customizes: zCollectionIdOrAddress.array().optional(),
-  }),
+  }).optional(),
 
   royalties: z.array(zRoyalty).optional(),
 })
-export type IV2Collection = z.infer<typeof collectionSchema>
+export type IV2Collection = z.infer<typeof zCollectionSchema>

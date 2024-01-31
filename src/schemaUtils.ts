@@ -7,6 +7,8 @@ import {
   UrlTemplateString
 } from "./types";
 import {safeJsonParseStringOrHexString} from "./tsUtils";
+import {ProbablyDecodedProperty} from './v3/types'
+import {StringUtils} from '@unique-nft/utils'
 
 const convert2LayerObjectToProperties = <T extends object>(obj: T, separator: string): PropertiesArray => {
   if (typeof obj !== "object" || obj === null) {
@@ -39,10 +41,11 @@ const convert2LayerObjectToProperties = <T extends object>(obj: T, separator: st
   return collectionProperties
 }
 
-export const convertPropertyArrayTo2layerObject = <T extends object>(properties: PropertiesArray, separator: string): T => {
+export const convertPropertyArrayTo2layerObject = <T extends object>(properties: ProbablyDecodedProperty[], separator: string): T => {
   const obj: any = {}
 
-  for (let {key, value} of properties) {
+  for (let {key, value, valueHex} of properties) {
+    value = value ?? StringUtils.Utf8.hexStringToString(valueHex)
     const keyParts = key.split(separator)
     const length = keyParts.length
     if (length === 1) {
@@ -64,7 +67,7 @@ export const converters2Layers = {
   objectToProperties: <T extends object>(obj: T): PropertiesArray => {
     return convert2LayerObjectToProperties(obj, SEPARATOR)
   },
-  propertiesToObject: <T extends object>(arr: PropertiesArray): T => {
+  propertiesToObject: <T extends object>(arr: ProbablyDecodedProperty[]): T => {
     return convertPropertyArrayTo2layerObject(arr, SEPARATOR)
   }
 }

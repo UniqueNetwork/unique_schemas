@@ -27,7 +27,13 @@ describe('Old schema', () => {
     const {result, error} = await decodeOldSchemaToken(
       1,
       2,
-      oldTokenDataExample,
+      '0x5c03d3976ad16f50451d95113728e0229c50cab8',
+      [
+        {
+          key: '_old_constData',
+          valueHex: '0x0a487b2269706673223a22516d533859586766474b6754556e6a4150744566337566356b345972464c503275446359754e79474c6e45694e62222c2274797065223a22696d616765227d10011a01002203426f62',
+        }
+      ],
       oldSchemaDecoded,
       {imageUrlTemplate: '{infix}', dummyImageFullUrl: ''},
     )
