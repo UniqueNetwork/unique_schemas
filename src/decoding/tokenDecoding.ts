@@ -1,13 +1,14 @@
-import {IV2Collection, IV2Media, IV2Royalty, IV2Token} from '../schemaV2.zod'
-import {Semver} from '../../semver'
+import {IV2Media, IV2Royalty, IV2Token} from '../schema.zod'
+import {Semver} from '../tools/semver'
 import {DecodeTokenParams, ProbablyDecodedProperty, ProbablyDecodedPropsDict} from '../types'
 import {buildDictionaryFromPropertiesArray, getTokenURI, safeJSONParseWithPossibleEmptyInput} from '../utils'
 import {Address} from '@unique-nft/utils'
-import * as oldSchema from '../../tools/oldSchemaDecoder'
-import * as collection from '../../tools/collection'
-import * as token from '../../tools/token'
-import {decodeRoyalty, RoyaltyType} from '../../tools/royalties'
-import {UniqueCollectionSchemaDecoded} from '../../types'
+import {decodeRoyalty, RoyaltyType} from '../tools/royalties'
+import {UniqueCollectionSchemaIntermediate} from '../tools/old_to_intermediate/intermediate_types'
+import {
+  decodeV0OrV1CollectionSchemaToIntermediate,
+  decodeV0OrV1TokenToIntermediate
+} from '../tools/old_to_intermediate'
 
 export const detectUniqueVersions = (tokenPropsDict: ProbablyDecodedPropsDict, collectionPropsDict: ProbablyDecodedPropsDict) => {
   const isUniqueSchema = tokenPropsDict.schemaName?.value === 'unique' ||
@@ -55,24 +56,35 @@ export const decodeTokenToV2 = async (options: DecodeTokenParams): Promise<IV2To
     throw new Error('Unknown token schema version - not Unique v2, v1 or v0 and not ERC721Metadata-compatible')
   }
 
-  return await decodeTokenUniqueV0OrV1(options, isUniqueV0, tokenPropsDict, collectionPropsDict)
+  return await decodeTokenUniqueV0OrV1(options, isUniqueV0, isUniqueV1, tokenPropsDict, collectionPropsDict)
 }
 
 
-const decodeTokenUniqueV0OrV1 = async (options: DecodeTokenParams, isUniqueV0: boolean, tokenPropsDict: ProbablyDecodedPropsDict, collectionPropsDict: ProbablyDecodedPropsDict, collectionV1DecodedSchema?: UniqueCollectionSchemaDecoded) => {
+const decodeTokenUniqueV0OrV1 = async (options: DecodeTokenParams,isUniqueV0: boolean, isUniqueV1: boolean, tokenPropsDict: ProbablyDecodedPropsDict, collectionPropsDict: ProbablyDecodedPropsDict, collectionV1DecodedSchema?: UniqueCollectionSchemaIntermediate) => {
   if (!options.collectionProperties) {
     throw new Error('Collection properties are required for decoding tokens in Unique schema for versions less than v2')
   }
 
   const collectionId = typeof options.collectionId === 'number' ? options.collectionId : Address.collection.addressToId(options.collectionId)
-  const collectionSchema = collectionV1DecodedSchema ? collectionV1DecodedSchema : isUniqueV0
-    ? oldSchema.decodeOldSchemaCollection(collectionId, options.collectionProperties, options.decodingImageLinkOptions)
-    : collection.decodeUniqueCollectionFromProperties(collectionId, options.collectionProperties)
+  const collectionSchema = collectionV1DecodedSchema
+    ? collectionV1DecodedSchema
+    : decodeV0OrV1CollectionSchemaToIntermediate(
+      collectionId,
+      options.collectionProperties,
+      isUniqueV0,
+      isUniqueV1,
+    )
 
 
-  const tokenIntermediateRepresentation = isUniqueV0
-    ? oldSchema.decodeOldSchemaToken(collectionId, options.tokenId, options.tokenOwner, options.tokenProperties, collectionSchema, options.decodingImageLinkOptions)
-    : token.decodeTokenFromProperties(collectionId, options.tokenId, options.tokenOwner, options.tokenProperties, collectionSchema)
+  const tokenIntermediateRepresentation = decodeV0OrV1TokenToIntermediate(
+    collectionId,
+    options.tokenId,
+    options.tokenOwner,
+    options.tokenProperties,
+    collectionSchema,
+    isUniqueV0,
+    isUniqueV1,
+  )
 
   const attributesArray = Object.values(tokenIntermediateRepresentation.attributes)
   const tokenName = tokenIntermediateRepresentation.name?._ ??

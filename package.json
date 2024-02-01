@@ -12,8 +12,7 @@
     "release": "dotenv -e ./configs/.release.env -- release-it --config ./configs/.release-it.js --github.release",
     "generate_types": "create-validator-ts \"src/v2/types.ts\" --additionalProperties",
     "testrun": "vitest run",
-    "test": "vitest",
-    "opensea-decoding": "tsx src/v3/media_processing/opensea/decoding/main.ts"
+    "test": "vitest"
   },
   "repository": {
     "type": "git",

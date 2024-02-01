@@ -1,38 +1,28 @@
 import {
   AttributeSchema,
   AttributeType,
-  COLLECTION_SCHEMA_NAME,
   CollectionAttributesSchema,
   DecodedAttributes,
   DecodedInfixOrUrlOrCidAndHash,
   DecodingImageLinkOptions,
-  LocalizedStringWithDefault,
-  UniqueCollectionSchemaDecoded,
-  UniqueTokenDecoded,
-  UrlTemplateString
-} from "../types";
-import {validateURLSafe} from "./validators";
+  UniqueCollectionSchemaIntermediate,
+  UniqueTokenIntermediate
+} from "./intermediate_types";
 
-import {DecodingResult} from "../schemaUtils";
-import {CrossAccountId, HumanizedNftToken} from "../unique_types";
 import type {Message, Type} from 'protobufjs'
 import {Root} from 'protobufjs'
-import {ValidationError} from "../types";
-import {getEntries, getKeys, getValues, safeJSONParse} from "../tsUtils";
+import {ValidationError} from "./intermediate_types";
 import {StringUtils, Address} from "@unique-nft/utils";
-import {PropertiesArray} from "../unique_types";
-import {buildDictionaryFromPropertiesArray, safeJSONParseWithPossibleEmptyInput} from '../v3/utils'
-import {ProbablyDecodedProperty} from '../v3/types'
-import {parseImageLinkOptions} from './universal'
+import {buildDictionaryFromPropertiesArray, safeJSONParse, safeJSONParseWithPossibleEmptyInput} from '../../utils'
+import {ProbablyDecodedProperty} from '../../types'
+import {parseImageLinkOptions} from './index'
 
 
 const isOffchainSchemaAValidUrl = (offchainSchema: string | undefined): offchainSchema is string => {
-  return typeof offchainSchema === "string" &&
-    validateURLSafe(offchainSchema, 'offchainSchema') &&
-    offchainSchema.indexOf('{id}') >= 0
+  return typeof offchainSchema === "string" && offchainSchema.indexOf('{id}') >= 0
 }
 
-export const decodeOldSchemaCollection = (collectionId: number, properties: ProbablyDecodedProperty[], decodingImageLinkOptions?: DecodingImageLinkOptions): UniqueCollectionSchemaDecoded => {
+export const decodeOldSchemaCollection = (collectionId: number, properties: ProbablyDecodedProperty[], decodingImageLinkOptions?: DecodingImageLinkOptions): UniqueCollectionSchemaIntermediate => {
   const {imageUrlTemplate, dummyImageFullUrl} = parseImageLinkOptions(decodingImageLinkOptions)
 
   const propObj = properties.reduce((acc, {key, value, valueHex}) => {
@@ -47,8 +37,9 @@ export const decodeOldSchemaCollection = (collectionId: number, properties: Prob
 
   const offchainSchemaIsValidUrl = isOffchainSchemaAValidUrl(offchainSchema)
 
-  const schema: UniqueCollectionSchemaDecoded = {
-    schemaName: COLLECTION_SCHEMA_NAME.old,
+  const schema: UniqueCollectionSchemaIntermediate = {
+    schemaName: 'unique',
+    schemaVersion: '0.0.1',
 
     collectionId,
     coverPicture: {
@@ -57,11 +48,10 @@ export const decodeOldSchemaCollection = (collectionId: number, properties: Prob
     },
     image: {
       urlTemplate: offchainSchemaIsValidUrl
-        ? offchainSchema.replace('{id}', '{infix}') as UrlTemplateString
+        ? offchainSchema.replace('{id}', '{infix}')
         : imageUrlTemplate
     },
 
-    schemaVersion: '0.0.1',
     attributesSchema: {},
     attributesSchemaVersion: '1.0.0'
   }
@@ -108,7 +98,7 @@ export const decodeOldSchemaCollection = (collectionId: number, properties: Prob
       const realJSON = safeJSONParseWithPossibleEmptyInput(realJSONStr) as any
       if (typeof realJSON === 'string') continue
 
-      realJSON._ = realJSON._ || realJSON.en || realJSON[getKeys(realJSON)[0]] || null
+      realJSON._ = realJSON._ || realJSON.en || realJSON[Object.keys(realJSON)[0]] || null
       if (typeof realJSON._ !== 'string') continue
 
       rawValueToDecodedValueDict[numberedKey] = realJSON
@@ -145,9 +135,9 @@ export const decodeOldSchemaToken = (
   tokenId: number,
   owner: string | undefined,
   propertiesArray: ProbablyDecodedProperty[],
-  schema: UniqueCollectionSchemaDecoded,
+  schema: UniqueCollectionSchemaIntermediate,
   decodingImageLinkOptions?: DecodingImageLinkOptions
-): UniqueTokenDecoded => {
+): UniqueTokenIntermediate => {
   const constOnchainSchema = schema.oldProperties?._old_constOnChainSchema
 
   if (!constOnchainSchema) {
@@ -182,7 +172,7 @@ export const decodeOldSchemaToken = (
   try {
     tokenDecoded = NFTMeta.decode(u8aToken)
     tokenDecodedHuman = tokenDecoded.toJSON()
-    tokenDecodedWithRawValues = getEntries(tokenDecoded).map(([name, rawValue], index) => ({
+    tokenDecodedWithRawValues = Object.entries(tokenDecoded).map(([name, rawValue], index) => ({
       name,
       rawValue: rawValue,
       toJSONValue: tokenDecodedHuman[name],
@@ -228,21 +218,21 @@ export const decodeOldSchemaToken = (
       } else {
         value = safeJSONParse(enumOptions?.[toJSONValue] || rawValue)
         if (typeof value !== 'string') {
-          value._ = value.en || getValues(value)[0]
+          value._ = value.en || Object.values(value)[0]
         }
       }
     }
 
     if (field.type === 'string') value = {_: value}
 
-    const schemaAttr = getEntries(schema.attributesSchema!).find(([attrId, attrValue]) => {
+    const schemaAttr = Object.entries(schema.attributesSchema!).find(([attrId, attrValue]) => {
       return attrValue.name._ === name
     })
 
     const index = schemaAttr ? schemaAttr[0] : i
     i += 1
 
-    tokenAttributesResult[index] = {
+    tokenAttributesResult[index as any] = {
       name: {_: name},
       type: field.type === 'number' ? AttributeType.float : AttributeType.string,
       value,
@@ -284,7 +274,7 @@ export const decodeOldSchemaToken = (
     }
   }
 
-  const decodedToken: UniqueTokenDecoded = {
+  const decodedToken: UniqueTokenIntermediate = {
     collectionId,
     tokenId,
     owner,

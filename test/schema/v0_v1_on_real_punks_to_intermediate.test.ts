@@ -1,9 +1,9 @@
-import type {UniqueCollectionSchemaDecoded, UniqueTokenDecoded} from '../../src'
+import type {UniqueCollectionSchemaIntermediate, UniqueTokenIntermediate} from '../../src'
 import type {ICollection, INftToken} from '@unique-nft/utils/chainLens'
 
 import {describe, test, expect, beforeAll} from 'vitest'
 import {ChainLenses} from '@unique-nft/utils/chainLens'
-import {decodeV0OrV1CollectionSchemaToIntermediate, decodeV0OrV1TokenToIntermediate} from '../../src/tools/universal'
+import {decodeV0OrV1CollectionSchemaToIntermediate, decodeV0OrV1TokenToIntermediate} from '../../src/tools/old_to_intermediate'
 
 const punkData = {
   collectionId: 1,
@@ -40,8 +40,8 @@ describe('Decoding v0 and v1 on real punks', async () => {
   let punkV0Collection: ICollection | null = null
   let punkV1Collection: ICollection | null = null
 
-  let punkV0Schema: UniqueCollectionSchemaDecoded | null = null
-  let punkV1Schema: UniqueCollectionSchemaDecoded | null = null
+  let punkV0Schema: UniqueCollectionSchemaIntermediate | null = null
+  let punkV1Schema: UniqueCollectionSchemaIntermediate | null = null
 
   let punkV0Token: INftToken | null = null
   let punkV1Token: INftToken | null = null
@@ -61,7 +61,7 @@ describe('Decoding v0 and v1 on real punks', async () => {
     expect(punkV0Schema).not.toBeNull()
     expect(punkV0Token).not.toBeNull()
 
-    let decodedPunkV0Token: UniqueTokenDecoded | null = null
+    let decodedPunkV0Token: UniqueTokenIntermediate | null = null
 
     expect(() => {
       decodedPunkV0Token = decodeV0OrV1TokenToIntermediate(
@@ -83,7 +83,7 @@ describe('Decoding v0 and v1 on real punks', async () => {
     expect(punkV1Schema).not.toBeNull()
     expect(punkV1Token).not.toBeNull()
 
-    let decodedPunkV1Token: UniqueTokenDecoded | null = null
+    let decodedPunkV1Token: UniqueTokenIntermediate | null = null
 
     expect(() => {
       decodedPunkV1Token = decodeV0OrV1TokenToIntermediate(

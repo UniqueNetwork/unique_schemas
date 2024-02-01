@@ -2,11 +2,11 @@ import type {ICollection, INftToken} from '@unique-nft/utils/chainLens'
 
 import {describe, test, expect, beforeAll} from 'vitest'
 import {ChainLenses} from '@unique-nft/utils/chainLens'
-import type {UniqueCollectionSchemaDecoded} from '../../src'
-import {decodeV0OrV1CollectionSchemaToIntermediate} from '../../src/tools/universal'
-import {decodeTokenToV2} from '../../src/v3/decoding/tokenDecoding'
-import {IV2Collection, IV2Token} from '../../src/v3/schemaV2.zod'
-import {decodeCollectionToV2} from '../../src/v3/decoding/collectionDecoding'
+import type {UniqueCollectionSchemaIntermediate} from '../../src'
+import {decodeV0OrV1CollectionSchemaToIntermediate} from '../../src/tools/old_to_intermediate'
+import {decodeTokenToV2} from '../../src/decoding/tokenDecoding'
+import {IV2Collection, IV2Token} from '../../src/schema.zod'
+import {decodeCollectionToV2} from '../../src/decoding/collectionDecoding'
 
 const V0_PUNK_IN_V2_FORM: IV2Token = {
   schemaName: 'unique',
@@ -62,8 +62,8 @@ describe('Decoding collection and token in schemas v0 and v1 to v2', async () =>
   let punkV0Collection: ICollection | null = null
   let punkV1Collection: ICollection | null = null
 
-  let punkV0Schema: UniqueCollectionSchemaDecoded | null = null
-  let punkV1Schema: UniqueCollectionSchemaDecoded | null = null
+  let punkV0Schema: UniqueCollectionSchemaIntermediate | null = null
+  let punkV1Schema: UniqueCollectionSchemaIntermediate | null = null
 
   let punkV0Token: INftToken | null = null
   let punkV1Token: INftToken | null = null

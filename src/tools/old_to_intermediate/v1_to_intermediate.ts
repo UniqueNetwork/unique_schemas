@@ -1,74 +1,93 @@
 import {
+  DecodedInfixOrUrlOrCidAndHash,
+  UniqueCollectionSchemaIntermediate,
+  URL_TEMPLATE_INFIX
+} from './intermediate_types'
+
+import {ProbablyDecodedProperty} from '../../types'
+import {StringUtils} from '@unique-nft/utils'
+import {decodeHexAndParseJSONOrReturnNull} from '../../utils'
+
+
+import {
   DecodedAttributes,
   EncodedTokenAttributes,
   InfixOrUrlOrCidAndHash, LocalizedStringOrBoxedNumberWithDefault, LocalizedStringWithDefault,
-  UniqueCollectionSchemaDecoded,
-  UniqueCollectionSchemaToCreate,
-  UniqueTokenDecoded,
-  UniqueTokenToCreate
-} from '../types'
-import {validateUniqueToken} from './validators'
-import {
-  decodeHexAndParseJSONOrReturnNull,
-  getEntries,
-  safeJsonParseStringOrHexString
-} from '../tsUtils'
-import {
-  decodeTokenUrlOrInfixOrCidWithHashField,
-  DecodingResult
-} from "../schemaUtils";
+  UniqueTokenIntermediate
+} from './intermediate_types'
 import {Address} from "@unique-nft/utils/address";
-import {ProbablyDecodedProperty} from '../v3/types'
-import {StringUtils} from '@unique-nft/utils'
-import {PropertiesArray} from '../unique_types'
 
-const addUrlObjectToTokenProperties = (properties: PropertiesArray, prefix: string, source: InfixOrUrlOrCidAndHash) => {
-  if (typeof source.urlInfix === 'string') {
-    properties.push({key: `${prefix}.i`, value: source.urlInfix})
-  } else if (typeof source.ipfsCid === 'string') {
-    properties.push({key: `${prefix}.c`, value: source.ipfsCid})
-  } else if (typeof source.url === 'string') {
-    properties.push({key: `${prefix}.u`, value: source.url})
+
+
+export const decodeTokenUrlOrInfixOrCidWithHashField = <U extends { urlTemplate?: string }>(obj: InfixOrUrlOrCidAndHash, urlTemplateObj: U | undefined): DecodedInfixOrUrlOrCidAndHash => {
+  const result: DecodedInfixOrUrlOrCidAndHash = {
+    ...obj,
+    fullUrl: null
   }
 
-  if (typeof source.hash === 'string') {
-    properties.push({key: `${prefix}.h`, value: source.hash})
+  if (typeof obj.url === 'string') {
+    result.fullUrl = obj.url
+    return result
   }
-}
 
-const addKeyToTokenProperties = (properties: PropertiesArray, key: string, value: string | number | object) => {
-  let strValue = JSON.stringify(value)
+  const urlTemplate = urlTemplateObj?.urlTemplate
 
-  properties.push({
-    key,
-    value: strValue
-  })
-}
-
-export const encodeTokenToProperties = (token: UniqueTokenToCreate, schema: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaDecoded): PropertiesArray => {
-  validateUniqueToken(token, schema as UniqueCollectionSchemaToCreate)
-
-  const properties: PropertiesArray = []
-  if (token.name) addKeyToTokenProperties(properties, 'n', token.name)
-  if (token.description) addKeyToTokenProperties(properties, 'd', token.description)
-
-  if (token.encodedAttributes) {
-    for (const n in token.encodedAttributes) {
-      const value = token.encodedAttributes[n]
-      addKeyToTokenProperties(properties, `a.${n}`, value)
+  if (typeof urlTemplate !== 'string' || urlTemplate.indexOf(URL_TEMPLATE_INFIX) < 0) {
+    if (typeof obj.ipfsCid === 'string') {
+      result.fullUrl = `ipfs://${obj.ipfsCid}`
+    }
+  } else {
+    if (typeof obj.urlInfix === 'string') {
+      result.fullUrl = urlTemplate.replace(URL_TEMPLATE_INFIX, obj.urlInfix)
+    } else if (typeof obj.ipfsCid === 'string') {
+      result.fullUrl = urlTemplate.replace(URL_TEMPLATE_INFIX, obj.ipfsCid)
     }
   }
 
-  if (token.image) addUrlObjectToTokenProperties(properties, 'i', token.image)
-  if (schema.imagePreview && token.imagePreview) addUrlObjectToTokenProperties(properties, 'p', token.imagePreview)
-  if (schema.video && token.video) addUrlObjectToTokenProperties(properties, 'v', token.video)
-  if (schema.audio && token.audio) addUrlObjectToTokenProperties(properties, 'au', token.audio)
-  if (schema.spatialObject && token.spatialObject) addUrlObjectToTokenProperties(properties, 'so', token.spatialObject)
-
-  return properties
+  return result
 }
 
-const fillTokenFieldByKeyPrefix = <T extends UniqueTokenToCreate>(token: T, properties: ProbablyDecodedProperty[], prefix: string, tokenField: keyof T) => {
+
+const convertPropertyArrayTo2layerObject = <T extends object>(properties: ProbablyDecodedProperty[], separator: string): T => {
+  const obj: any = {}
+
+  for (let {key, valueHex} of properties) {
+    const keyParts = key.split(separator)
+    const length = keyParts.length
+    if (length === 1) {
+      obj[key] = decodeHexAndParseJSONOrReturnNull(valueHex)
+    } else {
+      const [key, innerKey] = keyParts
+      if (typeof obj[key] !== 'object') {
+        obj[key] = {}
+      }
+      obj[key][innerKey] = decodeHexAndParseJSONOrReturnNull(valueHex)
+    }
+  }
+  return obj as T
+}
+
+
+export const decodeUniqueCollectionFromProperties = (collectionId: number, properties: ProbablyDecodedProperty[]): UniqueCollectionSchemaIntermediate => {
+  const unpackedSchema: UniqueCollectionSchemaIntermediate = convertPropertyArrayTo2layerObject(properties, '.') as any
+  // validateUniqueCollectionSchema(unpackedSchema)
+  unpackedSchema.collectionId = collectionId as number
+
+  if (unpackedSchema.coverPicture) {
+    unpackedSchema.coverPicture = decodeTokenUrlOrInfixOrCidWithHashField(unpackedSchema.coverPicture, unpackedSchema.image)
+  }
+  if (unpackedSchema.coverPicturePreview) {
+    unpackedSchema.coverPicturePreview = decodeTokenUrlOrInfixOrCidWithHashField(unpackedSchema.coverPicturePreview, unpackedSchema.image)
+  }
+
+  return unpackedSchema
+}
+
+
+//////////////////////////////////////////////////////
+// token in schema v1 decoding
+//////////////////////////////////////////////////////
+const fillTokenFieldByKeyPrefix = <T extends UniqueTokenIntermediate>(token: T, properties: ProbablyDecodedProperty[], prefix: string, tokenField: keyof T) => {
   const keysMatchingPrefix = [`${prefix}.i`, `${prefix}.u`, `${prefix}.c`, `${prefix}.h`]
   if (properties.some(({key}) => keysMatchingPrefix.includes(key))) token[tokenField] = {} as any
 
@@ -88,7 +107,7 @@ const fillTokenFieldByKeyPrefix = <T extends UniqueTokenToCreate>(token: T, prop
 }
 
 
-export const unpackEncodedTokenFromProperties = <T extends UniqueTokenToCreate>(properties: ProbablyDecodedProperty[], schema: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaDecoded): T => {
+export const unpackEncodedTokenFromProperties = <T extends UniqueTokenIntermediate>(properties: ProbablyDecodedProperty[], schema: UniqueCollectionSchemaIntermediate): T => {
   const token: T = {} as T
 
   const nameProperty = properties.find(({key}) => key === 'n')
@@ -115,8 +134,7 @@ export const unpackEncodedTokenFromProperties = <T extends UniqueTokenToCreate>(
 
     for (const attrProp of attributeProperties) {
       const {key, valueHex} = attrProp
-      const value = StringUtils.Utf8.hexStringToString(valueHex)
-      const parsed = safeJsonParseStringOrHexString<any>(value)
+      const parsed = decodeHexAndParseJSONOrReturnNull<any>(valueHex)
       const attributeKey = parseInt(key.split('.')[1] || '')
 
       if (!isNaN(attributeKey) && schema.attributesSchema?.hasOwnProperty(attributeKey)) {
@@ -131,12 +149,10 @@ export const unpackEncodedTokenFromProperties = <T extends UniqueTokenToCreate>(
 }
 
 
-export const decodeTokenFromProperties = (collectionId: number, tokenId: number, owner: string | undefined, propertiesArray: ProbablyDecodedProperty[], schema: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaDecoded): UniqueTokenDecoded => {
+export const decodeTokenFromProperties = (collectionId: number, tokenId: number, owner: string | undefined, propertiesArray: ProbablyDecodedProperty[], schema: UniqueCollectionSchemaIntermediate): UniqueTokenIntermediate => {
   const unpackedToken = unpackEncodedTokenFromProperties(propertiesArray, schema)
 
-  validateUniqueToken(unpackedToken, schema)
-
-  const token: UniqueTokenDecoded = {
+  const token: UniqueTokenIntermediate = {
     owner,
     tokenId,
     collectionId,
@@ -169,15 +185,15 @@ export const decodeTokenFromProperties = (collectionId: number, tokenId: number,
   return token
 }
 
-export const fullDecodeTokenAttributes = (token: UniqueTokenToCreate, collectionSchema: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaDecoded): DecodedAttributes => {
+export const fullDecodeTokenAttributes = (token: UniqueTokenIntermediate, collectionSchema: UniqueCollectionSchemaIntermediate): DecodedAttributes => {
   const attributes: DecodedAttributes = {}
   if (!token.encodedAttributes) return {}
 
-  const entries = getEntries(token.encodedAttributes)
+  const entries = Object.entries(token.encodedAttributes)
   for (const entry of entries) {
     const [key, rawValue] = entry
 
-    const schema = collectionSchema.attributesSchema?.[key]
+    const schema = collectionSchema.attributesSchema?.[key as any]
     if (!schema) continue
 
     let value: any = rawValue
@@ -194,7 +210,7 @@ export const fullDecodeTokenAttributes = (token: UniqueTokenToCreate, collection
       }
     }
 
-    attributes[key] = {
+    attributes[key as any] = {
       name: schema.name,
       value: value as LocalizedStringOrBoxedNumberWithDefault | Array<LocalizedStringOrBoxedNumberWithDefault>,
       isArray: schema.isArray || false,

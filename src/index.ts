@@ -1,29 +1,14 @@
-export * from './types'
-import * as types from './types'
-import * as validators from './tools/validators'
-import * as collection from './tools/collection'
-import * as token from './tools/token'
-import * as oldSchema from './tools/oldSchemaDecoder'
-import * as universal from './tools/universal'
+import {decodeCollectionToV2} from './decoding/collectionDecoding'
+import {decodeTokenToV2} from './decoding/tokenDecoding'
 
 export const SchemaTools = {
   decode: {
-    collectionSchema: universal.decodeV0OrV1CollectionSchemaToIntermediate,
-    token: universal.decodeV0OrV1TokenToIntermediate
+    collectionSchema: decodeCollectionToV2,
+    token: decodeTokenToV2,
   },
   encodeUnique: {
-    collectionSchema: collection.encodeCollectionSchemaToProperties,
-    collectionTokenPropertyPermissions: collection.generateTokenPropertyPermissionsFromCollectionSchema,
-    token: token.encodeTokenToProperties,
+    collection: () => { throw new Error('Not implemented') },
+    token: () => { throw new Error('Not implemented') },
   },
-  tools: {
-    unique: {
-      collection,
-      token,
-      validators,
-    },
-    oldSchema,
-    universal,
-  },
-  types,
+  tools: {},
 }

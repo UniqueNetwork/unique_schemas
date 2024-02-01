@@ -1,11 +1,10 @@
 import {DecodeCollectionParams, ProbablyDecodedProperty} from '../types'
-import {IV2Collection} from '../schemaV2.zod'
+import {IV2Collection} from '../schema.zod'
 import {buildDictionaryFromPropertiesArray} from '../utils'
 import {detectUniqueVersions} from './tokenDecoding'
-import {decodeHexAndParseJSONOrReturnNull} from '../../tsUtils'
+import {decodeHexAndParseJSONOrReturnNull} from '../utils'
 import {Address} from '@unique-nft/utils'
-import {decodeUniqueCollectionFromProperties} from '../../tools/collection'
-import {decodeOldSchemaCollection} from '../../tools/oldSchemaDecoder'
+import {decodeV0OrV1CollectionSchemaToIntermediate} from '../tools/old_to_intermediate'
 
 export const decodeCollectionToV2 = async (options: DecodeCollectionParams): Promise<IV2Collection> => {
   const properties = buildDictionaryFromPropertiesArray(options.collectionProperties)
@@ -27,9 +26,12 @@ export const decodeCollectionToV2 = async (options: DecodeCollectionParams): Pro
     ? Address.collection.addressToId(options.collectionId)
     : options.collectionId
 
-  const collectionSchema = isUniqueV0
-    ? decodeOldSchemaCollection(collectionId, options.collectionProperties, options.decodingImageLinkOptions)
-    : decodeUniqueCollectionFromProperties(collectionId, options.collectionProperties)
+  const collectionSchema = decodeV0OrV1CollectionSchemaToIntermediate(
+    collectionId,
+    options.collectionProperties,
+    isUniqueV0,
+    isUniqueV1,
+  )
 
   const collectionData: IV2Collection = {
     schemaName: 'unique',

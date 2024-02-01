@@ -1,5 +1,5 @@
 import {describe, expect, test} from 'vitest'
-import {Semver} from '../src/semver'
+import {Semver} from '../src/tools/semver'
 
 describe('semver', () => {
   const strings = {

@@ -1,7 +1,7 @@
 import Axios from 'axios'
 import {sha256} from '@noble/hashes/sha256'
 import {bytesToHex} from '@noble/hashes/utils'
-import type {IV2MediaType, IV2MediaDetails, IV2Media, IV2ImageDetails} from '../schemaV2.zod'
+import type {IV2MediaType, IV2MediaDetails, IV2Media, IV2ImageDetails} from '../../schema.zod'
 
 export type IGetDetailsOptions<T> = {
   details?: T,
