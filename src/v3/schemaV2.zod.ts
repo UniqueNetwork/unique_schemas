@@ -146,7 +146,9 @@ export type IV2CustomizingOverrides = z.infer<typeof zCustomizingOverrides>
 export const zTokenSchema = z.object({
   // base stuff
   schemaName: z.string().optional(),
-  version: zSemverString2xx.optional(),
+  schemaVersion: zSemverString2xx.optional(),
+  originalSchemaVersion: zSemverString.optional(),
+
   name: z.string().optional(),
   description: z.string().optional(),
   image: z.string().optional(),

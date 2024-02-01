@@ -32,7 +32,7 @@ const isOffchainSchemaAValidUrl = (offchainSchema: string | undefined): offchain
     offchainSchema.indexOf('{id}') >= 0
 }
 
-export const decodeOldSchemaCollection = async (collectionId: number, properties: ProbablyDecodedProperty[], decodingImageLinkOptions?: DecodingImageLinkOptions): Promise<DecodingResult<UniqueCollectionSchemaDecoded>> => {
+export const decodeOldSchemaCollection = (collectionId: number, properties: ProbablyDecodedProperty[], decodingImageLinkOptions?: DecodingImageLinkOptions): UniqueCollectionSchemaDecoded => {
   const {imageUrlTemplate, dummyImageFullUrl} = parseImageLinkOptions(decodingImageLinkOptions)
 
   const propObj = properties.reduce((acc, {key, value, valueHex}) => {
@@ -85,15 +85,9 @@ export const decodeOldSchemaCollection = async (collectionId: number, properties
 
   let root: Root = {} as any
   let NFTMeta: Type = {} as any
-  try {
-    root = Root.fromJSON(JSON.parse(constOnchainSchema))
-    NFTMeta = root.lookupType('onChainMetaData.NFTMeta')
-  } catch (err: any) {
-    return {
-      result: null,
-      error: err as Error,
-    }
-  }
+
+  root = Root.fromJSON(JSON.parse(constOnchainSchema))
+  NFTMeta = root.lookupType('onChainMetaData.NFTMeta')
 
   const attributesSchema: CollectionAttributesSchema = {}
 
@@ -143,53 +137,37 @@ export const decodeOldSchemaCollection = async (collectionId: number, properties
     _old_variableOnChainSchema: variableOnchainSchema,
   }
 
-  return {result: schema, error: null}
+  return schema
 }
 
-export const decodeOldSchemaToken = async (
+export const decodeOldSchemaToken = (
   collectionId: number,
   tokenId: number,
   owner: string | undefined,
   propertiesArray: ProbablyDecodedProperty[],
   schema: UniqueCollectionSchemaDecoded,
   decodingImageLinkOptions?: DecodingImageLinkOptions
-): Promise<DecodingResult<UniqueTokenDecoded>> => {
+): UniqueTokenDecoded => {
   const constOnchainSchema = schema.oldProperties?._old_constOnChainSchema
 
   if (!constOnchainSchema) {
-    return {
-      result: null,
-      error: new ValidationError(`collection doesn't contain _old_constOnChainSchema field`)
-    }
+    throw new ValidationError(`collection doesn't contain _old_constOnChainSchema field`)
   }
 
-  let root: Root = {} as any
-  let NFTMeta: Type = {} as any
-  try {
-    root = Root.fromJSON(JSON.parse(constOnchainSchema))
-    NFTMeta = root.lookupType('onChainMetaData.NFTMeta')
-  } catch (err: any) {
-    return {
-      result: null,
-      error: err as Error,
-    }
-  }
+
+  const root = Root.fromJSON(JSON.parse(constOnchainSchema))
+  const NFTMeta = root.lookupType('onChainMetaData.NFTMeta')
+
 
   if (!propertiesArray) {
-    return {
-      result: null,
-      error: new ValidationError(`parsing token with old schema: no token properties passed`)
-    }
+    throw new ValidationError(`parsing token with old schema: no token properties passed`)
   }
 
   const props = buildDictionaryFromPropertiesArray(propertiesArray)
 
   const constDataProp = props._old_constData
   if (!constDataProp) {
-    return {
-      result: null,
-      error: new ValidationError('no _old_constData property found')
-    }
+    throw new ValidationError('no _old_constData property found')
   }
 
   const u8aToken = StringUtils.HexString.toU8a(constDataProp.valueHex)
@@ -210,10 +188,7 @@ export const decodeOldSchemaToken = async (
       toJSONValue: tokenDecodedHuman[name],
     }))
   } catch (err: any) {
-    return {
-      result: null,
-      error: err
-    }
+    throw new ValidationError(`Unable to parse token with old schema, error on decoding Protobuf: ${err.message}`)
   }
 
   const tokenAttributesResult: DecodedAttributes = {}
@@ -321,8 +296,5 @@ export const decodeOldSchemaToken = async (
     decodedToken.nestingParentToken = Address.nesting.addressToIds(owner)
   }
 
-  return {
-    result: decodedToken,
-    error: null,
-  }
+  return decodedToken
 }

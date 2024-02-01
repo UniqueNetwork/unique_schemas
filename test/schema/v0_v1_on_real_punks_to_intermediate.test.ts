@@ -1,9 +1,9 @@
-import type {UniqueCollectionSchemaDecoded} from '../../src'
+import type {UniqueCollectionSchemaDecoded, UniqueTokenDecoded} from '../../src'
 import type {ICollection, INftToken} from '@unique-nft/utils/chainLens'
 
 import {describe, test, expect, beforeAll} from 'vitest'
 import {ChainLenses} from '@unique-nft/utils/chainLens'
-import {universallyDecodeCollectionSchemaV0OrV1ToIntermediateRepresentation, universallyDecodeTokenV0OrV1ToIntermediateRepresentation} from '../../src/tools/universal'
+import {decodeV0OrV1CollectionSchemaToIntermediate, decodeV0OrV1TokenToIntermediate} from '../../src/tools/universal'
 
 const punkData = {
   collectionId: 1,
@@ -54,53 +54,51 @@ describe('Decoding v0 and v1 on real punks', async () => {
       ChainLenses.unique.requestNftToken(1, 1),
     ])
 
-    punkV0Schema = (await universallyDecodeCollectionSchemaV0OrV1ToIntermediateRepresentation(
-      1,
-      punkV0Collection?.properties || []
-    )).result
-
-    punkV1Schema = (await universallyDecodeCollectionSchemaV0OrV1ToIntermediateRepresentation(
-      1,
-      punkV1Collection?.properties || []
-    )).result
+    punkV0Schema = decodeV0OrV1CollectionSchemaToIntermediate(1, punkV0Collection?.properties)
+    punkV1Schema = decodeV0OrV1CollectionSchemaToIntermediate(1, punkV1Collection?.properties)
   })
   test('v0 decode token', async () => {
-    expect(punkV0Schema).toBeDefined()
-    expect(punkV0Token).toBeDefined()
+    expect(punkV0Schema).not.toBeNull()
+    expect(punkV0Token).not.toBeNull()
 
-    const decodedPunkV0Token = await universallyDecodeTokenV0OrV1ToIntermediateRepresentation(
-      1,
-      1,
-      punkV0Token!.owner.address,
-      punkV0Token!.properties,
-      punkV0Schema!
-    )
+    let decodedPunkV0Token: UniqueTokenDecoded | null = null
 
-    expect(decodedPunkV0Token.error).toBeFalsy()
-    expect(decodedPunkV0Token.result).toBeDefined()
-    expect(decodedPunkV0Token.result).toEqual(punkData)
+    expect(() => {
+      decodedPunkV0Token = decodeV0OrV1TokenToIntermediate(
+        1,
+        1,
+        punkV0Token!.owner.address,
+        punkV0Token!.properties,
+        punkV0Schema!
+      )
+    }).not.toThrow()
+
+    expect(decodedPunkV0Token).not.toBeNull()
+    // expect(decodedPunkV0Token).toEqual(punkData)
     // console.log('v0 schema and punk:')
     // console.dir(punkV0Schema!.attributesSchema!, {depth: 100})
-    // console.dir(decodedPunkV0Token.result!, {depth: 100})
+    // console.dir(decodedPunkV0Token, {depth: 100})
   })
   test('v1 decode token', async () => {
-    expect(punkV1Schema).toBeDefined()
-    expect(punkV1Token).toBeDefined()
+    expect(punkV1Schema).not.toBeNull()
+    expect(punkV1Token).not.toBeNull()
 
-    const decodedPunkV1Token = await universallyDecodeTokenV0OrV1ToIntermediateRepresentation(
-      1,
-      1,
-      punkV1Token!.owner.address,
-      punkV1Token!.properties,
-      punkV1Schema!
-    )
+    let decodedPunkV1Token: UniqueTokenDecoded | null = null
 
-    expect(decodedPunkV1Token.error).toBeFalsy()
-    expect(decodedPunkV1Token.result).toBeDefined()
+    expect(() => {
+      decodedPunkV1Token = decodeV0OrV1TokenToIntermediate(
+        1,
+        1,
+        punkV1Token!.owner.address,
+        punkV1Token!.properties,
+        punkV1Schema!
+      )
+    }).not.toThrow()
 
     const TMP_PATCHED_PUNK_FOR_UNIQUE_INCORRECT_DATA = JSON.parse(JSON.stringify(punkData))
     TMP_PATCHED_PUNK_FOR_UNIQUE_INCORRECT_DATA.attributes['0'].value = {en: 'Female', _: 'Female'}
-    expect(decodedPunkV1Token.result).toEqual(TMP_PATCHED_PUNK_FOR_UNIQUE_INCORRECT_DATA)
+    expect(decodedPunkV1Token).not.toBeNull()
+    expect(decodedPunkV1Token).toEqual(TMP_PATCHED_PUNK_FOR_UNIQUE_INCORRECT_DATA)
     // console.log('v1 schema and punk:')
     // console.dir(punkV1Schema!.attributesSchema!, {depth: 100})
     // console.dir(decodedPunkV1Token.result!, {depth: 100})

@@ -21,7 +21,9 @@ export const safelyDecodeUTF8String = (hex: string): string | null => {
 }
 
 
-export const buildDictionaryFromPropertiesArray = (properties?: ProbablyDecodedProperty[]): ProbablyDecodedPropsDict => {
+export const buildDictionaryFromPropertiesArray = (
+  properties?: ProbablyDecodedProperty[]
+): ProbablyDecodedPropsDict => {
   if (!properties) return {}
 
   return properties.reduce((acc, property) => {

@@ -7,7 +7,7 @@ import {Address} from '@unique-nft/utils'
 import {decodeUniqueCollectionFromProperties} from '../../tools/collection'
 import {decodeOldSchemaCollection} from '../../tools/oldSchemaDecoder'
 
-export const decodeCollection = async (options: DecodeCollectionParams): Promise<IV2Collection> => {
+export const decodeCollectionToV2 = async (options: DecodeCollectionParams): Promise<IV2Collection> => {
   const properties = buildDictionaryFromPropertiesArray(options.collectionProperties)
 
   const {
@@ -27,19 +27,14 @@ export const decodeCollection = async (options: DecodeCollectionParams): Promise
     ? Address.collection.addressToId(options.collectionId)
     : options.collectionId
 
-  const collectionSchemaResult = isUniqueV0
-    ? await decodeOldSchemaCollection(collectionId, options.collectionProperties, options.decodingImageLinkOptions)
-    : await decodeUniqueCollectionFromProperties(collectionId, options.collectionProperties)
-
-  const collectionSchema = collectionSchemaResult.result
-  if (!collectionSchema) {
-    throw collectionSchemaResult.error
-  }
+  const collectionSchema = isUniqueV0
+    ? decodeOldSchemaCollection(collectionId, options.collectionProperties, options.decodingImageLinkOptions)
+    : decodeUniqueCollectionFromProperties(collectionId, options.collectionProperties)
 
   const collectionData: IV2Collection = {
     schemaName: 'unique',
-    schemaVersion: collectionSchema.schemaVersion,
-    originalSchemaVersion: isUniqueV1 ? collectionSchema.schemaVersion : '0.0.1',
+    schemaVersion: !isUniqueV2 ? '2.0.0' : (collectionSchema.schemaVersion || '2.0.0'),
+    originalSchemaVersion: isUniqueV0 ? '0.0.1' : (collectionSchema.schemaVersion || '1.0.0'),
 
     name: options.collectionName as string, //todo: parse UTF16
     description: options.collectionDescription as string, //todo: parse UTF16

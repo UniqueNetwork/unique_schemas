@@ -37,42 +37,49 @@ export const parseImageLinkOptions = (options?: DecodingImageLinkOptions): Requi
   }
 }
 
+export const decodeV0OrV1CollectionSchemaToIntermediate = (
+  collectionId: number,
+  properties: ProbablyDecodedProperty[] | undefined | null,
+  options?: DecodingImageLinkOptions
+): UniqueCollectionSchemaDecoded => {
+  if (!properties || !properties.length) {
+    throw new ValidationError(`Unable to parse: collection properties are empty`)
+  }
 
-type TMP_ANY_REMOVE_ME = any
-
-export const universallyDecodeCollectionSchemaV0OrV1ToIntermediateRepresentation = async (collectionId: number, properties: ProbablyDecodedProperty[], options?: DecodingImageLinkOptions): Promise<DecodingResult<UniqueCollectionSchemaDecoded>> => {
   const schemaNameProp = properties.find(({key}) => key === 'schemaName')?.value || null
   const schemaName = typeof schemaNameProp === 'string' ? safeJsonParseStringOrHexString<string>(schemaNameProp) : null
   const isOldSchema = !!properties.find(({key}) => key === '_old_schemaVersion')
 
+
   if (isOldSchema) {
-    return await oldSchema.decodeOldSchemaCollection(collectionId, properties as TMP_ANY_REMOVE_ME, options)
+    return oldSchema.decodeOldSchemaCollection(collectionId, properties, options)
   } else if (schemaName === COLLECTION_SCHEMA_NAME.unique) {
-    return await collection.decodeUniqueCollectionFromProperties(collectionId, properties)
+    return collection.decodeUniqueCollectionFromProperties(collectionId, properties)
   }
 
-  return {
-    result: null,
-    error: new ValidationError(`Unknown collection schema`)
-  }
+  throw new ValidationError(`Unknown collection schema`)
 }
 
-export const universallyDecodeTokenV0OrV1ToIntermediateRepresentation = async (collectionId: number, tokenId: number, owner: string, propertyArray: ProbablyDecodedProperty[], schema: UniqueCollectionSchemaDecoded, imageLinkOptions?: DecodingImageLinkOptions): Promise<DecodingResult<UniqueTokenDecoded>> => {
+export const decodeV0OrV1TokenToIntermediate = (
+  collectionId: number,
+  tokenId: number,
+  owner: string,
+  propertyArray: ProbablyDecodedProperty[] | undefined | null,
+  schema: UniqueCollectionSchemaDecoded,
+  imageLinkOptions?: DecodingImageLinkOptions
+): UniqueTokenDecoded => {
   if (!schema) {
-    return {
-      result: null,
-      error: new ValidationError('unable to parse: collection schema was not provided')
-    }
+    throw new ValidationError('unable to parse: collection schema was not provided')
+  }
+  if (!propertyArray || !propertyArray.length) {
+    throw new ValidationError(`unable to parse: token properties are empty`)
   }
 
   if (schema.schemaName === COLLECTION_SCHEMA_NAME.unique) {
-    return await token.decodeTokenFromProperties(collectionId, tokenId, owner, propertyArray, schema)
+    return token.decodeTokenFromProperties(collectionId, tokenId, owner, propertyArray, schema)
   } else if (schema.schemaName === COLLECTION_SCHEMA_NAME.old) {
-    return await oldSchema.decodeOldSchemaToken(collectionId, tokenId, owner, propertyArray, schema, imageLinkOptions)
+    return oldSchema.decodeOldSchemaToken(collectionId, tokenId, owner, propertyArray, schema, imageLinkOptions)
   }
 
-  return {
-    result: null,
-    error: new ValidationError(`unable to parse: collection schemaName is unknown (passed ${schema.schemaName}`)
-  }
+  throw new ValidationError(`unable to parse: collection schemaName is unknown (passed ${schema.schemaName}`)
 }

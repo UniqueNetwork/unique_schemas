@@ -15,28 +15,19 @@ export const unpackCollectionSchemaFromProperties = (properties: ProbablyDecoded
   return converters2Layers.propertiesToObject(properties) as any
 }
 
-export const decodeUniqueCollectionFromProperties = async (collectionId: number, properties: ProbablyDecodedProperty[]): Promise<DecodingResult<UniqueCollectionSchemaDecoded>> => {
-  try {
-    const unpackedSchema: UniqueCollectionSchemaDecoded = unpackCollectionSchemaFromProperties(properties)
-    validateUniqueCollectionSchema(unpackedSchema)
-    unpackedSchema.collectionId = collectionId as number
+export const decodeUniqueCollectionFromProperties = (collectionId: number, properties: ProbablyDecodedProperty[]): UniqueCollectionSchemaDecoded => {
+  const unpackedSchema: UniqueCollectionSchemaDecoded = unpackCollectionSchemaFromProperties(properties)
+  validateUniqueCollectionSchema(unpackedSchema)
+  unpackedSchema.collectionId = collectionId as number
 
-    if (unpackedSchema.coverPicture) {
-      unpackedSchema.coverPicture = decodeTokenUrlOrInfixOrCidWithHashField(unpackedSchema.coverPicture, unpackedSchema.image)
-    }
-    if (unpackedSchema.coverPicturePreview) {
-      unpackedSchema.coverPicturePreview = decodeTokenUrlOrInfixOrCidWithHashField(unpackedSchema.coverPicturePreview, unpackedSchema.image)
-    }
-    return {
-      result: unpackedSchema,
-      error: null,
-    }
-  } catch (e) {
-    return {
-      result: null,
-      error: e as Error,
-    }
+  if (unpackedSchema.coverPicture) {
+    unpackedSchema.coverPicture = decodeTokenUrlOrInfixOrCidWithHashField(unpackedSchema.coverPicture, unpackedSchema.image)
   }
+  if (unpackedSchema.coverPicturePreview) {
+    unpackedSchema.coverPicturePreview = decodeTokenUrlOrInfixOrCidWithHashField(unpackedSchema.coverPicturePreview, unpackedSchema.image)
+  }
+
+  return unpackedSchema
 }
 
 const generateDefaultTPPObjectForKey = (key: string): TokenPropertyPermissionObject => ({

@@ -131,17 +131,10 @@ export const unpackEncodedTokenFromProperties = <T extends UniqueTokenToCreate>(
 }
 
 
-export const decodeTokenFromProperties = async (collectionId: number, tokenId: number, owner: string | undefined, propertiesArray: ProbablyDecodedProperty[], schema: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaDecoded): Promise<DecodingResult<UniqueTokenDecoded>> => {
+export const decodeTokenFromProperties = (collectionId: number, tokenId: number, owner: string | undefined, propertiesArray: ProbablyDecodedProperty[], schema: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaDecoded): UniqueTokenDecoded => {
   const unpackedToken = unpackEncodedTokenFromProperties(propertiesArray, schema)
 
-  try {
-    validateUniqueToken(unpackedToken, schema)
-  } catch (e) {
-    return {
-      result: null,
-      error: e as Error,
-    }
-  }
+  validateUniqueToken(unpackedToken, schema)
 
   const token: UniqueTokenDecoded = {
     owner,
@@ -173,10 +166,7 @@ export const decodeTokenFromProperties = async (collectionId: number, tokenId: n
     token.file = decodeTokenUrlOrInfixOrCidWithHashField(unpackedToken.file, schema.file)
   }
 
-  return {
-    result: token,
-    error: null,
-  }
+  return token
 }
 
 export const fullDecodeTokenAttributes = (token: UniqueTokenToCreate, collectionSchema: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaDecoded): DecodedAttributes => {

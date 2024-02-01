@@ -7,6 +7,7 @@ import * as oldSchema from '../../tools/oldSchemaDecoder'
 import * as collection from '../../tools/collection'
 import * as token from '../../tools/token'
 import {decodeRoyalty, RoyaltyType} from '../../tools/royalties'
+import {UniqueCollectionSchemaDecoded} from '../../types'
 
 export const detectUniqueVersions = (tokenPropsDict: ProbablyDecodedPropsDict, collectionPropsDict: ProbablyDecodedPropsDict) => {
   const isUniqueSchema = tokenPropsDict.schemaName?.value === 'unique' ||
@@ -28,7 +29,7 @@ export const detectUniqueVersions = (tokenPropsDict: ProbablyDecodedPropsDict, c
   return {isUniqueV2, isUniqueV1, isUniqueV0}
 }
 
-export const decodeToken = async (options: DecodeTokenParams): Promise<IV2Token> => {
+export const decodeTokenToV2 = async (options: DecodeTokenParams): Promise<IV2Token> => {
   const tokenPropsDict = buildDictionaryFromPropertiesArray(options.tokenProperties)
   const collectionPropsDict = buildDictionaryFromPropertiesArray(options.collectionProperties)
 
@@ -58,29 +59,20 @@ export const decodeToken = async (options: DecodeTokenParams): Promise<IV2Token>
 }
 
 
-export const decodeTokenUniqueV0OrV1 = async (options: DecodeTokenParams, isUniqueV0: boolean, tokenPropsDict: ProbablyDecodedPropsDict, collectionPropsDict: ProbablyDecodedPropsDict) => {
+const decodeTokenUniqueV0OrV1 = async (options: DecodeTokenParams, isUniqueV0: boolean, tokenPropsDict: ProbablyDecodedPropsDict, collectionPropsDict: ProbablyDecodedPropsDict, collectionV1DecodedSchema?: UniqueCollectionSchemaDecoded) => {
   if (!options.collectionProperties) {
     throw new Error('Collection properties are required for decoding tokens in Unique schema for versions less than v2')
   }
 
   const collectionId = typeof options.collectionId === 'number' ? options.collectionId : Address.collection.addressToId(options.collectionId)
-  const collectionSchemaResult = isUniqueV0
-    ? await oldSchema.decodeOldSchemaCollection(collectionId, options.collectionProperties, options.decodingImageLinkOptions)
-    : await collection.decodeUniqueCollectionFromProperties(collectionId, options.collectionProperties)
+  const collectionSchema = collectionV1DecodedSchema ? collectionV1DecodedSchema : isUniqueV0
+    ? oldSchema.decodeOldSchemaCollection(collectionId, options.collectionProperties, options.decodingImageLinkOptions)
+    : collection.decodeUniqueCollectionFromProperties(collectionId, options.collectionProperties)
 
-  const collectionSchema = collectionSchemaResult.result
-  if (!collectionSchema) {
-    throw collectionSchemaResult.error
-  }
 
-  const tokenIntermediateRepresentationResult = isUniqueV0
-    ? await oldSchema.decodeOldSchemaToken(collectionId, options.tokenId, options.tokenOwner, options.tokenProperties, collectionSchema, options.decodingImageLinkOptions)
-    : await token.decodeTokenFromProperties(collectionId, options.tokenId, options.tokenOwner, options.tokenProperties, collectionSchema)
-
-  const tokenIntermediateRepresentation = tokenIntermediateRepresentationResult.result
-  if (!tokenIntermediateRepresentation) {
-    throw tokenIntermediateRepresentationResult.error
-  }
+  const tokenIntermediateRepresentation = isUniqueV0
+    ? oldSchema.decodeOldSchemaToken(collectionId, options.tokenId, options.tokenOwner, options.tokenProperties, collectionSchema, options.decodingImageLinkOptions)
+    : token.decodeTokenFromProperties(collectionId, options.tokenId, options.tokenOwner, options.tokenProperties, collectionSchema)
 
   const attributesArray = Object.values(tokenIntermediateRepresentation.attributes)
   const tokenName = tokenIntermediateRepresentation.name?._ ??
@@ -137,6 +129,8 @@ export const decodeTokenUniqueV0OrV1 = async (options: DecodeTokenParams, isUniq
   // convert token from intermediate representation to v2 one
   const tokenV2: IV2Token = {
     schemaName: 'unique',
+    schemaVersion: '2.0.0',
+    originalSchemaVersion: isUniqueV0 ? '0.0.1' : (collectionSchema.schemaVersion || '1.0.0'),
   }
   if (tokenIntermediateRepresentation.image && tokenIntermediateRepresentation.image.fullUrl) {
     //todo: retrieve media details if requested in options.tryRequestForMediaDetails
@@ -152,8 +146,7 @@ export const decodeTokenUniqueV0OrV1 = async (options: DecodeTokenParams, isUniq
   return tokenV2
 }
 
-
-export const decodeTokenUniqueV2 = async (props: ProbablyDecodedPropsDict, collectionProps: ProbablyDecodedPropsDict | null, tokenURI: string | null, options: DecodeTokenParams): Promise<IV2Token> => {
+const decodeTokenUniqueV2 = async (props: ProbablyDecodedPropsDict, collectionProps: ProbablyDecodedPropsDict | null, tokenURI: string | null, options: DecodeTokenParams): Promise<IV2Token> => {
   // for not UniqueV2 will be probably empty
   // if somebody will use this property for not UniqueV2 data - ¯\_(ツ)_/¯
   let tokenDataString = props.tokenData?.value || null
