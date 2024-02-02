@@ -49,18 +49,15 @@
     "tsx": "^4.7.0"
   },
   "dependencies": {
-    "@unique-nft/sdk": "^0.6.1",
-    "@unique-nft/solidity-interfaces": "^0.70.0",
     "@unique-nft/utils": "^0.3.14",
-    "ajv": "^8.12.0",
     "axios": "^1.6.7",
-    "ethers": "^5.7.2",
+    "protobufjs": "^7.2.6",
+    "zod": "^3.22.4"
+  },
+  "peerDependencies": {
     "file-type": "^19.0.0",
     "json5": "^2.2.3",
     "mime": "^4.0.1",
-    "opensea-js": "^7.0.8",
-    "protobufjs": "^7.2.6",
-    "uuid": "^9.0.1",
-    "zod": "^3.22.4"
+    "uuid": "^9.0.1"
   }
 }
