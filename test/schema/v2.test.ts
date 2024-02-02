@@ -2,7 +2,7 @@ import type {ICollection, INftToken} from '@unique-nft/utils/chainLens'
 
 import {describe, test, expect, beforeAll} from 'vitest'
 import {ChainLenses} from '@unique-nft/utils/chainLens'
-import type {UniqueCollectionSchemaIntermediate} from '../../src'
+import type {UniqueCollectionSchemaIntermediate} from '../../src/tools/old_to_intermediate/intermediate_types'
 import {decodeV0OrV1CollectionSchemaToIntermediate} from '../../src/tools/old_to_intermediate'
 import {decodeTokenToV2} from '../../src/decoding/tokenDecoding'
 import {IV2Collection, IV2Token} from '../../src/schema.zod'
@@ -14,9 +14,9 @@ const V0_PUNK_IN_V2_FORM: IV2Token = {
   originalSchemaVersion: '0.0.1',
   image: 'https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image1.png',
   attributes: [
-    { trait_type: 'gender', value: 'Male' },
-    { trait_type: 'traits', value: 'Teeth Smile' },
-    { trait_type: 'traits', value: 'Up Hair' }
+    {trait_type: 'gender', value: 'Male'},
+    {trait_type: 'traits', value: 'Teeth Smile'},
+    {trait_type: 'traits', value: 'Up Hair'}
   ]
 }
 
@@ -26,19 +26,19 @@ const V1_PUNK_IN_V2_FORM: IV2Token = {
   originalSchemaVersion: '1.0.0',
   image: 'https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image1.png',
   attributes: [
-    { trait_type: 'gender', value: 'Female' },
-    { trait_type: 'traits', value: 'Teeth Smile' },
-    { trait_type: 'traits', value: 'Up Hair' }
+    {trait_type: 'gender', value: 'Female'},
+    {trait_type: 'traits', value: 'Teeth Smile'},
+    {trait_type: 'traits', value: 'Up Hair'}
   ],
   royalties: [
     {
-      address: '5H684Wa69GpbgwQ7w9nZyzVpDmEDCTexhRNmZ7mkqM1Rt7dH',
+      address: '5Gus5r7HSZv9ScdaTNVbFMBEsxMtc4cZBPTLfJJbLXQK8m9d',
       percent: 0.5
     }
   ]
 }
 
-const V0_COLLECTION_IN_V2_FORM: IV2Collection  = {
+const V0_COLLECTION_IN_V2_FORM: IV2Collection = {
   schemaName: 'unique',
   schemaVersion: '2.0.0',
   originalSchemaVersion: '0.0.1',
@@ -83,8 +83,18 @@ describe('Decoding collection and token in schemas v0 and v1 to v2', async () =>
       throw new Error('No punk v1 collection')
     }
 
-    punkV0Schema = decodeV0OrV1CollectionSchemaToIntermediate(1, punkV0Collection.properties)
-    punkV1Schema = decodeV0OrV1CollectionSchemaToIntermediate(1, punkV1Collection.properties)
+    punkV0Schema = decodeV0OrV1CollectionSchemaToIntermediate(
+      1,
+      punkV0Collection.properties,
+      true,
+      false,
+    )
+    punkV1Schema = decodeV0OrV1CollectionSchemaToIntermediate(
+      1,
+      punkV1Collection.properties,
+      false,
+      true,
+    )
   })
 
   test('v0 decode token to v2', async () => {
