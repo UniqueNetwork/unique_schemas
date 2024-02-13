@@ -6,6 +6,13 @@ export type ProbablyDecodedProperty = {
   value?: string | null
 }
 
+export type PropertyForEncoding =
+  { key: string, valueHex?: undefined, value: string }
+  |
+  { key: string, valueHex: string, value?: undefined }
+
+export type PropertyWithHexOnly = { key: string, valueHex: string }
+
 export type ProbablyDecodedPropsDict = Record<string, { value: string | null, valueHex: string }>
 
 export type DecodeCollectionParams = {
@@ -51,3 +58,24 @@ export interface TokenPropertyPermissionObject {
 
 
 export type CollectionTokenPropertyPermissions = Array<TokenPropertyPermissionObject>
+
+/////////////////////////////////////////////////////
+// encoding params and results
+/////////////////////////////////////////////////////
+
+export type EncodeCollectionOptions = {
+  defaultPermission?: TokenPropertyPermission
+
+  overwriteTPPs?: CollectionTokenPropertyPermissions
+  overwriteProperties?: PropertyForEncoding[]
+}
+
+export type EncodeCollectionResult = {
+  collectionProperties: PropertyWithHexOnly[]
+  tokenPropertyPermissions: CollectionTokenPropertyPermissions
+}
+
+export type EncodeTokenOptions = {
+  URI?: string
+  overwriteProperties?: PropertyForEncoding[]
+}

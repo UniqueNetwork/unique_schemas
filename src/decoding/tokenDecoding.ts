@@ -3,7 +3,7 @@ import {Semver} from '../tools/semver'
 import {DecodeTokenParams, ProbablyDecodedProperty, ProbablyDecodedPropsDict} from '../types'
 import {buildDictionaryFromPropertiesArray, getTokenURI, safeJSONParseWithPossibleEmptyInput} from '../utils'
 import {Address} from '@unique-nft/utils'
-import {decodeRoyalty, RoyaltyType} from '../tools/royalties'
+import {decodeRoyalty, decodeRoyaltyToV2, RoyaltyType} from '../tools/royalties'
 import {UniqueCollectionSchemaIntermediate} from '../tools/old_to_intermediate/intermediate_types'
 import {
   decodeV0OrV1CollectionSchemaToIntermediate,
@@ -120,23 +120,8 @@ const decodeTokenUniqueV0OrV1 = async (options: DecodeTokenParams,isUniqueV0: bo
     media.file = {type: 'document', url: tokenIntermediateRepresentation.file.fullUrl}
 
 
-  const royalties: Array<IV2Royalty> = []
-  if (tokenPropsDict.royalties?.valueHex || collectionPropsDict.royalties?.valueHex) {
-    const royaltiesHexString = tokenPropsDict.royalties?.valueHex || collectionPropsDict.royalties?.valueHex
-    const royaltiesResult = royaltiesHexString ? decodeRoyalty(royaltiesHexString) : []
-    for (const royalty of royaltiesResult) {
-      const royaltyInShortForm: IV2Royalty = {
-        address: royalty.address,
-        // core idea: given value   2500 with decimals 4, we want to get 2.5
-        //                     or 650000 with decimals 6, we want to get 6.5
-        percent: Number(royalty.value) / (Math.pow(10, royalty.decimals - 1)), //todo: check math
-      }
-      if (royalty.royaltyType === RoyaltyType.PRIMARY_ONLY) {
-        royaltyInShortForm.isPrimaryOnly = true
-      }
-      royalties.push(royaltyInShortForm)
-    }
-  }
+  const royaltyEncoded = tokenPropsDict.royalties?.valueHex || collectionPropsDict.royalties?.valueHex
+  const royalties: IV2Royalty[] = royaltyEncoded ? decodeRoyaltyToV2(royaltyEncoded) : []
 
   // convert token from intermediate representation to v2 one
   const tokenV2: IV2Token = {

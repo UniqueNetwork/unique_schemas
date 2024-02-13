@@ -1,10 +1,11 @@
-import { Address } from '@unique-nft/utils/address';
+import {Address} from '@unique-nft/utils/address';
 import {
   RoyaltyType,
   UniqueRoyaltyPart,
   UniqueRoyaltyPartNoBigint,
 } from './types';
-import { validateRoyaltyPart, ZEROS } from './shared';
+import {validateRoyaltyPart, ZEROS} from './shared';
+import {IV2Royalty} from '../../schema.zod'
 
 const encodeAddress = (address: string): [boolean, string] => {
   if (Address.is.ethereumAddress(address)) {
@@ -57,3 +58,20 @@ export const encodeRoyalty = (
   parts: (UniqueRoyaltyPart | UniqueRoyaltyPartNoBigint)[],
 ): string =>
   '0x' + parts.map((part) => encodeRoyaltyPart(part).substring(2)).join('');
+
+export const encodeRoyaltyFromV2 = (royalties: IV2Royalty[]) => {
+  // IV2Royalty[] => UniqueRoyaltyPart[]
+  return encodeRoyalty(
+    royalties.map((royalty) => {
+      const {address, percent, isPrimaryOnly} = royalty;
+      return {
+        address,
+        value: BigInt(percent * 10000),
+        decimals: 4,
+        royaltyType: isPrimaryOnly ? RoyaltyType.PRIMARY_ONLY : RoyaltyType.DEFAULT,
+        version: 1,
+      } satisfies UniqueRoyaltyPart
+    })
+  )
+
+}

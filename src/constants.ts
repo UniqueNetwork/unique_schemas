@@ -1,3 +1,5 @@
+import {TokenPropertyPermission} from './types'
+
 export const PERMISSION = <const>{
   REWRITEABLE_FOR_BOTH: {mutable: true, collectionAdmin: true, tokenOwner: true},
   REWRITEABLE_FOR_COLLECTION_ADMIN: {mutable: true, collectionAdmin: true, tokenOwner: false},
@@ -6,7 +8,7 @@ export const PERMISSION = <const>{
   WRITABLE_ONCE_FOR_BOTH: {mutable: false, collectionAdmin: true, tokenOwner: true},
   WRITABLE_ONCE_FOR_COLLECTION_ADMIN: {mutable: false, collectionAdmin: true, tokenOwner: false},
   WRITABLE_ONCE_FOR_TOKEN_OWNER: {mutable: false, collectionAdmin: false, tokenOwner: true},
-} satisfies { [K: string]: { mutable: boolean; collectionAdmin: boolean; tokenOwner: boolean } }
+} satisfies { [K: string]: TokenPropertyPermission}
 
 export const DEFAULT_PERMISSION = PERMISSION.WRITABLE_ONCE_FOR_COLLECTION_ADMIN
 
@@ -39,3 +41,6 @@ export type SubType =
   | 'dailymotion'
   | 'mixcloud'
   | 'figma'
+
+export const SCHEMA_NAME = 'unique'
+export const SCHEMA_VERSION = '2.0.0'

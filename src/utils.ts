@@ -1,4 +1,4 @@
-import {ProbablyDecodedProperty, ProbablyDecodedPropsDict} from './types'
+import {ProbablyDecodedProperty, ProbablyDecodedPropsDict, PropertyForEncoding, PropertyWithHexOnly} from './types'
 import {Utf8} from '@unique-nft/utils/string'
 import {StringUtils} from '@unique-nft/utils'
 
@@ -64,5 +64,27 @@ export const getTokenURI = (tokenProperties: ProbablyDecodedPropsDict, collectio
     )
 
   return tokenURI || null
+}
+
+export const zipTwoArraysByKey = <T extends { key: string }>(src1: T[], src2: T[]): T[] => {
+  if (src2.length === 0) return src1
+
+  const result: T[] = [...src1]
+  for (const property of src2) {
+    const index = result.findIndex(p => p.key === property.key)
+    if (index === -1) {
+      result.push(property)
+    } else {
+      result[index] = property
+    }
+  }
+  return result
+}
+
+export const hexifyProperties = (properties: PropertyForEncoding[]): PropertyWithHexOnly[] => {
+  return properties.map(p => ({
+    key: p.key,
+    valueHex: p.valueHex ?? Utf8.stringToHexString(p.value),
+  }))
 }
 
