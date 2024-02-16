@@ -63,7 +63,7 @@ describe('Decoding collection and token in schemas v0 and v1 to v2', async () =>
   let punkV0Token: INftToken | null = null
   let punkV1Token: INftToken | null = null
 
-  let complexCollection: ICollection | null = null;
+  let complexCollection: ICollection | null = null
   let complexToken: INftToken | null = null
 
   beforeAll(async () => {
@@ -72,13 +72,11 @@ describe('Decoding collection and token in schemas v0 and v1 to v2', async () =>
       ChainLenses.unique.requestCollection(1),
       ChainLenses.quartz.requestNftToken(1, 1),
       ChainLenses.unique.requestNftToken(1, 1),
-      ChainLenses.opal.requestCollection(2396),
-      ChainLenses.opal.requestNftToken(2396, 1),
     ]);
 
     [complexCollection, complexToken] = await Promise.all([
-      ChainLenses.opal.requestCollection(2396),
-      ChainLenses.opal.requestNftToken(2396, 1),
+      ChainLenses.unique.requestCollection(2396),
+      ChainLenses.unique.requestNftToken(2396, 1972),
     ]);
 
     if (!punkV0Collection) {
@@ -90,8 +88,19 @@ describe('Decoding collection and token in schemas v0 and v1 to v2', async () =>
   })
 
   test('complex collection and token to v2', async () => {
-    const collection = await decodeCollectionToV2(complexCollection);
-    const token = await decodeTokenToV2(complexToken);
+    const collection = await decodeCollectionToV2({
+      collectionId: complexCollection.collectionId,
+      collectionName: complexCollection.name,
+      collectionDescription: complexCollection.description,
+      collectionSymbol: complexCollection.tokenPrefix,
+      collectionProperties: complexCollection.properties
+    });
+    const token = await decodeTokenToV2({
+      collectionId: complexToken.collectionId,
+      tokenId: complexToken.tokenId,
+      collectionProperties: complexCollection.properties,
+      tokenProperties: complexToken.properties
+    });
     console.log('Done')
   })
 
