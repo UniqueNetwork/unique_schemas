@@ -3,7 +3,7 @@ import {Semver} from '../tools/semver'
 import {DecodeTokenParams, ProbablyDecodedProperty, ProbablyDecodedPropsDict} from '../types'
 import {buildDictionaryFromPropertiesArray, getTokenURI, safeJSONParseWithPossibleEmptyInput} from '../utils'
 import {Address} from '@unique-nft/utils'
-import {decodeRoyalty, decodeRoyaltyToV2, RoyaltyType} from '../tools/royalties'
+import {Royalties} from '@unique-nft/utils/royalties'
 import {UniqueCollectionSchemaIntermediate} from '../tools/old_to_intermediate/intermediate_types'
 import {
   decodeV0OrV1CollectionSchemaToIntermediate,
@@ -121,7 +121,7 @@ const decodeTokenUniqueV0OrV1 = async (options: DecodeTokenParams,isUniqueV0: bo
 
 
   const royaltyEncoded = tokenPropsDict.royalties?.valueHex || collectionPropsDict.royalties?.valueHex
-  const royalties: IV2Royalty[] = royaltyEncoded ? decodeRoyaltyToV2(royaltyEncoded) : []
+  const royalties: IV2Royalty[] = royaltyEncoded ? Royalties.uniqueV2.decode(royaltyEncoded) : []
 
   // convert token from intermediate representation to v2 one
   const tokenV2: IV2Token = {

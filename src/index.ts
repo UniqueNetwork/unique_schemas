@@ -1,6 +1,7 @@
 import {decodeCollectionToV2} from './decoding/collectionDecoding'
 import {decodeTokenToV2} from './decoding/tokenDecoding'
 import {encodeCollection, encodeToken} from './encoding'
+import * as schemas from './schema.zod'
 
 export const SchemaTools = {
   decode: {
@@ -11,7 +12,10 @@ export const SchemaTools = {
     collection: encodeCollection,
     token: encodeToken,
   },
-  tools: {},
+  tools: {
+    schemas,
+  },
 }
 
 export * from './types'
+export type * from './schema.zod'

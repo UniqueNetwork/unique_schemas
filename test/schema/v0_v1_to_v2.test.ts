@@ -31,7 +31,7 @@ const V1_PUNK_IN_V2_FORM: IV2Token = {
   royalties: [
     {
       address: '5Gus5r7HSZv9ScdaTNVbFMBEsxMtc4cZBPTLfJJbLXQK8m9d',
-      percent: 0.5
+      percent: 5
     }
   ],
 }

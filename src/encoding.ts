@@ -8,10 +8,10 @@ import {
 } from './types'
 import {DEFAULT_PERMISSION, SCHEMA_NAME, SCHEMA_VERSION} from './constants'
 import {IV2Collection, IV2Token, zCollectionSchema, zTokenSchema} from './schema.zod'
-import {encodeRoyaltyFromV2} from './tools/royalties'
+import {Royalties} from '@unique-nft/utils/royalties'
 import {zipTwoArraysByKey, hexifyProperties} from './utils'
 
-export const encodeCollection = (data: unknown, options: EncodeCollectionOptions): EncodeCollectionResult => {
+export const encodeCollection = (data: IV2Collection, options: EncodeCollectionOptions): EncodeCollectionResult => {
   const collectionInfo: IV2Collection = zCollectionSchema.parse(data as IV2Collection)
 
   const permission = options.defaultPermission ?? {...DEFAULT_PERMISSION}
@@ -22,7 +22,8 @@ export const encodeCollection = (data: unknown, options: EncodeCollectionOptions
     {key: 'collectionInfo', value: JSON.stringify(collectionInfo)},
   ]
   if (collectionInfo.royalties) {
-    properties.push({key: 'royalties', value: encodeRoyaltyFromV2(collectionInfo.royalties)})
+    // properties.push({key: 'royalties', value: Royalties.uniqueV2.encode(collectionInfo.royalties)})
+    throw new Error('Royalties are not supported in collections in v2, please use the token level royalties')
   }
 
   const TPPs: CollectionTokenPropertyPermissions = [
@@ -37,7 +38,7 @@ export const encodeCollection = (data: unknown, options: EncodeCollectionOptions
   }
 }
 
-export const encodeToken = (data: unknown, options: EncodeTokenOptions): PropertyWithHexOnly[] => {
+export const encodeToken = (data: IV2Token, options: EncodeTokenOptions): PropertyWithHexOnly[] => {
   const token: IV2Token = zTokenSchema.parse(data)
 
   const properties: PropertyForEncoding[] = [
@@ -46,7 +47,7 @@ export const encodeToken = (data: unknown, options: EncodeTokenOptions): Propert
     {key: 'tokenData', value: JSON.stringify(token)},
   ]
 
-  token.royalties && properties.push({key: 'royalties', value: encodeRoyaltyFromV2(token.royalties)})
+  token.royalties && properties.push({key: 'royalties', valueHex: Royalties.uniqueV2.encode(token.royalties)})
 
   options.URI && properties.push({key: 'URI', value: options.URI})
 
