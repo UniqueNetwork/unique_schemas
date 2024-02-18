@@ -1,11 +1,9 @@
 import {describe, expect, test} from 'vitest'
-import {IV2Collection, IV2Token} from 'src/schema.zod'
+import {IV2CollectionForEncoding, IV2TokenForEncoding} from 'src/schema.zod'
 import {SchemaTools} from 'src'
-import {Royalties, RoyaltyType} from '@unique-nft/utils/royalties'
+import {SCHEMA_NAME, SCHEMA_VERSION} from '../../src/constants'
 
-const DEMO_V2_COLLECTION: IV2Collection = {
-  schemaName: 'unique',
-  schemaVersion: '2.0.0',
+const DEMO_V2_COLLECTION: IV2CollectionForEncoding = {
   cover_image: {
     url: 'https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image1.png'
   },
@@ -33,9 +31,7 @@ const DEMO_COLLECTION_ENCODED = {
 }
 
 
-const DEMO_V2_TOKEN: IV2Token = {
-  schemaName: 'unique',
-  schemaVersion: '2.0.0',
+const DEMO_V2_TOKEN: IV2TokenForEncoding = {
   image: 'https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image1.png',
   attributes: [
     {trait_type: 'gender', value: 'Female'},
@@ -63,6 +59,11 @@ const DEMO_TOKEN_ENCODED = [
   }
 ]
 
+const SCHEMA_NAME_AND_VERSION = {
+  schemaName: SCHEMA_NAME,
+  schemaVersion: SCHEMA_VERSION,
+}
+
 
 describe('Decoding collection and token in schemas v0 and v1 to v2', async () => {
   test('Encoding collection in v2', async () => {
@@ -78,7 +79,10 @@ describe('Decoding collection and token in schemas v0 and v1 to v2', async () =>
       collectionProperties: encoded.collectionProperties,
     })
 
-    expect(decoded).toEqual(DEMO_V2_COLLECTION)
+    expect(decoded).to.deep.equal({
+      ...SCHEMA_NAME_AND_VERSION,
+      ...DEMO_V2_COLLECTION,
+    })
   })
 
   test('Encoding token in v2', async () => {
@@ -90,6 +94,9 @@ describe('Decoding collection and token in schemas v0 and v1 to v2', async () =>
       tokenId: 1,
       tokenProperties: encoded,
     })
-    expect(decoded).toEqual(DEMO_V2_TOKEN)
+    expect(decoded).to.deep.equal({
+      ...SCHEMA_NAME_AND_VERSION,
+      ...DEMO_V2_TOKEN,
+    })
   })
 })

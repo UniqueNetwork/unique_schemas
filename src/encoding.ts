@@ -7,18 +7,25 @@ import {
   PropertyWithHexOnly,
 } from './types'
 import {DEFAULT_PERMISSION, SCHEMA_NAME, SCHEMA_VERSION} from './constants'
-import {IV2Collection, IV2Token, zCollectionSchema, zTokenSchema} from './schema.zod'
+import {
+  IV2Collection,
+  IV2CollectionForEncoding,
+  IV2Token,
+  IV2TokenForEncoding,
+  zCollectionSchema,
+  zTokenSchema
+} from './schema.zod'
 import {Royalties} from '@unique-nft/utils/royalties'
 import {zipTwoArraysByKey, hexifyProperties} from './utils'
 
-export const encodeCollection = (data: IV2Collection, options: EncodeCollectionOptions): EncodeCollectionResult => {
-  const collectionInfo: IV2Collection = zCollectionSchema.parse(data as IV2Collection)
+export const encodeCollection = (data: IV2CollectionForEncoding, options: EncodeCollectionOptions): EncodeCollectionResult => {
+  const collectionInfo = zCollectionSchema.parse(data)
 
   const permission = options.defaultPermission ?? {...DEFAULT_PERMISSION}
 
   const properties: PropertyForEncoding[] = [
-    {key: 'schemaName', value: collectionInfo.schemaName},
-    {key: 'schemaVersion', value: collectionInfo.schemaVersion},
+    {key: 'schemaName', value: collectionInfo.schemaName || SCHEMA_NAME},
+    {key: 'schemaVersion', value: collectionInfo.schemaVersion || SCHEMA_VERSION},
     {key: 'collectionInfo', value: JSON.stringify(collectionInfo)},
   ]
   if (collectionInfo.royalties) {
@@ -38,8 +45,8 @@ export const encodeCollection = (data: IV2Collection, options: EncodeCollectionO
   }
 }
 
-export const encodeToken = (data: IV2Token, options: EncodeTokenOptions): PropertyWithHexOnly[] => {
-  const token: IV2Token = zTokenSchema.parse(data)
+export const encodeToken = (data: IV2TokenForEncoding, options: EncodeTokenOptions): PropertyWithHexOnly[] => {
+  const token = zTokenSchema.parse(data)
 
   const properties: PropertyForEncoding[] = [
     {key: 'schemaName', value: token.schemaName || SCHEMA_NAME},

@@ -1,4 +1,5 @@
 import {z} from 'zod'
+import {SCHEMA_NAME, SCHEMA_VERSION} from './constants'
 
 export const zCollectionIdOrAddress = z.union([
   z.number().min(1).max((2 ** 32) - 1),
@@ -145,8 +146,8 @@ export type IV2CustomizingOverrides = z.infer<typeof zCustomizingOverrides>
 
 export const zTokenSchema = z.object({
   // base stuff
-  schemaName: z.string().optional(),
-  schemaVersion: zSemverString2xx.optional(),
+  schemaName: z.string().optional().default(SCHEMA_NAME),
+  schemaVersion: zSemverString2xx.optional().default(SCHEMA_VERSION),
   originalSchemaVersion: zSemverString.optional(),
 
   name: z.string().optional(),
@@ -171,10 +172,14 @@ export const zTokenSchema = z.object({
   locale: z.string().optional(),
 })
 export type IV2Token = z.infer<typeof zTokenSchema>
+export type IV2TokenForEncoding = z.input<typeof zTokenSchema>
 
 export const zCollectionSchema = z.object({
-  schemaName: z.string().refine((v) => v === 'unique', {message: 'schemaName must be "unique"'}),
-  schemaVersion: zSemverString2xx,
+  schemaName: z.string()
+    .optional()
+    .refine((v) => v === SCHEMA_NAME, {message: `schemaName must be "${SCHEMA_NAME}"`})
+    .default(SCHEMA_NAME),
+  schemaVersion: zSemverString2xx.optional().default(SCHEMA_VERSION),
   originalSchemaVersion: zSemverString.optional(),
 
   name: z.string().optional(),
@@ -196,3 +201,4 @@ export const zCollectionSchema = z.object({
   royalties: z.array(zRoyalty).optional(),
 })
 export type IV2Collection = z.infer<typeof zCollectionSchema>
+export type IV2CollectionForEncoding = z.input<typeof zCollectionSchema>
