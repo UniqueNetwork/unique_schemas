@@ -8,8 +8,6 @@ Collection encoding takes some info about collection (cover image, etc.) and ret
 import {SchemaTools} from '@unique-nft/schemas'
 
 const {collectionProperties, tokenPropertyPermissions} = SchemaTools.collection.encode({
-  schemaName: 'unique',
-  schemaVersion: '2.0.0',
   cover_image: {
     url: 'https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image1.png'
   },
@@ -32,8 +30,6 @@ Token encoding takes some info about token (image, attributes, royalties, etc.) 
 import {SchemaTools} from '@unique-nft/schemas'
 
 const tokenProperties = SchemaTools.token.encode({
-  schemaName: 'unique',
-  schemaVersion: '2.0.0',
   image: 'https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image1.png',
   attributes: [
     {trait_type: 'gender', value: 'Female'},
