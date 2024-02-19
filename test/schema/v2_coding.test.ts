@@ -7,6 +7,10 @@ const DEMO_V2_COLLECTION: IV2CollectionForEncoding = {
   cover_image: {
     url: 'https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image1.png'
   },
+  potential_attributes: [{
+    trait_type: 'color',
+    values: ['red', 'green', 'blue'],
+  }],
 }
 
 const DEMO_COLLECTION_ENCODED = {
@@ -15,7 +19,7 @@ const DEMO_COLLECTION_ENCODED = {
     {key: 'schemaVersion', valueHex: '0x322e302e30'},
     {
       key: 'collectionInfo',
-      valueHex: '0x7b22736368656d614e616d65223a22756e69717565222c22736368656d6156657273696f6e223a22322e302e30222c22636f7665725f696d616765223a7b2275726c223a2268747470733a2f2f697066732e756e697175652e6e6574776f726b2f697066732f516d634163483446394859517470714b487842467747766b664b623871636b586a325957557263633879643234472f696d616765312e706e67227d7d'
+      valueHex: '0x7b22736368656d614e616d65223a22756e69717565222c22736368656d6156657273696f6e223a22322e302e30222c22636f7665725f696d616765223a7b2275726c223a2268747470733a2f2f697066732e756e697175652e6e6574776f726b2f697066732f516d634163483446394859517470714b487842467747766b664b623871636b586a325957557263633879643234472f696d616765312e706e67227d2c22706f74656e7469616c5f61747472696275746573223a5b7b2274726169745f74797065223a22636f6c6f72222c2276616c756573223a5b22726564222c22677265656e222c22626c7565225d7d5d7d'
     }
   ],
   tokenPropertyPermissions: [
@@ -65,8 +69,8 @@ const SCHEMA_NAME_AND_VERSION = {
 }
 
 
-describe('Decoding collection and token in schemas v0 and v1 to v2', async () => {
-  test('Encoding collection in v2', async () => {
+describe('Encoding and decoding collection and token in schemas v2', async () => {
+  test('Encoding and decoding collection in v2', async () => {
     const encoded = SchemaTools.encode.collection(DEMO_V2_COLLECTION, {})
     // console.dir(encoded, {depth: 1000})
     expect(encoded).toEqual(DEMO_COLLECTION_ENCODED)
@@ -85,7 +89,7 @@ describe('Decoding collection and token in schemas v0 and v1 to v2', async () =>
     })
   })
 
-  test('Encoding token in v2', async () => {
+  test('Encoding and decoding token in v2', async () => {
     const encoded = SchemaTools.encode.token(DEMO_V2_TOKEN, {})
     expect(encoded).toEqual(DEMO_TOKEN_ENCODED)
 

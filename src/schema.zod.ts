@@ -174,6 +174,13 @@ export const zTokenSchema = z.object({
 export type IV2Token = z.infer<typeof zTokenSchema>
 export type IV2TokenForEncoding = z.input<typeof zTokenSchema>
 
+const zPotentialAttributeValues = z.array(z.object({
+  trait_type: z.string(),
+  display_type: z.string().optional(),
+  values: z.array(z.union([z.string(), z.number()])).optional(),
+}))
+export type IV2PotentialAttributeValues = z.infer<typeof zPotentialAttributeValues>
+
 export const zCollectionSchema = z.object({
   schemaName: z.string()
     .optional()
@@ -192,6 +199,8 @@ export const zCollectionSchema = z.object({
 
   cover_image: zImageWithDetailsAndThumbnail.optional(),
   default_token_image: zImageWithDetailsAndThumbnail.optional(),
+
+  potential_attributes: zPotentialAttributeValues.optional(),
 
   customizing: z.object({
     slots: z.record(zCustomizingSlot).optional(),

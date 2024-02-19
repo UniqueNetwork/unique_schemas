@@ -1,5 +1,5 @@
 import {DecodeCollectionParams, ProbablyDecodedProperty} from '../types'
-import {IV2Collection} from '../schema.zod'
+import {IV2Collection, IV2PotentialAttributeValues} from '../schema.zod'
 import {buildDictionaryFromPropertiesArray} from '../utils'
 import {detectUniqueVersions} from './tokenDecoding'
 import {decodeHexAndParseJSONOrReturnNull} from '../utils'
@@ -42,6 +42,20 @@ export const decodeCollectionToV2 = async (options: DecodeCollectionParams): Pro
     description: options.collectionDescription as string, //todo: parse UTF16
     symbol: options.collectionSymbol as string, //todo: parse UTF16
     tokenPrefix: options.collectionSymbol as string, //todo: parse UTF16
+  }
+
+  if (collectionSchema.attributesSchema) {
+    collectionData.potential_attributes = Object.values(collectionSchema.attributesSchema)
+      .map(oldAttribute => {
+        const newAttribute: IV2PotentialAttributeValues[number] = {
+          trait_type: oldAttribute.name._,
+          display_type: oldAttribute.type,
+        }
+        if (oldAttribute.enumValues) {
+          newAttribute.values = Object.values(oldAttribute.enumValues).map(enumValue => enumValue._)
+        }
+        return newAttribute
+      })
   }
 
   if (collectionSchema.coverPicture.fullUrl) {

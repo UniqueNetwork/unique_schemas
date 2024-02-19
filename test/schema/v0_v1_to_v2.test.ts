@@ -47,12 +47,27 @@ const V0_COLLECTION_IN_V2_FORM: IV2Collection = {
   cover_image: {
     url: 'https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image1.png'
   },
+  potential_attributes: [
+    {trait_type: 'gender', display_type: 'string', values: ['Male', 'Female']},
+    {
+      trait_type: 'traits',
+      display_type: 'string',
+      values: ['Black Lipstick', 'Red Lipstick', 'Smile', 'Teeth Smile', 'Purple Lipstick', 'Nose Ring', 'Asian Eyes', 'Sunglasses', 'Red Glasses', 'Round Eyes', 'Left Earring', 'Right Earring', 'Two Earrings', 'Brown Beard', 'Mustache Beard', 'Mustache', 'Regular Beard', 'Up Hair', 'Down Hair', 'Mahawk', 'Red Mahawk', 'Orange Hair', 'Bubble Hair', 'Emo Hair', 'Thin Hair', 'Bald', 'Blonde Hair', 'Caret Hair', 'Pony Tails', 'Cigar', 'Pipe']
+    }
+  ],
 }
 
 const V1_COLLECTION_IN_V2_FORM: IV2Collection = {
   ...JSON.parse(JSON.stringify(V0_COLLECTION_IN_V2_FORM)),
   originalSchemaVersion: '1.0.0',
   description: 'First NFT collection in Polkadot and Kusama space',
+  potential_attributes: [
+    {
+      ...V0_COLLECTION_IN_V2_FORM.potential_attributes![0],
+      values: ['Female', 'Male'],
+    },
+    ...V0_COLLECTION_IN_V2_FORM.potential_attributes!.slice(1),
+  ],
 }
 
 
@@ -97,7 +112,7 @@ describe('Decoding collection and token in schemas v0 and v1 to v2', async () =>
     })).resolves.toEqual(V1_PUNK_IN_V2_FORM)
   })
 
-  test('v0 decode collection to v2', async () => {
+  test('v0 decode collection to v2: collection_v0_v2', async () => {
     await expect(decodeCollectionToV2({
       collectionId: 1,
       collectionName: punkV0Collection!.name,
@@ -107,7 +122,7 @@ describe('Decoding collection and token in schemas v0 and v1 to v2', async () =>
     })).resolves.toEqual(V0_COLLECTION_IN_V2_FORM)
   })
 
-  test('v1 decode collection to v2', async () => {
+  test('v1 decode collection to v2: collection_v1_v2', async () => {
     await expect(decodeCollectionToV2({
       collectionId: 1,
       collectionName: punkV1Collection!.name,
