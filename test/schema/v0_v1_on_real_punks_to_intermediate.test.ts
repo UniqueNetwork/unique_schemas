@@ -1,17 +1,18 @@
-import type {UniqueCollectionSchemaIntermediate, UniqueTokenIntermediate} from '../../src/tools/old_to_intermediate/intermediate_types'
+import type {
+  UniqueCollectionSchemaIntermediate,
+  UniqueTokenIntermediate
+} from '../../src/tools/old_to_intermediate/intermediate_types'
 import type {ICollection, INftToken} from '@unique-nft/utils/chainLens'
-
-import {describe, test, expect, beforeAll} from 'vitest'
 import {ChainLenses} from '@unique-nft/utils/chainLens'
+
+import {beforeAll, describe, expect, test} from 'vitest'
 import {
   decodeV0OrV1CollectionSchemaToIntermediate,
   decodeV0OrV1TokenToIntermediate
 } from '../../src/tools/old_to_intermediate'
+import {COLLECTION_SCHEMA_FAMILY} from '../../src'
 
 const punkData = {
-  collectionId: 1,
-  tokenId: 1,
-  owner: '5FZeTmbZQZsJcyEevjGVK1HHkcKfWBYxWpbgEffQ2M1SqAnP',
   attributes: {
     '0': {
       name: {_: 'gender'},
@@ -57,8 +58,8 @@ describe('Decoding v0 and v1 on real punks', async () => {
       ChainLenses.unique.requestNftToken(1, 1),
     ])
 
-    punkV0Schema = decodeV0OrV1CollectionSchemaToIntermediate(1, punkV0Collection?.properties, true, false)
-    punkV1Schema = decodeV0OrV1CollectionSchemaToIntermediate(1, punkV1Collection?.properties, false, true)
+    punkV0Schema = decodeV0OrV1CollectionSchemaToIntermediate(punkV0Collection?.properties, COLLECTION_SCHEMA_FAMILY.V0)
+    punkV1Schema = decodeV0OrV1CollectionSchemaToIntermediate(punkV1Collection?.properties, COLLECTION_SCHEMA_FAMILY.V1)
   })
   test('v0 decode token', async () => {
     expect(punkV0Schema).not.toBeNull()
@@ -68,13 +69,11 @@ describe('Decoding v0 and v1 on real punks', async () => {
 
     expect(() => {
       decodedPunkV0Token = decodeV0OrV1TokenToIntermediate(
-        1,
-        1,
-        punkV0Token!.owner.address,
         punkV0Token!.properties,
         punkV0Schema!,
-        true,
-        false,
+        {
+          tokenId: 1,
+        },
       )
     }).not.toThrow()
 
@@ -92,13 +91,8 @@ describe('Decoding v0 and v1 on real punks', async () => {
 
     expect(() => {
       decodedPunkV1Token = decodeV0OrV1TokenToIntermediate(
-        1,
-        1,
-        punkV1Token!.owner.address,
         punkV1Token!.properties,
         punkV1Schema!,
-        false,
-        true,
       )
     }).not.toThrow()
 

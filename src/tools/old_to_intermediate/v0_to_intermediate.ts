@@ -6,15 +6,15 @@ import {
   DecodedInfixOrUrlOrCidAndHash,
   DecodingImageLinkOptions,
   UniqueCollectionSchemaIntermediate,
-  UniqueTokenIntermediate
+  UniqueTokenIntermediate,
+  ValidationError
 } from "./intermediate_types";
 
 import type {Message, Type} from 'protobufjs'
 import {Root} from 'protobufjs'
-import {ValidationError} from "./intermediate_types";
-import {StringUtils, Address} from "@unique-nft/utils";
+import {StringUtils} from "@unique-nft/utils";
 import {buildDictionaryFromPropertiesArray, safeJSONParse, safeJSONParseWithPossibleEmptyInput} from '../../utils'
-import {ProbablyDecodedProperty} from '../../types'
+import {COLLECTION_SCHEMA_FAMILY, DecodeTokenOptions, ProbablyDecodedProperty} from '../../types'
 import {parseImageLinkOptions} from './index'
 
 
@@ -22,7 +22,7 @@ const isOffchainSchemaAValidUrl = (offchainSchema: string | undefined): offchain
   return typeof offchainSchema === "string" && offchainSchema.indexOf('{id}') >= 0
 }
 
-export const decodeOldSchemaCollection = (collectionId: number, properties: ProbablyDecodedProperty[], decodingImageLinkOptions?: DecodingImageLinkOptions): UniqueCollectionSchemaIntermediate => {
+export const decodeOldSchemaCollection = (properties: ProbablyDecodedProperty[], decodingImageLinkOptions?: DecodingImageLinkOptions): UniqueCollectionSchemaIntermediate => {
   const {imageUrlTemplate, dummyImageFullUrl} = parseImageLinkOptions(decodingImageLinkOptions)
 
   const propObj = properties.reduce((acc, {key, value, valueHex}) => {
@@ -40,8 +40,8 @@ export const decodeOldSchemaCollection = (collectionId: number, properties: Prob
   const schema: UniqueCollectionSchemaIntermediate = {
     schemaName: 'unique',
     schemaVersion: '0.0.1',
+    schemaFamily: COLLECTION_SCHEMA_FAMILY.V0,
 
-    collectionId,
     coverPicture: {
       url: dummyImageFullUrl,
       fullUrl: null
@@ -131,19 +131,16 @@ export const decodeOldSchemaCollection = (collectionId: number, properties: Prob
 }
 
 export const decodeOldSchemaToken = (
-  collectionId: number,
-  tokenId: number,
-  owner: string | undefined,
   propertiesArray: ProbablyDecodedProperty[],
   schema: UniqueCollectionSchemaIntermediate,
-  decodingImageLinkOptions?: DecodingImageLinkOptions
+  decodingImageLinkOptions?: DecodingImageLinkOptions,
+  options?: DecodeTokenOptions
 ): UniqueTokenIntermediate => {
   const constOnchainSchema = schema.oldProperties?._old_constOnChainSchema
 
   if (!constOnchainSchema) {
     throw new ValidationError(`collection doesn't contain _old_constOnChainSchema field`)
   }
-
 
   const root = Root.fromJSON(JSON.parse(constOnchainSchema))
   const NFTMeta = root.lookupType('onChainMetaData.NFTMeta')
@@ -268,22 +265,19 @@ export const decodeOldSchemaToken = (
   }
 
   if (!ipfsImageIsSet && isOffchainSchemaAValidUrl(offchainSchema)) {
+    const tokenId = options?.tokenId?.toString()
+    if (!tokenId) {
+      throw new ValidationError(`Decoding token in Unique schema v0: tokenId is required to parse this token and it is not provided. Please pass it inside options param.`)
+    }
     image = {
-      urlInfix: tokenId.toString(),
-      fullUrl: offchainSchema.replace('{id}', tokenId.toString())
+      urlInfix: tokenId,
+      fullUrl: offchainSchema.replace('{id}', tokenId)
     }
   }
 
   const decodedToken: UniqueTokenIntermediate = {
-    collectionId,
-    tokenId,
-    owner,
     image,
     attributes: tokenAttributesResult,
-  }
-
-  if (owner && Address.is.nestingAddress(owner)) {
-    decodedToken.nestingParentToken = Address.nesting.addressToIds(owner)
   }
 
   return decodedToken

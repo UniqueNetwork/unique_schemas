@@ -1,19 +1,16 @@
-import {DecodeCollectionParams, ProbablyDecodedProperty} from '../types'
+import {COLLECTION_SCHEMA_FAMILY, DecodeCollectionOptions, ProbablyDecodedProperty} from '../types'
 import {IV2Collection, IV2PotentialAttributeValues} from '../schema.zod'
-import {buildDictionaryFromPropertiesArray} from '../utils'
-import {detectUniqueVersions} from './tokenDecoding'
-import {decodeHexAndParseJSONOrReturnNull} from '../utils'
-import {Address} from '@unique-nft/utils'
+import {buildDictionaryFromPropertiesArray, decodeHexAndParseJSONOrReturnNull} from '../utils'
+import {detectCollectionSchemaFamily} from './tokenDecoding'
 import {decodeV0OrV1CollectionSchemaToIntermediate} from '../tools/old_to_intermediate'
 
-export const decodeCollectionToV2 = async (options: DecodeCollectionParams): Promise<IV2Collection> => {
-  const properties = buildDictionaryFromPropertiesArray(options.collectionProperties)
+export const decodeCollectionToV2 = async (collectionProperties: ProbablyDecodedProperty[], options?: DecodeCollectionOptions): Promise<IV2Collection> => {
+  const properties = buildDictionaryFromPropertiesArray(collectionProperties)
 
-  const {
-    isUniqueV0,
-    isUniqueV1,
-    isUniqueV2
-  } = detectUniqueVersions(properties, properties) //twice because there is no any token info now
+  const {schemaFamily} = detectCollectionSchemaFamily(properties, properties) //twice because there is no any token info now
+
+  const isUniqueV2 = schemaFamily === COLLECTION_SCHEMA_FAMILY.V2
+  const isUniqueV0 = schemaFamily === COLLECTION_SCHEMA_FAMILY.V0
 
   if (isUniqueV2) {
     const collectionInfo = decodeHexAndParseJSONOrReturnNull(properties.collectionInfo?.valueHex)
@@ -22,15 +19,13 @@ export const decodeCollectionToV2 = async (options: DecodeCollectionParams): Pro
     } as IV2Collection
   }
 
-  const collectionId = typeof options.collectionId === 'string'
-    ? Address.collection.addressToId(options.collectionId)
-    : options.collectionId
+  // const collectionId = typeof options.collectionId === 'string'
+  //   ? Address.collection.addressToId(options.collectionId)
+  //   : options.collectionId
 
   const collectionSchema = decodeV0OrV1CollectionSchemaToIntermediate(
-    collectionId,
-    options.collectionProperties,
-    isUniqueV0,
-    isUniqueV1,
+    collectionProperties,
+    schemaFamily,
   )
 
   const collectionData: IV2Collection = {
@@ -38,10 +33,10 @@ export const decodeCollectionToV2 = async (options: DecodeCollectionParams): Pro
     schemaVersion: !isUniqueV2 ? '2.0.0' : (collectionSchema.schemaVersion || '2.0.0'),
     originalSchemaVersion: isUniqueV0 ? '0.0.1' : (collectionSchema.schemaVersion || '1.0.0'),
 
-    name: options.collectionName as string, //todo: parse UTF16
-    description: options.collectionDescription as string, //todo: parse UTF16
-    symbol: options.collectionSymbol as string, //todo: parse UTF16
-    tokenPrefix: options.collectionSymbol as string, //todo: parse UTF16
+    // name: options.collectionName as string, //todo: parse UTF16
+    // description: options.collectionDescription as string, //todo: parse UTF16
+    // symbol: options.collectionSymbol as string, //todo: parse UTF16
+    // tokenPrefix: options.collectionSymbol as string, //todo: parse UTF16
   }
 
   if (collectionSchema.attributesSchema) {
@@ -62,7 +57,7 @@ export const decodeCollectionToV2 = async (options: DecodeCollectionParams): Pro
     collectionData.cover_image = {
       url: collectionSchema.coverPicture.fullUrl
     }
-    if (options.tryRequestForMediaDetails) {
+    if (options?.tryRequestForMediaDetails) {
       //todo: request for media details for cover image
     }
   }

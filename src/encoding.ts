@@ -4,9 +4,9 @@ import {
   EncodeCollectionResult,
   EncodeTokenOptions,
   PropertyForEncoding,
-  PropertyWithHexOnly,
+  PropertyWithHex,
 } from './types'
-import {DEFAULT_PERMISSION, SCHEMA_NAME, SCHEMA_VERSION} from './constants'
+import {DEFAULT_COLLECTION_FLAGS_VALUE, DEFAULT_PERMISSION, SCHEMA_NAME, SCHEMA_VERSION} from './constants'
 import {
   IV2Collection,
   IV2CollectionForEncoding,
@@ -18,10 +18,10 @@ import {
 import {Royalties} from '@unique-nft/utils/royalties'
 import {zipTwoArraysByKey, hexifyProperties} from './utils'
 
-export const encodeCollection = (data: IV2CollectionForEncoding, options: EncodeCollectionOptions): EncodeCollectionResult => {
+export const encodeCollection = (data: IV2CollectionForEncoding, options?: EncodeCollectionOptions): EncodeCollectionResult => {
   const collectionInfo = zCollectionSchema.parse(data)
 
-  const permission = options.defaultPermission ?? {...DEFAULT_PERMISSION}
+  const permission = options?.defaultPermission ?? {...DEFAULT_PERMISSION}
 
   const properties: PropertyForEncoding[] = [
     {key: 'schemaName', value: collectionInfo.schemaName || SCHEMA_NAME},
@@ -40,12 +40,15 @@ export const encodeCollection = (data: IV2CollectionForEncoding, options: Encode
   ].map(key => ({key, permission}))
 
   return {
-    collectionProperties: hexifyProperties(zipTwoArraysByKey(properties, options.overwriteProperties ?? [])),
-    tokenPropertyPermissions: zipTwoArraysByKey(TPPs, options.overwriteTPPs ?? []),
+    collectionProperties: hexifyProperties(zipTwoArraysByKey(properties, options?.overwriteProperties ?? [])),
+    tokenPropertyPermissions: zipTwoArraysByKey(TPPs, options?.overwriteTPPs ?? []),
+    flags: DEFAULT_COLLECTION_FLAGS_VALUE,
   }
 }
 
-export const encodeToken = (data: IV2TokenForEncoding, options: EncodeTokenOptions): PropertyWithHexOnly[] => {
+export const encodeToken = (data: IV2TokenForEncoding, options?: EncodeTokenOptions): {
+  tokenProperties: PropertyWithHex[]
+} => {
   const token = zTokenSchema.parse(data)
 
   const properties: PropertyForEncoding[] = [
@@ -56,7 +59,9 @@ export const encodeToken = (data: IV2TokenForEncoding, options: EncodeTokenOptio
 
   token.royalties && properties.push({key: 'royalties', valueHex: Royalties.uniqueV2.encode(token.royalties)})
 
-  options.URI && properties.push({key: 'URI', value: options.URI})
+  options?.URI && properties.push({key: 'URI', value: options.URI})
 
-  return hexifyProperties(zipTwoArraysByKey(properties, options.overwriteProperties ?? []))
+  return {
+    tokenProperties: hexifyProperties(zipTwoArraysByKey(properties, options?.overwriteProperties ?? []))
+  }
 }

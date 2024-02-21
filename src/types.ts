@@ -1,4 +1,7 @@
-import {DecodingImageLinkOptions} from './tools/old_to_intermediate/intermediate_types'
+import {
+  DecodingImageLinkOptions,
+  UniqueCollectionSchemaIntermediate
+} from './tools/old_to_intermediate/intermediate_types'
 
 export type ProbablyDecodedProperty = {
   key: string
@@ -11,30 +14,24 @@ export type PropertyForEncoding =
   |
   { key: string, valueHex: string, value?: undefined }
 
-export type PropertyWithHexOnly = { key: string, valueHex: string }
+export type PropertyWithHex = { key: string, valueHex: string, value?: string }
 
 export type ProbablyDecodedPropsDict = Record<string, { value: string | null, valueHex: string }>
 
-export type DecodeCollectionParams = {
-  collectionId: string | number
-  collectionProperties: ProbablyDecodedProperty[]
-
-  collectionName: string | number[]
-  collectionDescription: string | number[]
-  collectionSymbol: string | number[]
-
+export type DecodeCollectionOptions = {
   tryRequestForMediaDetails?: boolean
 
   decodingImageLinkOptions?: DecodingImageLinkOptions
 }
 
-export type DecodeTokenParams = {
-  collectionId: string | number
-  collectionProperties?: ProbablyDecodedProperty[]
+export type DecodeTokenOptions = {
+  // collectionId: string | number
 
-  tokenId: number
-  tokenProperties: ProbablyDecodedProperty[]
+  tokenId?: number
+  collectionProperties?: ProbablyDecodedProperty[]
   tokenOwner?: string
+
+  collectionDecodedSchemaV1?: UniqueCollectionSchemaIntermediate
 
   tryRequestForTokenURI?: boolean
   tryRequestForMediaDetails?: boolean
@@ -71,11 +68,20 @@ export type EncodeCollectionOptions = {
 }
 
 export type EncodeCollectionResult = {
-  collectionProperties: PropertyWithHexOnly[]
+  collectionProperties: PropertyWithHex[]
   tokenPropertyPermissions: CollectionTokenPropertyPermissions
+  flags: number
 }
 
 export type EncodeTokenOptions = {
   URI?: string
   overwriteProperties?: PropertyForEncoding[]
+}
+
+export enum COLLECTION_SCHEMA_FAMILY {
+  V0 = 'V0',
+  V1 = 'V1',
+  V2 = 'V2',
+  OTHER_ERC721 = 'ERC721',
+  UNKNOWN = 'UNKNOWN'
 }

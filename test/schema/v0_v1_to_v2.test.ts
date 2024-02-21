@@ -40,10 +40,6 @@ const V0_COLLECTION_IN_V2_FORM: IV2Collection = {
   schemaName: 'unique',
   schemaVersion: '2.0.0',
   originalSchemaVersion: '0.0.1',
-  name: 'SubstraPunks',
-  description: 'First NFT collection in polkadot space',
-  symbol: 'PNK',
-  tokenPrefix: 'PNK',
   cover_image: {
     url: 'https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image1.png'
   },
@@ -60,7 +56,6 @@ const V0_COLLECTION_IN_V2_FORM: IV2Collection = {
 const V1_COLLECTION_IN_V2_FORM: IV2Collection = {
   ...JSON.parse(JSON.stringify(V0_COLLECTION_IN_V2_FORM)),
   originalSchemaVersion: '1.0.0',
-  description: 'First NFT collection in Polkadot and Kusama space',
   potential_attributes: [
     {
       ...V0_COLLECTION_IN_V2_FORM.potential_attributes![0],
@@ -95,40 +90,30 @@ describe('Decoding collection and token in schemas v0 and v1 to v2', async () =>
   })
 
   test('v0 decode token to v2', async () => {
-    await expect(decodeTokenToV2({
-      collectionId: 1,
-      tokenId: 1,
-      collectionProperties: punkV0Collection!.properties,
-      tokenProperties: punkV0Token!.properties,
-    })).resolves.toEqual(V0_PUNK_IN_V2_FORM)
+    await expect(decodeTokenToV2(
+      punkV0Token!.properties,
+      {
+        tokenId: 1,
+        collectionProperties: punkV0Collection!.properties,
+      }
+    )).resolves.toEqual(V0_PUNK_IN_V2_FORM)
   })
 
   test('v1 decode token to v2', async () => {
-    await expect(decodeTokenToV2({
-      collectionId: 1,
-      tokenId: 1,
-      collectionProperties: punkV1Collection!.properties,
-      tokenProperties: punkV1Token!.properties,
-    })).resolves.toEqual(V1_PUNK_IN_V2_FORM)
+    await expect(decodeTokenToV2(
+      punkV1Token!.properties,
+      {
+        tokenId: 1,
+        collectionProperties: punkV1Collection!.properties,
+      }
+    )).resolves.toEqual(V1_PUNK_IN_V2_FORM)
   })
 
   test('v0 decode collection to v2: collection_v0_v2', async () => {
-    await expect(decodeCollectionToV2({
-      collectionId: 1,
-      collectionName: punkV0Collection!.name,
-      collectionDescription: punkV0Collection!.description,
-      collectionSymbol: punkV0Collection!.tokenPrefix,
-      collectionProperties: punkV0Collection!.properties,
-    })).resolves.toEqual(V0_COLLECTION_IN_V2_FORM)
+    await expect(decodeCollectionToV2(punkV0Collection!.properties)).resolves.toEqual(V0_COLLECTION_IN_V2_FORM)
   })
 
   test('v1 decode collection to v2: collection_v1_v2', async () => {
-    await expect(decodeCollectionToV2({
-      collectionId: 1,
-      collectionName: punkV1Collection!.name,
-      collectionDescription: punkV1Collection!.description,
-      collectionSymbol: punkV1Collection!.tokenPrefix,
-      collectionProperties: punkV1Collection!.properties,
-    })).resolves.toEqual(V1_COLLECTION_IN_V2_FORM)
+    await expect(decodeCollectionToV2(punkV1Collection!.properties,)).resolves.toEqual(V1_COLLECTION_IN_V2_FORM)
   })
 })

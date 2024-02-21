@@ -31,7 +31,8 @@ const DEMO_COLLECTION_ENCODED = {
     {key: 'overrides', permission: {mutable: false, collectionAdmin: true, tokenOwner: false}},
     {key: 'customizing_overrides', permission: {mutable: false, collectionAdmin: true, tokenOwner: false}},
     {key: 'royalties', permission: {mutable: false, collectionAdmin: true, tokenOwner: false}}
-  ]
+  ],
+  flags: 64,
 }
 
 
@@ -50,18 +51,20 @@ const DEMO_V2_TOKEN: IV2TokenForEncoding = {
   ],
 }
 
-const DEMO_TOKEN_ENCODED = [
-  {key: 'schemaName', valueHex: '0x756e69717565'},
-  {key: 'schemaVersion', valueHex: '0x322e302e30'},
-  {
-    key: 'tokenData',
-    valueHex: '0x7b22736368656d614e616d65223a22756e69717565222c22736368656d6156657273696f6e223a22322e302e30222c22696d616765223a2268747470733a2f2f697066732e756e697175652e6e6574776f726b2f697066732f516d634163483446394859517470714b487842467747766b664b623871636b586a325957557263633879643234472f696d616765312e706e67222c2261747472696275746573223a5b7b2274726169745f74797065223a2267656e646572222c2276616c7565223a2246656d616c65227d2c7b2274726169745f74797065223a22747261697473222c2276616c7565223a22546565746820536d696c65227d2c7b2274726169745f74797065223a22747261697473222c2276616c7565223a2255702048616972227d5d2c22726f79616c74696573223a5b7b2261646472657373223a223547757335723748535a763953636461544e5662464d424573784d746334635a4250544c664a4a624c58514b386d3964222c2270657263656e74223a302e357d5d7d'
-  },
-  {
-    key: 'royalties',
-    valueHex: '0x0100000000000000000000000000000000000000000001040000000000000032d66f052cf1bbe17da4f8b7101d9de7f7209eb80695f063c07090922682925b56'
-  }
-]
+const DEMO_TOKEN_ENCODED = {
+  tokenProperties: [
+    {key: 'schemaName', valueHex: '0x756e69717565'},
+    {key: 'schemaVersion', valueHex: '0x322e302e30'},
+    {
+      key: 'tokenData',
+      valueHex: '0x7b22736368656d614e616d65223a22756e69717565222c22736368656d6156657273696f6e223a22322e302e30222c22696d616765223a2268747470733a2f2f697066732e756e697175652e6e6574776f726b2f697066732f516d634163483446394859517470714b487842467747766b664b623871636b586a325957557263633879643234472f696d616765312e706e67222c2261747472696275746573223a5b7b2274726169745f74797065223a2267656e646572222c2276616c7565223a2246656d616c65227d2c7b2274726169745f74797065223a22747261697473222c2276616c7565223a22546565746820536d696c65227d2c7b2274726169745f74797065223a22747261697473222c2276616c7565223a2255702048616972227d5d2c22726f79616c74696573223a5b7b2261646472657373223a223547757335723748535a763953636461544e5662464d424573784d746334635a4250544c664a4a624c58514b386d3964222c2270657263656e74223a302e357d5d7d'
+    },
+    {
+      key: 'royalties',
+      valueHex: '0x0100000000000000000000000000000000000000000001040000000000000032d66f052cf1bbe17da4f8b7101d9de7f7209eb80695f063c07090922682925b56'
+    }
+  ]
+}
 
 const SCHEMA_NAME_AND_VERSION = {
   schemaName: SCHEMA_NAME,
@@ -75,13 +78,7 @@ describe('Encoding and decoding collection and token in schemas v2', async () =>
     // console.dir(encoded, {depth: 1000})
     expect(encoded).toEqual(DEMO_COLLECTION_ENCODED)
 
-    const decoded = await SchemaTools.decode.collection({
-      collectionId: 1,
-      collectionName: "SubstraPunks",
-      collectionDescription: "First NFT collection in Polkadot and Kusama space",
-      collectionSymbol: "PNK",
-      collectionProperties: encoded.collectionProperties,
-    })
+    const decoded = await SchemaTools.decode.collection(encoded.collectionProperties)
 
     expect(decoded).to.deep.equal({
       ...SCHEMA_NAME_AND_VERSION,
@@ -93,11 +90,7 @@ describe('Encoding and decoding collection and token in schemas v2', async () =>
     const encoded = SchemaTools.encode.token(DEMO_V2_TOKEN, {})
     expect(encoded).toEqual(DEMO_TOKEN_ENCODED)
 
-    const decoded = await SchemaTools.decode.token({
-      collectionId: 1,
-      tokenId: 1,
-      tokenProperties: encoded,
-    })
+    const decoded = await SchemaTools.decode.token(encoded.tokenProperties)
     expect(decoded).to.deep.equal({
       ...SCHEMA_NAME_AND_VERSION,
       ...DEMO_V2_TOKEN,

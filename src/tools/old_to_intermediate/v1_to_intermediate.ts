@@ -1,25 +1,23 @@
 import {
+  DecodedAttributes,
   DecodedInfixOrUrlOrCidAndHash,
+  EncodedTokenAttributes,
+  InfixOrUrlOrCidAndHash,
+  LocalizedStringOrBoxedNumberWithDefault,
+  LocalizedStringWithDefault,
   UniqueCollectionSchemaIntermediate,
+  UniqueTokenIntermediate,
   URL_TEMPLATE_INFIX
 } from './intermediate_types'
 
-import {ProbablyDecodedProperty} from '../../types'
+import {COLLECTION_SCHEMA_FAMILY, DecodeTokenOptions, ProbablyDecodedProperty} from '../../types'
 import {StringUtils} from '@unique-nft/utils'
 import {decodeHexAndParseJSONOrReturnNull} from '../../utils'
 
 
-import {
-  DecodedAttributes,
-  EncodedTokenAttributes,
-  InfixOrUrlOrCidAndHash, LocalizedStringOrBoxedNumberWithDefault, LocalizedStringWithDefault,
-  UniqueTokenIntermediate
-} from './intermediate_types'
-import {Address} from "@unique-nft/utils/address";
-
-
-
-export const decodeTokenUrlOrInfixOrCidWithHashField = <U extends { urlTemplate?: string }>(obj: InfixOrUrlOrCidAndHash, urlTemplateObj: U | undefined): DecodedInfixOrUrlOrCidAndHash => {
+export const decodeTokenUrlOrInfixOrCidWithHashField = <U extends {
+  urlTemplate?: string
+}>(obj: InfixOrUrlOrCidAndHash, urlTemplateObj: U | undefined): DecodedInfixOrUrlOrCidAndHash => {
   const result: DecodedInfixOrUrlOrCidAndHash = {
     ...obj,
     fullUrl: null
@@ -68,10 +66,9 @@ const convertPropertyArrayTo2layerObject = <T extends object>(properties: Probab
 }
 
 
-export const decodeUniqueCollectionFromProperties = (collectionId: number, properties: ProbablyDecodedProperty[]): UniqueCollectionSchemaIntermediate => {
+export const decodeUniqueCollectionFromProperties = (properties: ProbablyDecodedProperty[]): UniqueCollectionSchemaIntermediate => {
   const unpackedSchema: UniqueCollectionSchemaIntermediate = convertPropertyArrayTo2layerObject(properties, '.') as any
   // validateUniqueCollectionSchema(unpackedSchema)
-  unpackedSchema.collectionId = collectionId as number
 
   if (unpackedSchema.coverPicture) {
     unpackedSchema.coverPicture = decodeTokenUrlOrInfixOrCidWithHashField(unpackedSchema.coverPicture, unpackedSchema.image)
@@ -79,6 +76,7 @@ export const decodeUniqueCollectionFromProperties = (collectionId: number, prope
   if (unpackedSchema.coverPicturePreview) {
     unpackedSchema.coverPicturePreview = decodeTokenUrlOrInfixOrCidWithHashField(unpackedSchema.coverPicturePreview, unpackedSchema.image)
   }
+  unpackedSchema.schemaFamily = COLLECTION_SCHEMA_FAMILY.V1
 
   return unpackedSchema
 }
@@ -149,18 +147,16 @@ export const unpackEncodedTokenFromProperties = <T extends UniqueTokenIntermedia
 }
 
 
-export const decodeTokenFromProperties = (collectionId: number, tokenId: number, owner: string | undefined, propertiesArray: ProbablyDecodedProperty[], schema: UniqueCollectionSchemaIntermediate): UniqueTokenIntermediate => {
+export const decodeTokenFromProperties = (
+  propertiesArray: ProbablyDecodedProperty[],
+  schema: UniqueCollectionSchemaIntermediate,
+  options?: DecodeTokenOptions,
+): UniqueTokenIntermediate => {
   const unpackedToken = unpackEncodedTokenFromProperties(propertiesArray, schema)
 
   const token: UniqueTokenIntermediate = {
-    owner,
-    tokenId,
-    collectionId,
     attributes: fullDecodeTokenAttributes(unpackedToken, schema),
     image: decodeTokenUrlOrInfixOrCidWithHashField(unpackedToken.image, schema.image)
-  }
-  if (owner && Address.is.nestingAddress(owner)) {
-    token.nestingParentToken = Address.nesting.addressToIds(owner)
   }
 
   if (unpackedToken.name) token.name = unpackedToken.name
@@ -219,5 +215,6 @@ export const fullDecodeTokenAttributes = (token: UniqueTokenIntermediate, collec
       isEnum: !!schema.enumValues,
     }
   }
+
   return attributes
 }

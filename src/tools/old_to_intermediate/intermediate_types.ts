@@ -1,3 +1,5 @@
+import {COLLECTION_SCHEMA_FAMILY} from '../../types'
+
 export class ValidationError extends TypeError {
   constructor(message: string) {
     super(message)
@@ -60,6 +62,7 @@ export type CollectionAttributesSchema = {
 export type UniqueCollectionSchemaIntermediate = {
   schemaName: string
   schemaVersion: string // semver
+  schemaFamily: COLLECTION_SCHEMA_FAMILY | `${COLLECTION_SCHEMA_FAMILY}`,
 
   attributesSchemaVersion?: string
   attributesSchema?: CollectionAttributesSchema
@@ -91,7 +94,7 @@ export type UniqueCollectionSchemaIntermediate = {
     urlTemplate?: string
   }
 
-  collectionId: number
+  // collectionId: number
   coverPicture: DecodedInfixOrUrlOrCidAndHash
   coverPicturePreview?: DecodedInfixOrUrlOrCidAndHash
 
@@ -129,9 +132,6 @@ export interface UniqueTokenIntermediate {
   file?: DecodedInfixOrUrlOrCidAndHash
   spatialObject?: DecodedInfixOrUrlOrCidAndHash
 
-  tokenId: number
-  collectionId: number
-  owner?: string,
   nestingParentToken?: {
     collectionId: number
     tokenId: number

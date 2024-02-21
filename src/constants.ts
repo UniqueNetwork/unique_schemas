@@ -44,3 +44,4 @@ export type SubType =
 
 export const SCHEMA_NAME = 'unique'
 export const SCHEMA_VERSION = '2.0.0'
+export const DEFAULT_COLLECTION_FLAGS_VALUE = 64

@@ -1,16 +1,14 @@
 import {IV2Media, IV2Royalty, IV2Token} from '../schema.zod'
 import {Semver} from '../tools/semver'
-import {DecodeTokenParams, ProbablyDecodedProperty, ProbablyDecodedPropsDict} from '../types'
+import {COLLECTION_SCHEMA_FAMILY, DecodeTokenOptions, ProbablyDecodedProperty, ProbablyDecodedPropsDict} from '../types'
 import {buildDictionaryFromPropertiesArray, getTokenURI, safeJSONParseWithPossibleEmptyInput} from '../utils'
-import {Address} from '@unique-nft/utils'
 import {Royalties} from '@unique-nft/utils/royalties'
-import {UniqueCollectionSchemaIntermediate} from '../tools/old_to_intermediate/intermediate_types'
 import {
   decodeV0OrV1CollectionSchemaToIntermediate,
   decodeV0OrV1TokenToIntermediate
 } from '../tools/old_to_intermediate'
 
-export const detectUniqueVersions = (tokenPropsDict: ProbablyDecodedPropsDict, collectionPropsDict: ProbablyDecodedPropsDict) => {
+export const detectCollectionSchemaFamily = (tokenPropsDict: ProbablyDecodedPropsDict, collectionPropsDict: ProbablyDecodedPropsDict) => {
   const isUniqueSchema = tokenPropsDict.schemaName?.value === 'unique' ||
     collectionPropsDict.schemaName?.value === 'unique' ||
     collectionPropsDict.schemaName?.value === '"unique"'
@@ -24,66 +22,82 @@ export const detectUniqueVersions = (tokenPropsDict: ProbablyDecodedPropsDict, c
   }
   const uniqueVersion = Semver.fromString(uniqueVersionString || '0.0.0')
 
-  const isUniqueV2 = uniqueVersion.major === 2
-  const isUniqueV1 = uniqueVersion.major === 1
-  const isUniqueV0 = '_old_schemaVersion' in collectionPropsDict
-  return {isUniqueV2, isUniqueV1, isUniqueV0}
-}
-
-export const decodeTokenToV2 = async (options: DecodeTokenParams): Promise<IV2Token> => {
-  const tokenPropsDict = buildDictionaryFromPropertiesArray(options.tokenProperties)
-  const collectionPropsDict = buildDictionaryFromPropertiesArray(options.collectionProperties)
-
-  const {
-    isUniqueV0,
-    isUniqueV1,
-    isUniqueV2
-  } = detectUniqueVersions(tokenPropsDict, collectionPropsDict)
-
   const tokenURI = getTokenURI(tokenPropsDict, collectionPropsDict)
+
+  const isUniqueV2 = uniqueVersion.major === 2
 
   const isOtherErc721 = !!tokenURI && !isUniqueV2
 
-  if (isUniqueV2 || isOtherErc721) {
+  const schemaFamily = isUniqueV2
+    ? COLLECTION_SCHEMA_FAMILY.V2
+    : uniqueVersion.major === 1
+      ? COLLECTION_SCHEMA_FAMILY.V1
+      : '_old_schemaVersion' in collectionPropsDict
+        ? COLLECTION_SCHEMA_FAMILY.V0
+        : isOtherErc721
+          ? COLLECTION_SCHEMA_FAMILY.OTHER_ERC721
+          : COLLECTION_SCHEMA_FAMILY.UNKNOWN
+
+  return {
+    schemaFamily,
+    tokenURI
+  }
+}
+
+export const decodeTokenToV2 = async (
+  tokenProperties: ProbablyDecodedProperty[],
+  options?: DecodeTokenOptions
+): Promise<IV2Token> => {
+  const tokenPropsDict = buildDictionaryFromPropertiesArray(tokenProperties)
+  const collectionPropsDict = buildDictionaryFromPropertiesArray(options?.collectionProperties)
+
+  const {schemaFamily, tokenURI} = detectCollectionSchemaFamily(tokenPropsDict, collectionPropsDict)
+
+
+  if ([COLLECTION_SCHEMA_FAMILY.V2, COLLECTION_SCHEMA_FAMILY.OTHER_ERC721].includes(schemaFamily)) {
     return await decodeTokenUniqueV2(tokenPropsDict, collectionPropsDict, tokenURI, options)
   }
 
-  if (!collectionPropsDict) {
-    throw new Error('Collection properties are required for decoding tokens in Unique schema for versions less than v2')
+  if ([COLLECTION_SCHEMA_FAMILY.V0, COLLECTION_SCHEMA_FAMILY.V1].includes(schemaFamily)) {
+    if (!Array.isArray(options?.collectionProperties)) {
+      throw new Error('Collection properties are required for decoding tokens in Unique schema for versions less than v2')
+    }
+
+    return await decodeTokenUniqueV0OrV1(
+      tokenProperties,
+      schemaFamily,
+      options,
+    )
   }
 
-  if (!isUniqueV1 && !isUniqueV0) {
-    throw new Error('Unknown token schema version - not Unique v2, v1 or v0 and not ERC721Metadata-compatible')
-  }
-
-  return await decodeTokenUniqueV0OrV1(options, isUniqueV0, isUniqueV1, tokenPropsDict, collectionPropsDict)
+  throw new Error('Unknown token schema version - not Unique v2, v1 or v0 and not ERC721Metadata-compatible')
 }
 
 
-const decodeTokenUniqueV0OrV1 = async (options: DecodeTokenParams,isUniqueV0: boolean, isUniqueV1: boolean, tokenPropsDict: ProbablyDecodedPropsDict, collectionPropsDict: ProbablyDecodedPropsDict, collectionV1DecodedSchema?: UniqueCollectionSchemaIntermediate) => {
-  if (!options.collectionProperties) {
+const decodeTokenUniqueV0OrV1 = async (
+  tokenProperties: ProbablyDecodedProperty[],
+  schemaFamily: COLLECTION_SCHEMA_FAMILY,
+  options?: DecodeTokenOptions,
+) => {
+  const collectionProperties = options?.collectionProperties
+
+  if (!Array.isArray(collectionProperties)) {
     throw new Error('Collection properties are required for decoding tokens in Unique schema for versions less than v2')
   }
 
-  const collectionId = typeof options.collectionId === 'number' ? options.collectionId : Address.collection.addressToId(options.collectionId)
-  const collectionSchema = collectionV1DecodedSchema
-    ? collectionV1DecodedSchema
+  const collectionDecodedSchemaV1 = options?.collectionDecodedSchemaV1
+
+  const collectionSchema = collectionDecodedSchemaV1
+    ? collectionDecodedSchemaV1
     : decodeV0OrV1CollectionSchemaToIntermediate(
-      collectionId,
-      options.collectionProperties,
-      isUniqueV0,
-      isUniqueV1,
+      collectionProperties,
+      schemaFamily
     )
 
-
   const tokenIntermediateRepresentation = decodeV0OrV1TokenToIntermediate(
-    collectionId,
-    options.tokenId,
-    options.tokenOwner,
-    options.tokenProperties,
+    tokenProperties,
     collectionSchema,
-    isUniqueV0,
-    isUniqueV1,
+    options,
   )
 
   const attributesArray = Object.values(tokenIntermediateRepresentation.attributes)
@@ -119,9 +133,11 @@ const decodeTokenUniqueV0OrV1 = async (options: DecodeTokenParams,isUniqueV0: bo
   if (tokenIntermediateRepresentation.file && tokenIntermediateRepresentation.file.fullUrl)
     media.file = {type: 'document', url: tokenIntermediateRepresentation.file.fullUrl}
 
-
-  const royaltyEncoded = tokenPropsDict.royalties?.valueHex || collectionPropsDict.royalties?.valueHex
+  const royaltyEncoded = tokenProperties.find(prop => prop.key === 'royalties')?.valueHex ||
+    collectionProperties.find(prop => prop.key === 'royalties')?.valueHex
   const royalties: IV2Royalty[] = royaltyEncoded ? Royalties.uniqueV2.decode(royaltyEncoded) : []
+
+  const isUniqueV0 = schemaFamily === COLLECTION_SCHEMA_FAMILY.V0
 
   // convert token from intermediate representation to v2 one
   const tokenV2: IV2Token = {
@@ -143,12 +159,12 @@ const decodeTokenUniqueV0OrV1 = async (options: DecodeTokenParams,isUniqueV0: bo
   return tokenV2
 }
 
-const decodeTokenUniqueV2 = async (props: ProbablyDecodedPropsDict, collectionProps: ProbablyDecodedPropsDict | null, tokenURI: string | null, options: DecodeTokenParams): Promise<IV2Token> => {
+const decodeTokenUniqueV2 = async (tokenProperties: ProbablyDecodedPropsDict, collectionProps: ProbablyDecodedPropsDict | null, tokenURI: string | null, options?: DecodeTokenOptions): Promise<IV2Token> => {
   // for not UniqueV2 will be probably empty
   // if somebody will use this property for not UniqueV2 data - ¯\_(ツ)_/¯
-  let tokenDataString = props.tokenData?.value || null
+  let tokenDataString = tokenProperties.tokenData?.value || null
 
-  if (!tokenDataString && options.tryRequestForTokenURI && tokenURI) {
+  if (!tokenDataString && options?.tryRequestForTokenURI && tokenURI) {
     tokenDataString = await fetch(tokenURI).then(r => r.text())
   }
 
@@ -159,7 +175,7 @@ const decodeTokenUniqueV2 = async (props: ProbablyDecodedPropsDict, collectionPr
   }
 
   //todo: parse royalties and patch tokenData
-  const tokenRoyaltiesHexString = props.royalties?.valueHex
+  const tokenRoyaltiesHexString = tokenProperties.royalties?.valueHex
   const collectionRoyaltiesHexString = collectionProps?.royalties?.valueHex
 
   //todo: parse overrides and patch tokenData

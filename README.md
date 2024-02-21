@@ -13,13 +13,7 @@ const {collectionProperties, tokenPropertyPermissions} = SchemaTools.collection.
   },
 })
 
-const collectionInfo = SchemaTools.collection.decode({
-  collectionId: 1,
-  collectionName: "Demo",
-  collectionDescription: "Demo collection",
-  collectionSymbol: "DEMO",
-  collectionProperties,
-})
+const collectionInfo = SchemaTools.collection.decode(collectionProperties)
 ```
 
 ### Token encoding and decoding
@@ -48,9 +42,8 @@ const tokenProperties = SchemaTools.token.encode({
   ],
 })
 
-const token = SchemaTools.token.decode({
-  collectionId: 1,
-  tokenId: 1,
+const token = SchemaTools.token.decode(
   tokenProperties,
-})
+  {collectionProperties, tokenI2} // optional, but required to parse tokens in Unique Schema v0 and v1
+)
 ```

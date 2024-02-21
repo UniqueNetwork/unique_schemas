@@ -1,4 +1,4 @@
-import {ProbablyDecodedProperty, ProbablyDecodedPropsDict, PropertyForEncoding, PropertyWithHexOnly} from './types'
+import {ProbablyDecodedProperty, ProbablyDecodedPropsDict, PropertyForEncoding, PropertyWithHex} from './types'
 import {Utf8} from '@unique-nft/utils/string'
 import {StringUtils} from '@unique-nft/utils'
 
@@ -81,7 +81,7 @@ export const zipTwoArraysByKey = <T extends { key: string }>(src1: T[], src2: T[
   return result
 }
 
-export const hexifyProperties = (properties: PropertyForEncoding[]): PropertyWithHexOnly[] => {
+export const hexifyProperties = (properties: PropertyForEncoding[]): PropertyWithHex[] => {
   return properties.map(p => ({
     key: p.key,
     valueHex: p.valueHex ?? Utf8.stringToHexString(p.value),

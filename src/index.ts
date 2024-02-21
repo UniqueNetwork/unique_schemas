@@ -2,6 +2,7 @@ import {decodeCollectionToV2} from './decoding/collectionDecoding'
 import {decodeTokenToV2} from './decoding/tokenDecoding'
 import {encodeCollection, encodeToken} from './encoding'
 import * as schemas from './schema.zod'
+import {decodeV0OrV1CollectionSchemaToIntermediate} from './tools/old_to_intermediate'
 
 export const SchemaTools = {
   decode: {
@@ -14,6 +15,7 @@ export const SchemaTools = {
   },
   tools: {
     schemas,
+    decodeCollectionSchemaV1: decodeV0OrV1CollectionSchemaToIntermediate
   },
 }
 
