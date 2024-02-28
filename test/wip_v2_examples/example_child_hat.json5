@@ -32,7 +32,7 @@
       },
       image_overlay_specs: {
         layer: 20,
-        mount_point: {
+        anchor_point: {
           x: 100,
           y: 50,
         },

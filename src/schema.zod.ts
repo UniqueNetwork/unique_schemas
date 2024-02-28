@@ -97,9 +97,13 @@ export const zCustomizingImageOverlaySpecs = z.object({
   offset: z.object({x: z.number(), y: z.number()}).partial(),
   opacity: z.number(),
   rotation: z.number(),
-  scale: z.object({x: z.number(), y: z.number()}).partial(),
-  mount_point: z.object({x: z.number(), y: z.number()}),
-  parent_mount_point: z.object({x: z.number(), y: z.number()}),
+  scale: z.object({
+    x: z.number().optional(),
+    y: z.number().optional(),
+    unit: z.enum(['px', '%']).optional().default('%')}
+  ),
+  anchor_point: z.object({x: z.number(), y: z.number()}),
+  parent_anchor_point: z.object({x: z.number(), y: z.number()}),
 }).partial()
 export type IV2CustomizingImageOverlaySpecs = z.infer<typeof zCustomizingImageOverlaySpecs>
 
@@ -188,14 +192,6 @@ export const zCollectionSchema = z.object({
     .default(SCHEMA_NAME),
   schemaVersion: zSemverString2xx.optional().default(SCHEMA_VERSION),
   originalSchemaVersion: zSemverString.optional(),
-
-  name: z.string().optional(),
-  description: z.string().optional(),
-
-  // next two entries are duplicating each other
-  // tokenPrefix is Unique-style name, symbol is ERC721-style name
-  tokenPrefix: z.string().optional(),
-  symbol: z.string().optional(),
 
   cover_image: zImageWithDetailsAndThumbnail.optional(),
   default_token_image: zImageWithDetailsAndThumbnail.optional(),

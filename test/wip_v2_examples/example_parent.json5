@@ -45,7 +45,7 @@
       value: 'red'
     },
     {
-      trait_type: 'Amount',
+      trait_type: 'Count',
       value: 100
     },
     {
@@ -132,7 +132,7 @@
         slot_for: 'character',
         type: 'image',
         image_overlay_specs: {
-          parent_mount_point: {
+          parent_anchor_point: {
             x: 100,
             y: 150,
           },

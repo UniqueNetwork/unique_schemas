@@ -74,7 +74,7 @@ const SCHEMA_NAME_AND_VERSION = {
 
 describe('Encoding and decoding collection and token in schemas v2', async () => {
   test('Encoding and decoding collection in v2', async () => {
-    const encoded = SchemaTools.encode.collection(DEMO_V2_COLLECTION, {})
+    const encoded = SchemaTools.encode.collection(DEMO_V2_COLLECTION)
     // console.dir(encoded, {depth: 1000})
     expect(encoded).toEqual(DEMO_COLLECTION_ENCODED)
 
@@ -87,7 +87,7 @@ describe('Encoding and decoding collection and token in schemas v2', async () =>
   })
 
   test('Encoding and decoding token in v2', async () => {
-    const encoded = SchemaTools.encode.token(DEMO_V2_TOKEN, {})
+    const encoded = SchemaTools.encode.token(DEMO_V2_TOKEN)
     expect(encoded).toEqual(DEMO_TOKEN_ENCODED)
 
     const decoded = await SchemaTools.decode.token(encoded.tokenProperties)
