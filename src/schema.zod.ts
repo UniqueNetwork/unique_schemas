@@ -100,8 +100,8 @@ export const zCustomizingImageOverlaySpecs = z.object({
   scale: z.object({
     x: z.number().optional(),
     y: z.number().optional(),
-    unit: z.enum(['px', '%']).optional().default('%')}
-  ),
+    unit: z.enum(['px', '%']).default('%').optional(),
+  }),
   anchor_point: z.object({x: z.number(), y: z.number()}),
   parent_anchor_point: z.object({x: z.number(), y: z.number()}),
 }).partial()
