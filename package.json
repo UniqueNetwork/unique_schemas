@@ -36,27 +36,25 @@
     "@types/mime": "^3.0.4",
     "@types/uuid": "^9.0.8",
     "@vitest/ui": "^1.2.2",
+    "axios": "^1.6.7",
     "cpy-cli": "^5.0.0",
     "dotenv": "^16.4.1",
     "dotenv-cli": "^7.3.0",
+    "file-type": "^19.0.0",
+    "json5": "^2.2.3",
+    "mime": "^4.0.1",
     "mkdirp": "^3.0.1",
     "release-it": "^17.0.3",
     "rimraf": "^5.0.5",
     "tsup": "^8.0.1",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.3",
-    "vitest": "^1.2.2",
-    "tsx": "^4.7.0"
+    "uuid": "^9.0.1",
+    "vitest": "^1.2.2"
   },
   "dependencies": {
     "@unique-nft/utils": "^0.3.17",
-    "axios": "^1.6.7",
     "protobufjs": "^7.2.6",
     "zod": "^3.22.4"
-  },
-  "peerDependencies": {
-    "file-type": "^19.0.0",
-    "json5": "^2.2.3",
-    "mime": "^4.0.1",
-    "uuid": "^9.0.1"
   }
 }

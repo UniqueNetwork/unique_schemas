@@ -2,7 +2,8 @@ import axios from 'axios'
 
 import {sha1} from '@noble/hashes/sha1'
 import {hmac} from '@noble/hashes/hmac'
-import * as base64 from 'js-base64'
+import {algorithms} from '@unique-nft/utils/address'
+const base64 = algorithms.base64
 
 import {v4 as generateUUID} from 'uuid'
 
@@ -36,7 +37,10 @@ const getMinioConfig = (): IMinioConfig => {
 
 const calculateSignature = (secretKey: string, message: string) => {
   const hmac_ = hmac(sha1, secretKey, message)
-  const signature = base64.fromUint8Array(hmac_)
+  const signature = base64.encode(hmac_)
+  // maybe not working, this version should work:
+  // import * as base64 from 'js-base64'
+  // const signature = base64.fromUint8Array(hmac_)
   return signature
 }
 
