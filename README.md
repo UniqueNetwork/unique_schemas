@@ -7,13 +7,13 @@ Collection encoding takes some info about collection (cover image, etc.) and ret
 ```ts
 import {SchemaTools} from '@unique-nft/schemas'
 
-const {collectionProperties, tokenPropertyPermissions} = SchemaTools.collection.encode({
+const {collectionProperties, tokenPropertyPermissions} = SchemaTools.encode.collection({
   cover_image: {
     url: 'https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image1.png'
   },
 })
 
-const collectionInfo = SchemaTools.collection.decode(collectionProperties)
+const collectionInfo = SchemaTools.decode.collection(collectionProperties)
 ```
 
 ### Token encoding and decoding
@@ -23,7 +23,7 @@ Token encoding takes some info about token (image, attributes, royalties, etc.) 
 ```ts
 import {SchemaTools} from '@unique-nft/schemas'
 
-const tokenProperties = SchemaTools.token.encode({
+const tokenProperties = SchemaTools.encode.token({
   image: 'https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image1.png',
   attributes: [
     {trait_type: 'gender', value: 'Female'},
@@ -42,8 +42,8 @@ const tokenProperties = SchemaTools.token.encode({
   ],
 })
 
-const token = SchemaTools.token.decode(
+const token = SchemaTools.decode.token(
   tokenProperties,
-  {collectionProperties, tokenI2} // optional, but required to parse tokens in Unique Schema v0 and v1
+  {collectionProperties, tokenId} // optional, but required to parse tokens in Unique Schema v0 and v1
 )
 ```
