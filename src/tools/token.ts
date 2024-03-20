@@ -79,32 +79,41 @@ export const encodeTokenToProperties = (token: UniqueTokenToCreate, schema: Uniq
 }
 
 const fillTokenFieldByKeyPrefix = <T extends UniqueTokenToCreate>(token: T, properties: PropertiesArray, prefix: string, tokenField: keyof T, schema: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaDecoded) => {
-  const keysMatchingPrefix = [`${prefix}.i`, `${prefix}.u`, `${prefix}.c`, `${prefix}.h`]
-  if (properties.some(({key}) => keysMatchingPrefix.includes(key))) token[tokenField] = {} as any
+  const keysMatchingPrefix = [`${prefix}.u`, `${prefix}.i`, `${prefix}.c`, `${prefix}.h`]
+  if (properties.some(({key}) => keysMatchingPrefix.includes(key))) {
+    token[tokenField] = {} as any
+  } else {
+    return
+  }
 
   const field = token[tokenField] as any as InfixOrUrlOrCidAndHash
 
-  const urlInfixProperty = properties.find(({key}) => key === keysMatchingPrefix[0])
-  if (urlInfixProperty) field.urlInfix = urlInfixProperty.value
-
-  const urlProperty = properties.find(({key}) => key === keysMatchingPrefix[1])
-  if (urlProperty) field.url = urlProperty.value
-
+  const urlProperty = properties.find(({key}) => key === keysMatchingPrefix[0])
+  const urlInfixProperty = properties.find(({key}) => key === keysMatchingPrefix[1])
   const ipfsCidProperty = properties.find(({key}) => key === keysMatchingPrefix[2])
-  if (ipfsCidProperty) field.ipfsCid = ipfsCidProperty.value
+
+  if (urlProperty) {
+    field.url = urlProperty.value
+  } else if (urlInfixProperty) {
+    field.urlInfix = urlInfixProperty.value
+  } else if (ipfsCidProperty) {
+    field.ipfsCid = ipfsCidProperty.value
+  } else {
+    return
+  }
 
   const hashProperty = properties.find(({key}) => key === keysMatchingPrefix[3])
   if (hashProperty) field.hash = hashProperty.value
 
-
-  const urlTemplate = ((schema as any)[tokenField])?.urlTemplate as string | undefined
-  if (!token[tokenField] && typeof urlTemplate === 'string') {
-    token[tokenField] = {
-      url: urlTemplate.replace('{infix}', '')
-    } as any
-  }
+  // if (urlProperty) {
+  //   field.url = urlProperty.value
+  // } else if (infix) {
+  //   const urlTemplate = ((schema as any)[tokenField])?.urlTemplate as string | undefined
+  //   if (!token[tokenField] && typeof urlTemplate === 'string') {
+  //     field.url = urlTemplate.replace('{infix}', '')
+  //   }
+  // }
 }
-
 
 export const unpackEncodedTokenFromProperties = <T extends UniqueTokenToCreate>(properties: PropertiesArray, schema: UniqueCollectionSchemaToCreate | UniqueCollectionSchemaDecoded): T => {
   const token: T = {} as T
