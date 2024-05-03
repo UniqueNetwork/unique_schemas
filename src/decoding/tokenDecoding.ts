@@ -1,14 +1,31 @@
 import {IV2Media, IV2Royalty, IV2Token} from '../schema.zod'
 import {Semver} from '../tools/semver'
 import {COLLECTION_SCHEMA_FAMILY, DecodeTokenOptions, ProbablyDecodedProperty, ProbablyDecodedPropsDict} from '../types'
-import {buildDictionaryFromPropertiesArray, getTokenURI, safeJSONParseWithPossibleEmptyInput} from '../utils'
+import {
+  buildDictionaryFromPropertiesArray,
+  getTokenURI,
+  mergeRoyalties,
+  safeJSONParseWithPossibleEmptyInput
+} from '../utils'
 import {Royalties} from '@unique-nft/utils/royalties'
 import {
   decodeV0OrV1CollectionSchemaToIntermediate,
   decodeV0OrV1TokenToIntermediate
 } from '../tools/old_to_intermediate'
+import {UniqueCollectionSchemaIntermediate} from '../tools/old_to_intermediate/intermediate_types'
 
-export const detectCollectionSchemaFamily = (tokenPropsDict: ProbablyDecodedPropsDict, collectionPropsDict: ProbablyDecodedPropsDict) => {
+export const detectCollectionSchemaFamily = (
+  tokenPropsDict: ProbablyDecodedPropsDict,
+  collectionPropsDict: ProbablyDecodedPropsDict,
+  schemaV1?: UniqueCollectionSchemaIntermediate
+): {schemaFamily: COLLECTION_SCHEMA_FAMILY, tokenURI: string | null} => {
+  if (
+    schemaV1?.schemaFamily &&
+    [COLLECTION_SCHEMA_FAMILY.V0, COLLECTION_SCHEMA_FAMILY.V1].includes(schemaV1?.schemaFamily as COLLECTION_SCHEMA_FAMILY)
+  ) {
+    return {schemaFamily: schemaV1.schemaFamily as COLLECTION_SCHEMA_FAMILY, tokenURI: null}
+  }
+
   const isUniqueSchema = tokenPropsDict.schemaName?.value === 'unique' ||
     collectionPropsDict.schemaName?.value === 'unique' ||
     collectionPropsDict.schemaName?.value === '"unique"'
@@ -51,7 +68,10 @@ export const decodeTokenToV2 = async (
   const tokenPropsDict = buildDictionaryFromPropertiesArray(tokenProperties)
   const collectionPropsDict = buildDictionaryFromPropertiesArray(options?.collectionProperties)
 
-  const {schemaFamily, tokenURI} = detectCollectionSchemaFamily(tokenPropsDict, collectionPropsDict)
+  const {
+    schemaFamily,
+    tokenURI
+  } = detectCollectionSchemaFamily(tokenPropsDict, collectionPropsDict, options?.collectionDecodedSchemaV1)
 
 
   if ([COLLECTION_SCHEMA_FAMILY.V2, COLLECTION_SCHEMA_FAMILY.OTHER_ERC721].includes(schemaFamily)) {
@@ -59,10 +79,6 @@ export const decodeTokenToV2 = async (
   }
 
   if ([COLLECTION_SCHEMA_FAMILY.V0, COLLECTION_SCHEMA_FAMILY.V1].includes(schemaFamily)) {
-    if (!Array.isArray(options?.collectionProperties)) {
-      throw new Error('Collection properties are required for decoding tokens in Unique schema for versions less than v2')
-    }
-
     return await decodeTokenUniqueV0OrV1(
       tokenProperties,
       schemaFamily,
@@ -81,18 +97,21 @@ const decodeTokenUniqueV0OrV1 = async (
 ) => {
   const collectionProperties = options?.collectionProperties
 
-  if (!Array.isArray(collectionProperties)) {
-    throw new Error('Collection properties are required for decoding tokens in Unique schema for versions less than v2')
+  let collectionSchema = options?.collectionDecodedSchemaV1
+  if (!collectionSchema) {
+    if (!Array.isArray(collectionProperties)) {
+      throw new Error('Collection properties are required for decoding tokens in Unique schema for versions less than v2 and no pre-decoded schema have been provided')
+    }
+
+    const collectionDecodedSchemaV1 = options?.collectionDecodedSchemaV1
+
+    collectionSchema = collectionDecodedSchemaV1
+      ? collectionDecodedSchemaV1
+      : decodeV0OrV1CollectionSchemaToIntermediate(
+        collectionProperties,
+        schemaFamily
+      )
   }
-
-  const collectionDecodedSchemaV1 = options?.collectionDecodedSchemaV1
-
-  const collectionSchema = collectionDecodedSchemaV1
-    ? collectionDecodedSchemaV1
-    : decodeV0OrV1CollectionSchemaToIntermediate(
-      collectionProperties,
-      schemaFamily
-    )
 
   const tokenIntermediateRepresentation = decodeV0OrV1TokenToIntermediate(
     tokenProperties,
@@ -133,9 +152,18 @@ const decodeTokenUniqueV0OrV1 = async (
   if (tokenIntermediateRepresentation.file && tokenIntermediateRepresentation.file.fullUrl)
     media.file = {type: 'document', url: tokenIntermediateRepresentation.file.fullUrl}
 
-  const royaltyEncoded = tokenProperties.find(prop => prop.key === 'royalties')?.valueHex ||
-    collectionProperties.find(prop => prop.key === 'royalties')?.valueHex
-  const royalties: IV2Royalty[] = royaltyEncoded ? Royalties.uniqueV2.decode(royaltyEncoded) : []
+  const tokenRoyaltyEncoded = tokenProperties.find(prop => prop.key === 'royalties')?.valueHex
+  const tokenRoyalties: IV2Royalty[] = tokenRoyaltyEncoded ? Royalties.uniqueV2.decode(tokenRoyaltyEncoded) : []
+
+  const collectionRoyaltiesEncoded = collectionProperties?.find(prop => prop.key === 'royalties')?.valueHex
+  const collectionRoyalties =
+  collectionSchema.royalties
+    ? collectionSchema.royalties
+    : collectionRoyaltiesEncoded
+      ? Royalties.uniqueV2.decode(collectionRoyaltiesEncoded)
+      : []
+
+  const royalties = mergeRoyalties(collectionRoyalties, tokenRoyalties)
 
   const isUniqueV0 = schemaFamily === COLLECTION_SCHEMA_FAMILY.V0
 

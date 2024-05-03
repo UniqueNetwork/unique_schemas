@@ -1,4 +1,5 @@
 import {COLLECTION_SCHEMA_FAMILY} from '../../types'
+import {IV2Royalty} from '@unique-nft/utils/royalties'
 
 export class ValidationError extends TypeError {
   constructor(message: string) {
@@ -104,6 +105,8 @@ export type UniqueCollectionSchemaIntermediate = {
     _old_constOnChainSchema?: string
     _old_variableOnChainSchema?: string
   }
+
+  royalties?: IV2Royalty[]
 }
 
 

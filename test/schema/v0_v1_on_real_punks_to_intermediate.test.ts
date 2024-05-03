@@ -10,7 +10,7 @@ import {
   decodeV0OrV1CollectionSchemaToIntermediate,
   decodeV0OrV1TokenToIntermediate
 } from '../../src/tools/old_to_intermediate'
-import {COLLECTION_SCHEMA_FAMILY} from '../../src'
+import {COLLECTION_SCHEMA_FAMILY, SchemaTools} from '../../src'
 
 const punkData = {
   attributes: {
@@ -40,6 +40,67 @@ const punkData = {
   }
 }
 
+const collectionV0DecodedToV2 = {
+  schemaName: 'unique',
+  schemaVersion: '2.0.0',
+  originalSchemaVersion: '0.0.1',
+  potential_attributes: [
+    {trait_type: 'gender', display_type: 'string', values: ['Male', 'Female']},
+    {
+      trait_type: 'traits',
+      display_type: 'string',
+      values: ['Black Lipstick', 'Red Lipstick', 'Smile', 'Teeth Smile', 'Purple Lipstick', 'Nose Ring', 'Asian Eyes', 'Sunglasses', 'Red Glasses', 'Round Eyes', 'Left Earring', 'Right Earring', 'Two Earrings', 'Brown Beard', 'Mustache Beard', 'Mustache', 'Regular Beard', 'Up Hair', 'Down Hair', 'Mahawk', 'Red Mahawk', 'Orange Hair', 'Bubble Hair', 'Emo Hair', 'Thin Hair', 'Bald', 'Blonde Hair', 'Caret Hair', 'Pony Tails', 'Cigar', 'Pipe']
+    }
+  ],
+  cover_image: {url: 'https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image1.png'}
+}
+
+const collectionV1DecodedToV2 = {
+  schemaName: 'unique',
+  schemaVersion: '2.0.0',
+  originalSchemaVersion: '1.0.0',
+  royalties: [{address: '5Gus5r7HSZv9ScdaTNVbFMBEsxMtc4cZBPTLfJJbLXQK8m9d', percent: 5}],
+  potential_attributes: [
+    {trait_type: 'gender', display_type: 'string', values: ['Female', 'Male']},
+    {
+      trait_type: 'traits',
+      display_type: 'string',
+      values: ['Black Lipstick', 'Red Lipstick', 'Smile', 'Teeth Smile', 'Purple Lipstick', 'Nose Ring', 'Asian Eyes', 'Sunglasses', 'Red Glasses', 'Round Eyes', 'Left Earring', 'Right Earring', 'Two Earrings', 'Brown Beard', 'Mustache Beard', 'Mustache', 'Regular Beard', 'Up Hair', 'Down Hair', 'Mahawk', 'Red Mahawk', 'Orange Hair', 'Bubble Hair', 'Emo Hair', 'Thin Hair', 'Bald', 'Blonde Hair', 'Caret Hair', 'Pony Tails', 'Cigar', 'Pipe'],
+    }
+  ],
+  cover_image: {url: 'https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image1.png'}
+}
+
+const punkV0DecodedToV2 = {
+  schemaName: 'unique',
+  schemaVersion: '2.0.0',
+  originalSchemaVersion: '0.0.1',
+  image: 'https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image1.png',
+  attributes: [
+    {trait_type: 'gender', value: 'Male'},
+    {trait_type: 'traits', value: 'Teeth Smile'},
+    {trait_type: 'traits', value: 'Up Hair'}
+  ]
+}
+
+const punkV1DecodedToV2 = {
+  schemaName: 'unique',
+  schemaVersion: '2.0.0',
+  originalSchemaVersion: '1.0.0',
+  image: 'https://ipfs.unique.network/ipfs/QmcAcH4F9HYQtpqKHxBFwGvkfKb8qckXj2YWUrcc8yd24G/image1.png',
+  attributes: [
+    { trait_type: 'gender', value: 'Female' },
+    { trait_type: 'traits', value: 'Teeth Smile' },
+    { trait_type: 'traits', value: 'Up Hair' }
+  ],
+  royalties: [
+    {
+      address: '5Gus5r7HSZv9ScdaTNVbFMBEsxMtc4cZBPTLfJJbLXQK8m9d',
+      percent: 5
+    }
+  ]
+}
+
 describe('Decoding v0 and v1 on real punks', async () => {
   let punkV0Collection: ICollection | null = null
   let punkV1Collection: ICollection | null = null
@@ -61,6 +122,28 @@ describe('Decoding v0 and v1 on real punks', async () => {
     punkV0Schema = decodeV0OrV1CollectionSchemaToIntermediate(punkV0Collection?.properties, COLLECTION_SCHEMA_FAMILY.V0)
     punkV1Schema = decodeV0OrV1CollectionSchemaToIntermediate(punkV1Collection?.properties, COLLECTION_SCHEMA_FAMILY.V1)
   })
+  test('v0 decode real collection to v2', async () => {
+    expect(punkV0Schema).not.toBeNull()
+    expect(punkV0Collection).not.toBeNull()
+
+    const decodedPunkV0ToV2 = await SchemaTools.decode.collection(punkV0Collection!.properties)
+    expect(decodedPunkV0ToV2).not.toBeNull()
+    // console.log('v0 schema in v2 form:')
+    // console.dir(decodedPunkV0ToV2, {depth: 100})
+    expect(decodedPunkV0ToV2).toEqual(collectionV0DecodedToV2)
+  })
+
+  test('v1 decode real collection to v2', async () => {
+    expect(punkV1Schema).not.toBeNull()
+    expect(punkV1Collection).not.toBeNull()
+
+    const decodedPunkV1ToV2 = await SchemaTools.decode.collection(punkV1Collection!.properties)
+    expect(decodedPunkV1ToV2).not.toBeNull()
+    // console.log('v1 schema in v2 form:')
+    // console.dir(decodedPunkV1ToV2, {depth: 100})
+    expect(decodedPunkV1ToV2).toEqual(collectionV1DecodedToV2)
+  })
+
   test('v0 decode token', async () => {
     expect(punkV0Schema).not.toBeNull()
     expect(punkV0Token).not.toBeNull()
@@ -82,6 +165,16 @@ describe('Decoding v0 and v1 on real punks', async () => {
     // console.log('v0 schema and punk:')
     // console.dir(punkV0Schema!.attributesSchema!, {depth: 100})
     // console.dir(decodedPunkV0Token, {depth: 100})
+    const decodedPunkV0TokenToV2 = await SchemaTools.decode.token(punkV0Token!.properties, {
+      collectionDecodedSchemaV1: punkV0Schema!,
+      tokenId: 1,
+    })
+    expect(decodedPunkV0TokenToV2).toEqual(punkV0DecodedToV2)
+    const decodedPunkV0TokenToV2ViaProperties = await SchemaTools.decode.token(punkV0Token!.properties, {
+      collectionProperties: punkV0Collection!.properties,
+      tokenId: 1,
+    })
+    expect(decodedPunkV0TokenToV2ViaProperties).toEqual(punkV0DecodedToV2)
   })
   test('v1 decode token', async () => {
     expect(punkV1Schema).not.toBeNull()
@@ -103,5 +196,15 @@ describe('Decoding v0 and v1 on real punks', async () => {
     // console.log('v1 schema and punk:')
     // console.dir(punkV1Schema!.attributesSchema!, {depth: 100})
     // console.dir(decodedPunkV1Token.result!, {depth: 100})
+
+    const decodedPunkV1TokenToV2 = await SchemaTools.decode.token(punkV1Token!.properties, {
+      collectionDecodedSchemaV1: punkV1Schema!,
+    })
+    expect(decodedPunkV1TokenToV2).toEqual(punkV1DecodedToV2)
+
+    const decodedPunkV1TokenToV2ViaProperties = await SchemaTools.decode.token(punkV1Token!.properties, {
+      collectionProperties: punkV1Collection!.properties,
+    })
+    expect(decodedPunkV1TokenToV2ViaProperties).toEqual(punkV1DecodedToV2)
   })
 })

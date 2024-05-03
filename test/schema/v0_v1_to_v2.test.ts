@@ -63,6 +63,10 @@ const V1_COLLECTION_IN_V2_FORM: IV2Collection = {
     },
     ...V0_COLLECTION_IN_V2_FORM.potential_attributes!.slice(1),
   ],
+  royalties: [{
+    address: '5Gus5r7HSZv9ScdaTNVbFMBEsxMtc4cZBPTLfJJbLXQK8m9d',
+    percent: 5
+  }],
 }
 
 

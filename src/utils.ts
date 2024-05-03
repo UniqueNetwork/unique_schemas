@@ -1,6 +1,7 @@
 import {ProbablyDecodedProperty, ProbablyDecodedPropsDict, PropertyForEncoding, PropertyWithHex} from './types'
 import {Utf8} from '@unique-nft/utils/string'
 import {StringUtils} from '@unique-nft/utils'
+import {IV2Royalty} from '@unique-nft/utils/royalties'
 
 export const safeJSONParseWithPossibleEmptyInput = <T>(str?: string | null | undefined): T | string | null => {
   if (typeof str !== 'string') return null
@@ -88,3 +89,19 @@ export const hexifyProperties = (properties: PropertyForEncoding[]): PropertyWit
   }))
 }
 
+export const mergeRoyalties = (a: IV2Royalty[], b: IV2Royalty[]): IV2Royalty[] => {
+  // royalty is {address: string, percent: number}
+  // need to zip them, when a and b have same address, use b value
+
+  const result: IV2Royalty[] = [...a.map(r => ({...r}))]
+  for (const royalty of b) {
+    const index = result.findIndex(r => r.address === royalty.address)
+    if (index === -1) {
+      result.push(royalty)
+    } else {
+      result[index] = royalty
+    }
+  }
+
+  return result
+}

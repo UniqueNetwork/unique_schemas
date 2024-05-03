@@ -38,6 +38,8 @@ export const decodeCollectionToV2 = async (collectionProperties: ProbablyDecoded
     // symbol: options.collectionSymbol as string, //todo: parse UTF16
     // tokenPrefix: options.collectionSymbol as string, //todo: parse UTF16
   }
+  const {royalties} = collectionSchema
+  if (Array.isArray(royalties) && royalties.length) collectionData.royalties = royalties
 
   if (collectionSchema.attributesSchema) {
     collectionData.potential_attributes = Object.values(collectionSchema.attributesSchema)

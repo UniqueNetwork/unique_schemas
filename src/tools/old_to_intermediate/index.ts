@@ -9,6 +9,7 @@ import * as decoders_v0 from './v0_to_intermediate'
 import * as decoders_v1 from './v1_to_intermediate'
 import {COLLECTION_SCHEMA_FAMILY, DecodeTokenOptions, ProbablyDecodedProperty} from '../../types'
 import {Address} from '@unique-nft/utils'
+import {Royalties} from '@unique-nft/utils/royalties'
 
 const DEFAULT_IMAGE_URL_TEMPLATE: string = `https://ipfs.unique.network/ipfs/{infix}`
 const DEFAULT_DUMMY_IMAGE_FULL_URL = `https://ipfs.unique.network/ipfs/QmPCqY7Lmxerm8cLKmB18kT1RxkwnpasPVksA8XLhViVT7`
@@ -38,13 +39,19 @@ export const decodeV0OrV1CollectionSchemaToIntermediate = (
     throw new ValidationError(`Unable to parse: collection properties are empty`)
   }
 
-  if (schemaFamily === COLLECTION_SCHEMA_FAMILY.V0) {
-    return decoders_v0.decodeOldSchemaCollection(properties, options)
-  } else if (schemaFamily === COLLECTION_SCHEMA_FAMILY.V1) {
-    return decoders_v1.decodeUniqueCollectionFromProperties(properties)
-  }
+  const result = (schemaFamily === COLLECTION_SCHEMA_FAMILY.V0)
+    ? decoders_v0.decodeOldSchemaCollection(properties, options)
+    : (schemaFamily === COLLECTION_SCHEMA_FAMILY.V1)
+      ? decoders_v1.decodeUniqueCollectionFromProperties(properties)
+      : null
 
-  throw new ValidationError(`Unknown collection schema: "${schemaFamily}"`)
+  if (!result) throw new ValidationError(`Unknown collection schema: "${schemaFamily}"`)
+
+  const royaltyEncoded = properties.find(p => p.key === 'royalties')?.valueHex
+  const royalties = royaltyEncoded ? Royalties.uniqueV2.decode(royaltyEncoded) : []
+  if (royalties.length) result.royalties = royalties
+
+  return result
 }
 
 export const decodeV0OrV1TokenToIntermediate = (

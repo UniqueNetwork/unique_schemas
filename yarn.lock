@@ -532,14 +532,15 @@
     "@noble/hashes" "^1.3.3"
     base-x "^4.0.0"
 
-"@unique-nft/utils@^0.3.17":
-  version "0.3.17"
-  resolved "https://registry.yarnpkg.com/@unique-nft/utils/-/utils-0.3.17.tgz#ef6b483fd24770a85632423ef21dfeb8acbe5b79"
-  integrity sha512-rKldHiI+qaTtYbwHc2mopHxM3O5YyyagpPTcqaZ7/TB7B0OIFUpylV6nfWzACn15mmf0kz0MwtUU4FrpsHofNA==
+"@unique-nft/utils@^0.3.18":
+  version "0.3.18"
+  resolved "https://registry.yarnpkg.com/@unique-nft/utils/-/utils-0.3.18.tgz#9a3c3e7ff89cf087b156abdd4808dcb9cec926ee"
+  integrity sha512-9zClN7U7v3/fu5G8everg9ECevHrn5aIN/5EZMB1v4p0F3vXkCMOqm7G8k6y4+2ZgOK3ds9ojsIql6dO8mmIxQ==
   dependencies:
     "@noble/hashes" "^1.3.3"
     "@unique-nft/sr25519" "^0.0.2"
     base-x "^4.0.0"
+    coin-format "^0.0.2"
     utf-helpers "^0.0.3"
 
 "@vitest/expect@1.2.2":
@@ -1049,6 +1050,11 @@ clone@^1.0.2:
   version "1.0.4"
   resolved "https://registry.npmjs.org/clone/-/clone-1.0.4.tgz"
   integrity sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==
+
+coin-format@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/coin-format/-/coin-format-0.0.2.tgz#2c085cd0ee21b837bfb532a18d2d3d5ff28413e1"
+  integrity sha512-QhsGG2x2vj6t/HSTNWv9/95abQtM2KvyUdsqPwvCqlD3gdAXdBg6qmlsHTHzsywMP5EWUneVGJm6vv/vkuPCMg==
 
 color-convert@^1.9.0:
   version "1.9.3"
