@@ -23,14 +23,14 @@ const DEMO_COLLECTION_ENCODED = {
     }
   ],
   tokenPropertyPermissions: [
-    {key: 'schemaName', permission: {mutable: false, collectionAdmin: true, tokenOwner: false}},
-    {key: 'schemaVersion', permission: {mutable: false, collectionAdmin: true, tokenOwner: false}},
-    {key: 'tokenData', permission: {mutable: false, collectionAdmin: true, tokenOwner: false}},
-    {key: 'URI', permission: {mutable: false, collectionAdmin: true, tokenOwner: false}},
-    {key: 'URISuffix', permission: {mutable: false, collectionAdmin: true, tokenOwner: false}},
-    {key: 'overrides', permission: {mutable: false, collectionAdmin: true, tokenOwner: false}},
-    {key: 'customizing_overrides', permission: {mutable: false, collectionAdmin: true, tokenOwner: false}},
-    {key: 'royalties', permission: {mutable: false, collectionAdmin: true, tokenOwner: false}}
+    {key: 'schemaName', permission: {mutable: true, collectionAdmin: true, tokenOwner: false}},
+    {key: 'schemaVersion', permission: {mutable: true, collectionAdmin: true, tokenOwner: false}},
+    {key: 'tokenData', permission: {mutable: true, collectionAdmin: true, tokenOwner: false}},
+    {key: 'URI', permission: {mutable: true, collectionAdmin: true, tokenOwner: false}},
+    {key: 'URISuffix', permission: {mutable: true, collectionAdmin: true, tokenOwner: false}},
+    {key: 'overrides', permission: {mutable: true, collectionAdmin: true, tokenOwner: false}},
+    {key: 'customizing_overrides', permission: {mutable: true, collectionAdmin: true, tokenOwner: false}},
+    {key: 'royalties', permission: {mutable: true, collectionAdmin: true, tokenOwner: false}}
   ],
   flags: 64,
 }

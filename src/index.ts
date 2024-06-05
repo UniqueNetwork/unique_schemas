@@ -7,6 +7,7 @@ import {
   decodeV0OrV1TokenToIntermediate,
   parseImageLinkOptions
 } from './tools/old_to_intermediate'
+import {DEFAULT_PERMISSION, PERMISSION, SCHEMA_NAME, SCHEMA_VERSION} from './constants'
 
 export const SchemaTools = {
   decode: {
@@ -26,6 +27,12 @@ export const SchemaTools = {
         parseImageLinkOptions
       },
     },
+    constants: {
+      DEFAULT_SCHEMA_NAME: SCHEMA_NAME,
+      DEFAULT_SCHEMA_VERSION: SCHEMA_VERSION,
+      DEFAULT_PERMISSION: DEFAULT_PERMISSION,
+      PERMISSIONS: PERMISSION,
+    }
   },
 }
 

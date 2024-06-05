@@ -10,8 +10,9 @@ export const PERMISSION = <const>{
   WRITABLE_ONCE_FOR_TOKEN_OWNER: {mutable: false, collectionAdmin: false, tokenOwner: true},
 } satisfies { [K: string]: TokenPropertyPermission}
 
-export const DEFAULT_PERMISSION = PERMISSION.WRITABLE_ONCE_FOR_COLLECTION_ADMIN
+export const DEFAULT_PERMISSION = PERMISSION.REWRITEABLE_FOR_COLLECTION_ADMIN
 
+/*
 
 enum AttributeType {
   integer = 'integer',        // number
@@ -41,6 +42,7 @@ export type SubType =
   | 'dailymotion'
   | 'mixcloud'
   | 'figma'
+*/
 
 export const SCHEMA_NAME = 'unique'
 export const SCHEMA_VERSION = '2.0.0'
