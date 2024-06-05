@@ -9,6 +9,13 @@ export default defineConfig([
     sourcemap: true,
   },
   {
+    entry: {pure: "src/pure.ts"},
+    format: ["esm", "cjs"],
+    dts: true,
+    splitting: false,
+    sourcemap: true,
+  },
+  {
     entry: {unique_schemas: "src/index.ts"},
     format: ["iife"],
     globalName: "UniqueSchemas",

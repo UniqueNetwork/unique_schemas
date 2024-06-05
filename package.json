@@ -1,6 +1,6 @@
 {
   "name": "@unique-nft/schemas",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "Unique Network schemas encoding, validating and decoding toolkit",
   "main": "index.js",
   "scripts": {
@@ -55,7 +55,8 @@
   "dependencies": {
     "@unique-nft/utils": "^0.3.18",
     "protobufjs": "^7.2.6",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zod-openapi": "^2.18.0"
   },
   "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
 }

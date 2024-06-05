@@ -1,3 +1,4 @@
+import 'zod-openapi/extend'
 import {z} from 'zod'
 import {SCHEMA_NAME, SCHEMA_VERSION} from './constants'
 
