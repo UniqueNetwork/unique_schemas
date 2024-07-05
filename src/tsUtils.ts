@@ -38,7 +38,10 @@ export const safeJSONParse = <T>(str: string): T | string => {
 
 export const safeJsonParseStringOrHexString = <T = any>(stringOrHexString: string): T | string => {
   try {
-    return JSON.parse(stringOrHexString) as T
+    // NOTICE: this is a patch to support schema v2.0.0
+    if (stringOrHexString === 'unique' || stringOrHexString === '2.0.0') return stringOrHexString;
+
+    return JSON.parse(stringOrHexString) as T;
   } catch {
     return safeJSONParse<T>(StringUtils.Utf8.hexStringToString(stringOrHexString))
   }

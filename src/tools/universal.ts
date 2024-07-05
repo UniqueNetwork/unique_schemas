@@ -8,9 +8,10 @@ import {
 } from '../types'
 import * as oldSchema from './oldSchemaDecoder'
 import * as collection from './collection'
+import * as patch from './patch_collectionsV2';
 import {ValidationError} from '../types'
 import * as token from './token'
-import {validateUrlTemplateStringSafe} from './validators'
+import {validateAndParseSemverString, validateUrlTemplateStringSafe} from './validators'
 import {IFetch, safeJsonParseStringOrHexString} from '../tsUtils'
 import {Royalties} from '@unique-nft/utils/royalties'
 
@@ -48,6 +49,13 @@ export const universallyDecodeCollectionSchema = async (collectionId: number, pr
     const imageLinkOptions = parseImageLinkOptions(options)
     decoded = await oldSchema.decodeOldSchemaCollection(collectionId, properties, imageLinkOptions)
   } else if (schemaName === COLLECTION_SCHEMA_NAME.unique) {
+    /////// NOTICE: this is a patch to support schema 2.0.0 --->
+    const schemaVersion = properties.find(p => p.key === 'schemaVersion');
+    if (schemaVersion && schemaVersion.value === '2.0.0') {
+      properties = patch.convertPropertiesV2ToV1(properties);
+    }
+    ///////
+
     decoded = await collection.decodeUniqueCollectionFromProperties(collectionId, properties)
   } else if (isERC721Metadata) {
     decoded = collection.decodeUniqueCollectionFromERC721Metadata(collectionId, properties)
