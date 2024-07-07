@@ -5,6 +5,7 @@ import {decodeTokenFromProperties} from '../../src/tools/token'
 import {ETH_DEFAULT, SUB_PRIMARY_ONLY} from '../royalties.samples'
 import {makeRawTokenFromProperties} from './utils'
 import {ChainLenses} from '@unique-nft/utils/chainLens';
+import { expectedCollectionSchema, expectedTokenSchema } from '../samples/realCollectionAndTokenSchemas'
 
 // https://ipfs.unique.network/ipfs/QmPCqY7Lmxerm8cLKmB18kT1RxkwnpasPVksA8XLhViVT7
 const schema = {
@@ -181,18 +182,19 @@ describe('unique v1 - royalties', async () => {
   })
 
   test('WIP regress V2 schema', async () => {
-    const COLLECTION = 646;
-    const TOKEN = 4;
+    const COLLECTION = 2970;
+    const TOKEN = 1;
 
-    const lens = ChainLenses.unique;
+    const lens = ChainLenses.opal;
     const token = await lens.requestNftToken(COLLECTION, TOKEN);
 
     const collection = await lens.requestCollection(COLLECTION);
-    const schema = await SchemaTools.decode.collectionSchema(COLLECTION, collection!.properties, {erc721metadata: false, foreign: false})
+    const decodedCollection = await SchemaTools.decode.collectionSchema(COLLECTION, collection!.properties, {erc721metadata: false, foreign: false})
 
     const raw = makeRawTokenFromProperties(null, token!.properties);
-    const decoded = await SchemaTools.decode.token(COLLECTION, TOKEN, raw, schema.result as any, (() => {}) as any, [])
+    const decodedToken = await SchemaTools.decode.token(COLLECTION, TOKEN, raw, decodedCollection.result as any, (() => {}) as any, [])
 
-    console.log(decoded);
+    expect(decodedCollection.result).to.deep.eq(expectedCollectionSchema);
+    expect(decodedToken.result).to.deep.eq(expectedTokenSchema);
   });
 })

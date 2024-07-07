@@ -52,7 +52,7 @@ export const universallyDecodeCollectionSchema = async (collectionId: number, pr
     /////// NOTICE: this is a patch to support schema 2.0.0 --->
     const schemaVersion = properties.find(p => p.key === 'schemaVersion');
     if (schemaVersion && schemaVersion.value === '2.0.0') {
-      properties = patch.convertPropertiesV2ToV1(properties);
+      properties = patch.tryConvertCollectionPropertiesV2ToV1(properties);
     }
     ///////
 
@@ -92,7 +92,7 @@ export const universallyDecodeToken = async (collectionId: number, tokenId: numb
   if (schema.schemaName === COLLECTION_SCHEMA_NAME.unique) {
     /////// NOTICE: this is a patch to support schema 2.0.0 --->
     if(humanizedToken.properties.find(p => p.key === 'schemaVersion' && p.value === '2.0.0')) {
-      humanizedToken = patch.convertTokenPropertiesV2ToV1(humanizedToken, schema);
+      humanizedToken = patch.tryConvertTokenPropertiesV2ToV1(humanizedToken, schema);
     }
     ///////
     decoded = await token.decodeTokenFromProperties(collectionId, tokenId, humanizedToken, schema)
