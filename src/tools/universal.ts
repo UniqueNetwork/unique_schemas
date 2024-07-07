@@ -8,7 +8,7 @@ import {
 } from '../types'
 import * as oldSchema from './oldSchemaDecoder'
 import * as collection from './collection'
-import * as patch from './patch_collectionsV2';
+import * as patch from './patchSchemaV2';
 import {ValidationError} from '../types'
 import * as token from './token'
 import {validateAndParseSemverString, validateUrlTemplateStringSafe} from './validators'
@@ -85,11 +85,16 @@ export const universallyDecodeToken = async (collectionId: number, tokenId: numb
       error: new ValidationError('unable to parse: collection schema was not provided')
     }
   }
-  const humanizedToken: HumanizedNftToken = rawToken.toHuman() as HumanizedNftToken
+  let humanizedToken: HumanizedNftToken = rawToken.toHuman() as HumanizedNftToken
 
   let decoded: DecodingResult<UniqueTokenDecoded> | null = null
 
   if (schema.schemaName === COLLECTION_SCHEMA_NAME.unique) {
+    /////// NOTICE: this is a patch to support schema 2.0.0 --->
+    if(humanizedToken.properties.find(p => p.key === 'schemaVersion' && p.value === '2.0.0')) {
+      humanizedToken = patch.convertTokenPropertiesV2ToV1(humanizedToken, schema);
+    }
+    ///////
     decoded = await token.decodeTokenFromProperties(collectionId, tokenId, humanizedToken, schema)
   } else if (schema.schemaName === COLLECTION_SCHEMA_NAME.old) {
     const imageLinkOptions = parseImageLinkOptions(options)
