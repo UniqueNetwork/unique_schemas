@@ -38,7 +38,7 @@ export const safeJSONParse = <T>(str: string): T | string => {
 
 export const safeJsonParseStringOrHexString = <T = any>(stringOrHexString: string): T | string => {
   try {
-    return JSON.parse(stringOrHexString) as T;
+    return JSON.parse(stringOrHexString) as T
   } catch {
     return safeJSONParse<T>(StringUtils.Utf8.hexStringToString(stringOrHexString))
   }

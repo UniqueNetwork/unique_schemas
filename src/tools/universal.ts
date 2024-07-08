@@ -11,7 +11,7 @@ import * as collection from './collection'
 import * as patch from './patchSchemaV2';
 import {ValidationError} from '../types'
 import * as token from './token'
-import {validateAndParseSemverString, validateUrlTemplateStringSafe} from './validators'
+import {validateUrlTemplateStringSafe} from './validators'
 import {IFetch, safeJsonParseStringOrHexString} from '../tsUtils'
 import {Royalties} from '@unique-nft/utils/royalties'
 

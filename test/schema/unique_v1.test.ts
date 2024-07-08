@@ -4,7 +4,7 @@ import {AttributeType, SchemaTools, UniqueCollectionSchemaDecoded, UniqueTokenTo
 import {decodeTokenFromProperties} from '../../src/tools/token'
 import {ETH_DEFAULT, SUB_PRIMARY_ONLY} from '../royalties.samples'
 import {makeRawTokenFromProperties} from './utils'
-import {ChainLenses} from '@unique-nft/utils/chainLens';
+import {ChainLenses} from '@unique-nft/utils/chainLens'
 import { expectedCollectionSchema, expectedTokenSchema } from '../samples/realCollectionAndTokenSchemas'
 
 // https://ipfs.unique.network/ipfs/QmPCqY7Lmxerm8cLKmB18kT1RxkwnpasPVksA8XLhViVT7
@@ -172,7 +172,7 @@ describe('unique v1 - royalties', async () => {
   test('Royalties - decode from token properties', async () => {
     const tokenProperties = SchemaTools.encodeUnique.token(tokenToEncode, schema)
 
-    const decoded = await SchemaTools.decode.token(646, 4, makeRawTokenFromProperties(null, tokenProperties), schema as any, (() => {}) as any, [])
+    const decoded = await SchemaTools.decode.token(1, 1, makeRawTokenFromProperties(null, tokenProperties), schema as any, (() => {}) as any, [])
     expect(decoded.error).toBeFalsy()
     expect(decoded.result).toBeDefined()
 
