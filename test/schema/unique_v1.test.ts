@@ -180,8 +180,10 @@ describe('unique v1 - royalties', async () => {
     expect(decodedRoyalties).toBeDefined()
     expect(decodedRoyalties).to.deep.equal([ETH_DEFAULT.decoded])
   })
+})
 
-  test('WIP regress V2 schema', async () => {
+describe('unique v2', () => {
+  test('v1 decode has basic support of v2 collections and tokens', async () => {
     const COLLECTION = 2970;
     const TOKEN = 1;
 

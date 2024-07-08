@@ -38,6 +38,12 @@ export const parseImageLinkOptions = (options?: DecodingImageLinkOptions): Requi
 }
 
 export const universallyDecodeCollectionSchema = async (collectionId: number, properties: PropertiesArray, flags: CollectionFlags, options?: DecodingImageLinkOptions): Promise<DecodingResult<UniqueCollectionSchemaDecoded>> => {
+  /////// NOTICE: this is a patch to support schema 2.0.0 --->
+  const schemaVersion = properties.find(p => p.key === 'schemaVersion');
+  if (schemaVersion && schemaVersion.value === '2.0.0') {
+    properties = patch.tryConvertCollectionPropertiesV2ToV1(properties);
+  }
+  ///////
   const schemaNameProp = properties.find(({key}) => key === 'schemaName')?.value || null
   const schemaName = typeof schemaNameProp === 'string' ? safeJsonParseStringOrHexString<string>(schemaNameProp) : null
   const isOldSchema = !!properties.find(({key}) => key === '_old_schemaVersion')
@@ -49,13 +55,6 @@ export const universallyDecodeCollectionSchema = async (collectionId: number, pr
     const imageLinkOptions = parseImageLinkOptions(options)
     decoded = await oldSchema.decodeOldSchemaCollection(collectionId, properties, imageLinkOptions)
   } else if (schemaName === COLLECTION_SCHEMA_NAME.unique) {
-    /////// NOTICE: this is a patch to support schema 2.0.0 --->
-    const schemaVersion = properties.find(p => p.key === 'schemaVersion');
-    if (schemaVersion && schemaVersion.value === '2.0.0') {
-      properties = patch.tryConvertCollectionPropertiesV2ToV1(properties);
-    }
-    ///////
-
     decoded = await collection.decodeUniqueCollectionFromProperties(collectionId, properties)
   } else if (isERC721Metadata) {
     decoded = collection.decodeUniqueCollectionFromERC721Metadata(collectionId, properties)
