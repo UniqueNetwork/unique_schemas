@@ -16,7 +16,7 @@ const config = {
     requireCleanWorkingDir: false,
     changelog: 'git log --pretty=format:"* %s (%h)" ${from}...${to}',
     commitMessage: 'chore: release v${version}',
-    requireBranch: 'master',
+    // requireBranch: 'master',
     tagName: "v${version}",
   },
   github: {
