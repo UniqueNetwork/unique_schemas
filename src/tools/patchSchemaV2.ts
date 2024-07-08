@@ -1,4 +1,5 @@
 // This methods are a dirty hack to support v2 collections
+import { safeJsonParseStringOrHexString } from "src/tsUtils";
 import { UniqueCollectionSchemaDecoded } from "src/types";
 import { HumanizedNftToken, PropertiesArray } from "src/unique_types";
 
@@ -12,7 +13,7 @@ export const tryConvertCollectionPropertiesV2ToV1 = (properties: PropertiesArray
   
     const collectionInfo = properties.find(p => p.key === 'collectionInfo');
     if (collectionInfo) {
-      const collectionInfoObj = JSON.parse(collectionInfo.value);
+      const collectionInfoObj = safeJsonParseStringOrHexString(collectionInfo.value);
       const coverImage = collectionInfoObj.cover_image;
       if (coverImage) patched.push({key: 'coverPicture.url', value: `"${coverImage.url}"`});
       
@@ -33,17 +34,19 @@ export const tryConvertCollectionPropertiesV2ToV1 = (properties: PropertiesArray
   
     return patched;  
   } catch (error) {
-    return properties;
+    return properties
   }
 }
 
 export const tryConvertTokenPropertiesV2ToV1 = (tokenData: HumanizedNftToken, schema: UniqueCollectionSchemaDecoded): HumanizedNftToken => {
   try {
+    console.log(tokenData);
+
     const data = tokenData.properties.find(p => p.key === 'tokenData');
     type Prop = {key: string, value: string};
     const newProperties: Prop[] = [];
     if(data) {
-      const properties = JSON.parse(data.value);
+      const properties = safeJsonParseStringOrHexString(data.value);
       for (const propKey in properties) {
         if(propKey === 'image') {
           newProperties.push({key: 'i.u', value: properties[propKey]})
@@ -62,7 +65,7 @@ export const tryConvertTokenPropertiesV2ToV1 = (tokenData: HumanizedNftToken, sc
       }
     }
   
-    return {owner: tokenData.owner, properties: newProperties};  
+    return {owner: tokenData.owner, properties: newProperties}
   } catch (error) {
     return tokenData
   }
