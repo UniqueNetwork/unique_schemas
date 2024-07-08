@@ -40,8 +40,6 @@ export const tryConvertCollectionPropertiesV2ToV1 = (properties: PropertiesArray
 
 export const tryConvertTokenPropertiesV2ToV1 = (tokenData: HumanizedNftToken, schema: UniqueCollectionSchemaDecoded): HumanizedNftToken => {
   try {
-    console.log(tokenData);
-
     const data = tokenData.properties.find(p => p.key === 'tokenData');
     type Prop = {key: string, value: string};
     const newProperties: Prop[] = [];
