@@ -58,5 +58,17 @@
     "zod": "^3.22.4",
     "zod-openapi": "^2.18.0"
   },
-  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
+  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js",
+      "types": "./index.d.ts"
+    },
+    "./pure": {
+      "import": "./pure.mjs",
+      "require": "./pure.js",
+      "types": "./pure.d.ts"
+    }
+  }
 }
