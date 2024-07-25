@@ -1,6 +1,6 @@
 {
   "name": "@unique-nft/schemas",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "description": "Unique Network schemas encoding, validating and decoding toolkit",
   "main": "index.js",
   "scripts": {
