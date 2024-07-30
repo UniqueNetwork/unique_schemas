@@ -10,17 +10,18 @@ export const tryConvertCollectionPropertiesV2ToV1 = (properties: PropertiesArray
       else if (p.key === 'schemaVersion') p.value = '"1.0.0"'
       return p
     });
-  
+
     const collectionInfo = properties.find(p => p.key === 'collectionInfo');
     if (collectionInfo) {
       const collectionInfoObj = safeJsonParseStringOrHexString(collectionInfo.value);
       const coverImage = collectionInfoObj.cover_image;
       if (coverImage) patched.push({key: 'coverPicture.url', value: `"${coverImage.url}"`});
-      
+
       const potentialAttributes = collectionInfoObj.potential_attributes;
-      if(potentialAttributes) {
+      if (potentialAttributes && Array.isArray(potentialAttributes) && potentialAttributes.length > 0) {
         patched.push({key: 'attributesSchemaVersion', value: '"1.0.0"'});
-        for (const [i, attr] of (potentialAttributes as any[]).entries()) {
+
+        for (const [i, attr] of potentialAttributes.entries()) {
           patched.push({key: `attributesSchema.${i}`, value: JSON.stringify({
             type: "string",
             name: {_: attr.trait_type}
@@ -28,11 +29,11 @@ export const tryConvertCollectionPropertiesV2ToV1 = (properties: PropertiesArray
         }
       }
     }
-  
+
     patched.push({key: 'originalSchemaVersion', value: '"2.0.0"'});
     patched.push({key: 'image.urlTemplate', value: '"{infix}"'});
-  
-    return patched;  
+
+    return patched;
   } catch (error) {
     return properties
   }
@@ -58,11 +59,11 @@ export const tryConvertTokenPropertiesV2ToV1 = (tokenData: HumanizedNftToken, sc
                 }
               }
             }
-          }      
+          }
         }
       }
     }
-  
+
     return {owner: tokenData.owner, properties: newProperties}
   } catch (error) {
     return tokenData
