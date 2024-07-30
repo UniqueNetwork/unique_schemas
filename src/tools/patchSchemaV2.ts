@@ -19,6 +19,7 @@ export const tryConvertCollectionPropertiesV2ToV1 = (properties: PropertiesArray
       
       const potentialAttributes = collectionInfoObj.potential_attributes;
       if(potentialAttributes) {
+        patched.push({key: 'attributesSchemaVersion', value: '"1.0.0"'});
         for (const [i, attr] of (potentialAttributes as any[]).entries()) {
           patched.push({key: `attributesSchema.${i}`, value: JSON.stringify({
             type: "string",
@@ -28,7 +29,6 @@ export const tryConvertCollectionPropertiesV2ToV1 = (properties: PropertiesArray
       }
     }
   
-    patched.push({key: 'attributesSchemaVersion', value: '"1.0.0"'});
     patched.push({key: 'originalSchemaVersion', value: '"2.0.0"'});
     patched.push({key: 'image.urlTemplate', value: '"{infix}"'});
   
