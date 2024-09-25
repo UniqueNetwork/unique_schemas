@@ -183,7 +183,7 @@ describe('unique v1 - royalties', async () => {
 })
 
 describe('unique v2', () => {
-  test('v1 decode has basic support of v2 collections and tokens', async () => {
+  test('v1 decode has basic support of v2 collections and tokens 665', async () => {
     const COLLECTION = 2970;
     const TOKEN = 1;
 
@@ -196,7 +196,41 @@ describe('unique v2', () => {
     const raw = makeRawTokenFromProperties(null, token!.properties);
     const decodedToken = await SchemaTools.decode.token(COLLECTION, TOKEN, raw, decodedCollection.result as any, (() => {}) as any, [])
 
-    expect(decodedCollection.result).to.deep.eq(expectedCollectionSchema);
-    expect(decodedToken.result).to.deep.eq(expectedTokenSchema);
+    expect(decodedCollection.result).to.deep.eq(expectedCollectionSchema['2970']);
+    expect(decodedToken.result).to.deep.eq(expectedTokenSchema['2970']);
+  });
+
+  test('v1 decode has basic support of v2 collections and tokens 665', async () => {
+    const COLLECTION = 665;
+    const TOKEN = 1;
+
+    const lens = ChainLenses.unique;
+    const token = await lens.requestNftToken(COLLECTION, TOKEN);
+
+    const collection = await lens.requestCollection(COLLECTION);
+    const decodedCollection = await SchemaTools.decode.collectionSchema(COLLECTION, collection!.properties, {erc721metadata: false, foreign: false})
+
+    const raw = makeRawTokenFromProperties(null, token!.properties);
+    const decodedToken = await SchemaTools.decode.token(COLLECTION, TOKEN, raw, decodedCollection.result as any, (() => {}) as any, [])
+
+    expect(decodedCollection.result).to.deep.eq(expectedCollectionSchema['665']);
+    expect(decodedToken.result).to.deep.eq(expectedTokenSchema['665']);
+  });
+
+  test('v1 decode has basic support of v2 collections and tokens 691', async () => {
+    const COLLECTION = 691;
+    const TOKEN = 2;
+
+    const lens = ChainLenses.unique;
+    const token = await lens.requestNftToken(COLLECTION, TOKEN);
+
+    const collection = await lens.requestCollection(COLLECTION);
+    const decodedCollection = await SchemaTools.decode.collectionSchema(COLLECTION, collection!.properties, {erc721metadata: false, foreign: false})
+
+    const raw = makeRawTokenFromProperties(null, token!.properties);
+    const decodedToken = await SchemaTools.decode.token(COLLECTION, TOKEN, raw, decodedCollection.result as any, (() => {}) as any, [])
+
+    expect(decodedCollection.result).to.deep.eq(expectedCollectionSchema['691']);
+    expect(decodedToken.result).to.deep.eq(expectedTokenSchema['691']);
   });
 })

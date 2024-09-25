@@ -11,6 +11,7 @@ const config = {
       access: "public",
     },
     publishPath: "./dist",
+    tag: "v0",
   },
   git: {
     requireCleanWorkingDir: false,
