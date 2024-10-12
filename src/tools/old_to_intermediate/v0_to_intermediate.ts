@@ -11,7 +11,7 @@ import {
 } from "./intermediate_types";
 
 import type {Message, Type} from 'protobufjs'
-import {Root} from 'protobufjs'
+import protobufjs from 'protobufjs'
 import {StringUtils} from "@unique-nft/utils";
 import {buildDictionaryFromPropertiesArray, safeJSONParse, safeJSONParseWithPossibleEmptyInput} from '../../utils'
 import {COLLECTION_SCHEMA_FAMILY, DecodeTokenOptions, ProbablyDecodedProperty} from '../../types'
@@ -73,10 +73,10 @@ export const decodeOldSchemaCollection = (properties: ProbablyDecodedProperty[],
   }
 
 
-  let root: Root = {} as any
+  let root: protobufjs.Root = {} as any
   let NFTMeta: Type = {} as any
 
-  root = Root.fromJSON(JSON.parse(constOnchainSchema))
+  root = protobufjs.Root.fromJSON(JSON.parse(constOnchainSchema))
   NFTMeta = root.lookupType('onChainMetaData.NFTMeta')
 
   const attributesSchema: CollectionAttributesSchema = {}
@@ -142,7 +142,7 @@ export const decodeOldSchemaToken = (
     throw new ValidationError(`collection doesn't contain _old_constOnChainSchema field`)
   }
 
-  const root = Root.fromJSON(JSON.parse(constOnchainSchema))
+  const root = protobufjs.Root.fromJSON(JSON.parse(constOnchainSchema))
   const NFTMeta = root.lookupType('onChainMetaData.NFTMeta')
 
 
