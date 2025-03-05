@@ -1,6 +1,7 @@
 import {describe, expect, test} from 'vitest';
 import {decodeTokenToV2} from '../../src/decoding/tokenDecoding';
 import {Utf8} from '@unique-nft/utils/string';
+import {decodeCollectionToV2} from '../../src/decoding/collectionDecoding';
 
 
 describe('Minimal token schema v2 decoding', () => {
@@ -47,13 +48,20 @@ describe('Minimal token schema v2 decoding', () => {
       {key: 'tokenData', valueHex: tokenDataHex, value: tokenDataString},
     ]
 
+
+    const collectionInfo = {cover_image: 'https://example.com/cover.png'}
+    const collectionInfoString = JSON.stringify(collectionInfo)
+    const collectionInfoHex = Utf8.stringToHexString(collectionInfoString)
+
     const collectionProperties = [
       {key: 'schemaName', valueHex: '0x756e69717565', value: 'unique'},
       {key: 'schemaVersion', valueHex: '0x322e302e30', value: '2.0.0'},
+      {key: 'collectionInfo', valueHex: collectionInfoHex, value: collectionInfoString},
     ]
 
     const expected = {...tokenData}
 
     await expect(decodeTokenToV2(tokenProps, {collectionProperties})).resolves.toEqual(expected)
+    await expect(decodeCollectionToV2(collectionProperties)).resolves.toEqual(collectionInfo)
   })
 })
